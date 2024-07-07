@@ -1,0 +1,142 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container {
+  overflow-x: hidden;
+  width: 100vw;
+  min-height: 100vh;
+  background: #000;
+  padding: 10px;
+  background: linear-gradient(0deg, #000 30%, #000 30%, #fff 30%);
+  background-position: fixed;
+}
+
+.register,
+.login {
+  padding: 20px;
+}
+.register__header,
+.login__header {
+  font-size: 1.5em;
+  letter-spacing: 1px;
+  font-weight: 300;
+  width: 90vw;
+  padding: 15px;
+  margin-top: 10vh;
+}
+.register__header__paragraph,
+.login__header__paragraph {
+  padding-top: 12px;
+}
+.register__form,
+.login__form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 5px;
+  margin: 0 auto;
+  margin-top: 7vh;
+  max-width: 400px;
+}
+.register__form input,
+.login__form input {
+  width: 90%;
+  min-width: 200px;
+  height: 5vh;
+  outline: none;
+  border: none;
+  padding: 5px;
+  padding-left: 10px;
+  margin-top: 20px;
+  border-bottom: 1px solid #000;
+}
+
+.register__form__btn,
+.login__form__btn {
+  width: 50% !important;
+  min-width: 100px !important;
+  background-color: #fff !important;
+  border: 1px solid #000 !important;
+  margin-top: 14vh !important;
+}
+
+.login__form__btn {
+  margin-top: 5vh !important;
+}
+
+.having__account {
+  text-align: center;
+  margin-top: 40px;
+  color: #fff;
+  font-size: 0.8em;
+}
+.having__account a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.login .having__account {
+  color: #000;
+}
+.login .having__account a {
+  color: #000;
+}
+
+#messages {
+  color: rgb(227, 34, 34);
+  text-align: center;
+  margin: 5px 0;
+}
+
+.sellsite__products {
+  display: grid;
+  grid-template-columns: repeat(2, 2fr);
+  -moz-column-gap: 10px;
+  column-gap: 10px;
+  row-gap: 20px;
+}
+.sellsite__products .box_for_product {
+  padding: 8px;
+  text-align: left;
+  background-color: rgba(244, 244, 244, 0.896);
+  border-radius: 16px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  height: 30vh;
+}
+.sellsite__products .box_for_product .product_title {
+  margin: 5px 0;
+  margin-top: 21px;
+  padding-left: 5px;
+  display: inline-block;
+  color: #000;
+}
+.sellsite__products .box_for_product .product_price {
+  color: #000;
+  padding-left: 5px;
+}
+.sellsite__products .box_for_product img {
+  display: block;
+  width: 80%;
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 628px) {
+  .register__header,
+  .login__header {
+    width: calc(100vw - 20px);
+    text-align: center;
+  }
+} /*# sourceMappingURL=main.css.map */

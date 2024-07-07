@@ -1,0 +1,30 @@
+{% extends "main/base.html" %}
+  
+
+{% block title %} <title>Login</title> {%endblock title%}
+</head>
+{% block content %}
+<body>
+    <div class="login container">
+        <div class="login__header">
+            <h2 class="login__header__welcome welcome__text">Dzień dobry!</h2>
+            <p class="login__header__paragraph">Zaloguj</p>
+        </div>
+        <form method="POST" class="login__form"> 
+            {%csrf_token%}
+                <input type="text" name="username" placeholder="e-mail">
+                <input type="password" name="password" placeholder="hasło">
+                <input class='login__form__btn' type="submit" value="Zaloguj">
+        </form>
+        <div id="messages">  
+                     
+            {%for i in error_list%}
+                <label>{{i}}</label>
+            {%endfor%}
+
+        </div>
+        <p class="having__account">Nie masz jeszcze konta? <a href="{%url 'register_page'%}">Zarejestruj</a></p>
+    </div>
+</body>
+</html>
+{% endblock content%}
