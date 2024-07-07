@@ -1,0 +1,36 @@
+{% extends "main/base.html" %}
+  
+{%block title%}<title>Register</title>{%endblock title%}
+</head> 
+{% block content %}
+<body>
+    
+    <div class="register container">
+        <div class="register__header">
+            <h2 class="register__header__welcome welcome__text">Dzień dobry!</h2>
+            <p class="register__header__paragraph">Zarejestruj</p>
+        </div>
+       
+        
+        <form method="POST" class="register__form"> 
+            {%csrf_token%}
+                <input type="email" name="email" placeholder="e-mail" class="email">
+                <input type="text" name="first_name" placeholder="imię" class="name">
+                <input type="password" name="password1" placeholder="hasło" class="password">
+                <input type="password" name="password2" placeholder="powtórz hasło" class="password">
+
+                <input class='register__form__btn' type="submit" value="Zarejestruj">
+        </form>
+        <div id="messages">  
+                     
+            {%for i in error_list%}
+                <label>{{i}}</label>
+            {%endfor%}
+
+        </div>
+        <p class="having__account">Masz juz konto? <a href="{%url 'login_page'%}">Zaloguj się </a></p>
+    </div>
+
+</body>
+</html>
+{% endblock content %}
