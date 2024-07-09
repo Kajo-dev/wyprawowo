@@ -1,30 +1,63 @@
 {% extends "main/base.html" %}
-  
-
+{%load static %}
+<head>
 {% block title %} <title>Login</title> {%endblock title%}
-</head>
+
 {% block content %}
-<body>
-    <div class="login container">
-        <div class="login__header">
-            <h2 class="login__header__welcome welcome__text">Dzień dobry!</h2>
-            <p class="login__header__paragraph">Zaloguj</p>
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}" />
+</head>
+
+<div class="register container">
+    <div class="register-left-panel">
+        <h2>
+            <span> 👋 </span>  <br/> Dołącz do nas!
+        </h2>
+        <span class="line"></span>
+        <p class="register-left-panel-paragraph">
+            Miło Cię znowu widzieć! Dziękujemy, że współtworzysz społeczność wyprawowiczów!
+        </p>
+
+    </div>
+    <div class="register-right-panel">
+
+        <div>
+            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
         </div>
-        <form method="POST" class="login__form"> 
-            {%csrf_token%}
-                <input type="text" name="username" placeholder="e-mail">
-                <input type="password" name="password" placeholder="hasło">
-                <input class='login__form__btn' type="submit" value="Zaloguj">
-        </form>
-        <div id="messages">  
-                     
-            {%for i in error_list%}
-                <label>{{i}}</label>
-            {%endfor%}
+
+        <div class="box form-container">
+
+            <h2>Zaloguj się</h2>
+
+            <form method="POST" class="register__form">
+                {%csrf_token%}
+                <input type="text" name="username" placeholder="E-mail">
+                <input type="password" name="password" placeholder="Hasło">
+
+                <div class="checkbox-wrapper">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember_me"/>
+                        Zapamiętaj mnie
+                    </label>
+                </div>
+
+
+                <input class='register__form__btn' type="submit" value="Zaloguj">
+
+            </form>
+
+            <div id="messages">
+
+                {%for i in error_list%}
+                <label class="error-message">{{i}}</label>
+                {%endfor%}
+
+            </div>
+
+            <p class="having__account">Nie masz konta? <a href="{%url 'register_page'%}">Zarejestruj się </a></p>
 
         </div>
-        <p class="having__account">Nie masz jeszcze konta? <a href="{%url 'register_page'%}">Zarejestruj</a></p>
     </div>
-</body>
-</html>
+</div>
+
+
 {% endblock content%}

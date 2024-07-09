@@ -53,6 +53,7 @@ def register_page(request):
     if request.method == 'POST':
         email = request.POST['email']
         first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
@@ -67,11 +68,12 @@ def register_page(request):
         }
 
         if len(error_list) == 0:
-            newUser = User.objects.create_user(email=email, first_name=first_name, password=password1)
+            newUser = User.objects.create_user(email=email, first_name=first_name, password=password1, last_name=last_name)
             newUser.save()
             activate_email(request, newUser, email)
             data_front = {
                 'first_name': first_name,
+                'last_name': last_name,
                 'email': email
             }
             return render(request, 'user_manager/confirmation_email.html', data_front)
@@ -79,6 +81,12 @@ def register_page(request):
             return render(request, 'user_manager/register.html', data_front)
     return render(request, 'user_manager/register.html', {})
 
+
+def policy_privacy(request):
+    return render(request, 'static/policy-privacy.html',{})
+
+def policy_rules(request):
+    return render(request, 'static/policy-rules.html',{})
 
 def login_page(request):
     error_list = []
