@@ -10,14 +10,33 @@
     {%load static%}
     <link rel="stylesheet" type="text/css" href="{%static 'css/main.css'%}" />
     <link rel="stylesheet" type="text/css" href="{%static 'css/components/style.css'%}" />
+    <link rel="stylesheet" type="text/css" href="{%static 'css/components/footer.css'%}" />
     <script src="{% static 'js/main.js' %}" type="module"></script>
 
     {% block title %} {% endblock title %}
   </head>
     {% block content %} {% endblock content %}
 
-    <footer>
-      To jest stopka
+    <footer class="footer">
+      <div class="first-line">
+        <img src="{% static 'img/wyprawowo_avatar.png' %}" alt="avatar-wyprawowo" class="wyprawowo-avatar"/>
+        Wyprawowo.pl -  <span> Jeszcze nie wiesz, że chcesz </span>
+      </div>
+      <div class="second-line">
+        <div class="footer-nav">
+          <a href="polityka-prywatnosci">Polityka prywatności </a>
+          <a href="regulamin">regulamin</a>
+        </div>
+        <div class="social-media">
+          <div>
+          <a href="https://www.facebook.com/wyprawowopl" target="_blank">
+            <img src="{% static 'img/fb-icon.svg' %}" alt="fb-icon"/>
+          </a>
+          </div>
+        </div>
+      </div>
+      <div class="third-line">
+        © 2024 TRANSPLANET Radomir Ornowski. Wszystkie prawa zastrzeżone
+      </div>
     </footer>
-  </head>
 </html>
