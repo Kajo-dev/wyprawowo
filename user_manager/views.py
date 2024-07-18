@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .models import User
+from .models import User, Question, Answer, UserResponse
 from django.contrib.auth.decorators import login_required
 
 from .tokens import account_activation_token
@@ -98,7 +98,7 @@ def login_page(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home_page')
+            return redirect('policy_rules') # Policy rules just for testing purposes
         else:
             error_list.append('Dane do logowania są nieprawidłowe')
             data_front = {
@@ -108,6 +108,43 @@ def login_page(request):
 
     return render(request, 'user_manager/login.html', {})
 
+
+@login_required(login_url='login_page')
+def question_view(request, question_id):
+    previous_question_id = question_id - 1 if question_id > 1 else 1
+    try:
+       question = Question.objects.get(id=question_id)
+    except Question.DoesNotExist:
+        next_question = Question.objects.filter(id__gt=question_id).order_by('id').first()
+
+        if next_question:
+            return redirect('question_page', question_id = next_question.id)
+        else:
+            return redirect('login_page')
+
+    answers = Answer.objects.filter(question_id=question.id)
+
+    if request.method=='POST':
+        post_answers = request.POST.getlist('answer')
+        user = request.user
+        if not post_answers:
+            return render(request, 'user_manager/questions.html', {
+               'question': question,
+               'answers': answers,
+               'previous_question_id': previous_question_id,
+               'error_message': 'Prosze zaznaczyć odpowiedź!'})
+
+        for user_answer_id in post_answers:
+            user_response = UserResponse(user=user, question=question, answer_id=user_answer_id)
+            user_response.save()
+
+        next_question_id = question_id + 1
+
+        return redirect('question_view', question_id = next_question_id)
+
+
+
+    return render(request, 'user_manager/questions.html', {'question': question, 'answers': answers, 'current_number': question_id, 'previous_question_id': previous_question_id})
 
 @login_required(login_url='login_page')
 def logout_page(request):
