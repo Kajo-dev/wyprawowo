@@ -1,0 +1,41 @@
+.profile-wrapper {
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 50px auto 0;
+    padding: 0 5px;
+}
+
+.red-overlay {
+    background-color: var(--my-red);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.profile_avatar {
+    height: 70px;
+    border-radius: 100%;
+    background-color: gray;
+    border: 1px solid black;
+}
+
+.profile-main-info {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #9999;
+    padding-bottom: 10px;
+}
+
+.profile-box {
+    padding: 5px;
+}
+
+.profile_name {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.profile-description {
+    padding: 5px 0;
+    font-size: 0.9em;
+    color: #252525;
+}

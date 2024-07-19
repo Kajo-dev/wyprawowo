@@ -1,0 +1,34 @@
+{% extends "main/base.html" %}
+{%load static %}
+<head>
+    {% block title %} <title> user - Wyprawowo.pl</title> {%endblock title%}
+
+    {% block content %}
+    <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+    <link rel="stylesheet" type="text/css" href="{%static 'css/socials/profile_page.css'%}"/>
+</head>
+<div class="profile-wrapper">
+    <div class="profile-main-view">
+        <div class="red-overlay">
+            <div class="profile-box box-no-shadow">
+                <div class="profile-main-info">
+
+                    <img src="{{profile.avatar}}/thumb" alt="{{profile.slug}} avatar" class="profile_avatar"/>
+
+                    <p class="profile_name">
+                        {{profile.user.first_name}} {{profile.user.last_name}}
+                    </p>
+
+
+                </div>
+
+                <p class="profile-description">
+                    {{profile.description}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="profile-side-bar"></div>
+</div>
+
+{% endblock content%}
