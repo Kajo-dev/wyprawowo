@@ -172,10 +172,12 @@ def update_profile(request):
         description = request.POST.get('description')
         if request.FILES.get('avatar'):
             profile.avatar = upload_photo_to_cloudflare(request.FILES.get('avatar'))
-            profile.description = description
-            profile.save()
-        else:
-             return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe!'})
+        elif profile.avatar is None:
+            return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar,
+            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe!'})
+
+        profile.description = description
+        profile.save()
 
         return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
 

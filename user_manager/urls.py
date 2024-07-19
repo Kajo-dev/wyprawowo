@@ -10,5 +10,4 @@ urlpatterns = [
         path('polityka-prywatnosci/', user_manager_views.policy_privacy, name="policy_privacy"),
         path('regulamin/', user_manager_views.policy_rules, name="policy_rules"),
         path('pytania/<int:question_id>/', user_manager_views.question_view, name="question_view"),
-        path('profil/uzupelnij/', user_manager_views.update_profile, name="update_profile"),
     ]
