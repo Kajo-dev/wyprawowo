@@ -65,4 +65,28 @@ def profile_create(sender, instance, created, *args, **kwargs):
         Profile.objects.get_or_create(user=instance)
 
 
+class Question(models.Model):
+    text = models.CharField(max_length=200)
+    multiple_answer = models.BooleanField()
+
+    def __str__(self):
+        return str(self.text)
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    text = models.CharField(max_length=200)
+
+    def __str__(self):
+        return str(self.text)
+
+
+class UserResponse(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(f'{self.user}: {self.question.text} - {self.answer.text}' )
+
 post_save.connect(profile_create, sender=settings.AUTH_USER_MODEL)
