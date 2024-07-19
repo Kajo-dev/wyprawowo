@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .models import User, Question, Answer, UserResponse
+from .models import User, Question, Answer, UserResponse, Profile
 from django.contrib.auth.decorators import login_required
 
 from .tokens import account_activation_token
@@ -145,6 +145,11 @@ def question_view(request, question_id):
 
 
     return render(request, 'user_manager/questions.html', {'question': question, 'answers': answers, 'current_number': question_id, 'previous_question_id': previous_question_id})
+
+
+@login_required(login_url=login_page)
+def update_profile(request):
+    return render(request, 'user_manager/update_profile.html', {})
 
 @login_required(login_url='login_page')
 def logout_page(request):

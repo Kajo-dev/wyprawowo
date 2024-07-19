@@ -55,6 +55,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    description = models.TextField(max_length=255, blank=True)
+    avatar = models.ImageField()
+
 
     def __str__(self):
         return str(self.user)
@@ -67,7 +70,7 @@ def profile_create(sender, instance, created, *args, **kwargs):
 
 class Question(models.Model):
     text = models.CharField(max_length=200)
-    multiple_answer = models.BooleanField()
+    multiple_answer = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.text)
