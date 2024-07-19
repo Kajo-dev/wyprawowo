@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from .models import User, Question, Answer, UserResponse, Profile
 from django.contrib.auth.decorators import login_required
+import requests
+import json
 
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
@@ -9,6 +11,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
+from django.conf import settings
 
 
 def activate(request, uidb64, token):
@@ -120,7 +123,7 @@ def question_view(request, question_id):
         if next_question:
             return redirect('question_page', question_id = next_question.id)
         else:
-            return redirect('login_page')
+            return redirect('update_profile')
 
     answers = Answer.objects.filter(question_id=question.id)
 
@@ -147,9 +150,32 @@ def question_view(request, question_id):
     return render(request, 'user_manager/questions.html', {'question': question, 'answers': answers, 'current_number': question_id, 'previous_question_id': previous_question_id})
 
 
+def upload_photo_to_cloudflare(image):
+    account_id = settings.ACCOUNT_ID
+    url = f'https://api.cloudflare.com/client/v4/accounts/{account_id}/images/v1'
+    headers = {
+        'Authorization': f'Bearer {settings.API_KEY}',
+    }
+    if image:
+        files = {'file': image}
+        response = requests.post(url.format(ACCOUNT_ID=account_id), headers=headers, files=files)
+        if response.status_code == 200:
+            result = json.loads(response.text)['result']['variants'][0]
+            result = result[:result.rfind('/')]
+            return result
+
+
 @login_required(login_url=login_page)
 def update_profile(request):
-    return render(request, 'user_manager/update_profile.html', {})
+    profile = get_object_or_404(Profile, user=request.user)
+    if request.method == 'POST':
+        description = request.POST.get('description')
+        if request.FILES.get('avatar'):
+            profile.avatar = upload_photo_to_cloudflare(request.FILES.get('avatar'))
+        profile.description = description
+        profile.save()
+        return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
+    return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
 
 @login_required(login_url='login_page')
 def logout_page(request):
