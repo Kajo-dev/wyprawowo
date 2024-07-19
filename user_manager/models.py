@@ -56,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField(max_length=255, blank=True)
-    avatar = models.ImageField()
+    avatar = models.URLField(blank=True, null=True)
 
 
     def __str__(self):
@@ -77,7 +77,7 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
     text = models.CharField(max_length=200)
 
     def __str__(self):
