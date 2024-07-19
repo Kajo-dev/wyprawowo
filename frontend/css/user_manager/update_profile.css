@@ -69,3 +69,8 @@
 .save-button:hover {
     background-color: var(--my-red)
 }
+
+.error-message {
+    margin-left: 20px;
+    margin-bottom: 5px;
+}
