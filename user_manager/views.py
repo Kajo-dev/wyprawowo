@@ -4,8 +4,8 @@ from .models import User, Question, Answer, UserResponse, Profile
 from django.contrib.auth.decorators import login_required
 import requests
 import json
-import ssl
-
+import smtplib, ssl
+from email.message import EmailMessage
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -38,9 +38,6 @@ def activate(request, uidb64, token):
 
 
 def activate_email(request, user, to_email):
-    import smtplib, ssl
-    from email.message import EmailMessage
-
     msg = EmailMessage()
     message = render_to_string("user_manager/acctive_account.html", {
         'first_name': user.first_name,
