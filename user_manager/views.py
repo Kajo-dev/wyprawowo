@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 import requests
 import json
 
+
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from django.conf import settings
+
 
 
 def activate(request, uidb64, token):
@@ -57,6 +59,7 @@ def register_page(request):
         email = request.POST['email']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
+
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
@@ -91,6 +94,7 @@ def policy_privacy(request):
 def policy_rules(request):
     return render(request, 'static/policy-rules.html',{})
 
+
 def login_page(request):
     error_list = []
     if request.method == 'POST':
@@ -102,6 +106,7 @@ def login_page(request):
         if user is not None:
             login(request, user)
             return redirect('policy_rules') # Policy rules just for testing purposes
+
         else:
             error_list.append('Dane do logowania są nieprawidłowe')
             data_front = {

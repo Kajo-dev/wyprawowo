@@ -3,6 +3,7 @@ from Wyprawowo import settings
 from django.db.models.signals import post_save
 from django.utils.text import slugify
 
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
@@ -27,6 +28,7 @@ class CustomUserManager(BaseUserManager):
 
         return self._create_user(email, password, first_name, last_name,  **extra_fields)
 
+      
     def create_superuser(self, email, password, first_name, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
@@ -39,6 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(db_index=True, unique=True, max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
+
 
     is_staff = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
