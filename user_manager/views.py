@@ -4,14 +4,14 @@ from .models import User, Question, Answer, UserResponse, Profile
 from django.contrib.auth.decorators import login_required
 import requests
 import json
-
+import ssl
 
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
 
 
@@ -38,7 +38,10 @@ def activate(request, uidb64, token):
 
 
 def activate_email(request, user, to_email):
-    mail_subject = "Aktywacja Konta."
+    import smtplib, ssl
+    from email.message import EmailMessage
+
+    msg = EmailMessage()
     message = render_to_string("user_manager/acctive_account.html", {
         'first_name': user.first_name,
         'domain': get_current_site(request).domain,
@@ -46,11 +49,17 @@ def activate_email(request, user, to_email):
         'token': account_activation_token.make_token(user),
         "protocol": 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    try:
-        email.send()
-    except Exception as e:
-        print("Failed to send email: %s", e)
+    msg.set_content(message)
+    msg["Subject"] = "Aktywacja Konta."
+    msg["From"] = settings.EMAIL_HOST_USER
+    msg["To"] = to_email
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT) as smtp:
+        smtp.starttls(context=context)
+        smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+        smtp.send_message(msg)
+
 
 
 def register_page(request):

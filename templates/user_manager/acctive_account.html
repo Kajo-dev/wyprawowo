@@ -1,7 +1,7 @@
 {% autoescape off %}
 Witaj {{ first_name }}, 
 
-Kliknij link poniżej, aby zakończyć proces rejestracji:
+Kliknij link poniżej, aby potwierdzić addres email:
 
 {{ protocol }}://{{ domain }}{% url 'activate_account' uidb64=uid token=token %}
 {% endautoescape %}
