@@ -11,7 +11,6 @@ from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
 
 
@@ -29,7 +28,16 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        return redirect('login_page')
+
+        first_question = Question.objects.first()
+        if first_question:
+            return redirect('question_view', question_id=first_question.id)
+        else:
+            error_list.append('Brak pytań w bazie')
+            data_front = {
+                'error_list': error_list
+            }
+            return render(request, 'starter/home.html', data_front)
     else:
         error_list.append('Link jest niepoprawny')
         data_front = {
