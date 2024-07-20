@@ -190,16 +190,24 @@ def update_profile(request):
     profile = get_object_or_404(Profile, user=request.user)
     if request.method == 'POST':
         description = request.POST.get('description')
-        if request.FILES.get('avatar'):
-            profile.avatar = upload_photo_to_cloudflare(request.FILES.get('avatar'))
-        elif profile.avatar is None:
+        avatar = request.FILES.get('avatar')
+        if avatar and description:
+            try:
+                avatar_link = upload_photo_to_cloudflare(avatar)
+                if avatar_link:
+                    profile.avatar = avatar_link
+                    profile.description = description
+                    profile.save()
+                    return redirect('ini_payment_view')
+            except Exception as e:
+                return render(request, 'user_manager/update_profile.html',{
+                        'profile_avatar': profile.avatar,
+                        'profile_description': profile.description,
+                        'error_message': 'Skontaktuj się z administratorem błąd podczas ładowania avataru'}
+                )
+        else:
             return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar,
-            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe!'})
-
-        profile.description = description
-        profile.save()
-
-        return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
+            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe, oraz Opis!'})
 
     return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
 
@@ -207,3 +215,7 @@ def update_profile(request):
 def logout_page(request):
     logout(request)
     return render(request, 'user_manager/logout.html', {})
+
+@login_required(login_url='login_page')
+def ini_payment(request):
+    return render(request, 'user_manager/ini_payment_process.html', {})
