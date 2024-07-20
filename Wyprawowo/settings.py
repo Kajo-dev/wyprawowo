@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user_manager'
-
+    'user_manager',
+    'socials'
 ]
 
 AUTH_USER_MODEL = 'user_manager.User'
@@ -146,3 +146,8 @@ EMAIL_USE_TLS = True
 EMAIL_SSL_CERTFILE = certifi.where()
 
 PASSWORD_RESET_TIMEOUT = 14400  # 4h
+
+#cloudflare
+ACCOUNT_ID = os.getenv('ACCOUNT_ID')
+API_KEY = os.getenv('API_KEY')
+

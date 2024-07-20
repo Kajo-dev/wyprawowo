@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4"
+  },
+  "scripts": {
+    "dev": "npx tailwindcss -i ./frontend/css/main.css/ -o ./frontend/css/styles.css --watch"
+  }
+}

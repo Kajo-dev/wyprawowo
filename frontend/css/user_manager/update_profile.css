@@ -1,0 +1,86 @@
+.file-input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.update-profile-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.update-profile-form label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9em;
+}
+
+.form-container {
+    padding: 5px;
+}
+
+.avatar-square {
+    width: 60px;
+    height: 60px;
+    background-color: #b7b7b7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+}
+
+.underline {
+    text-decoration: underline;
+    cursor: pointer;
+
+}
+
+.avatar-image {
+    height: 80%;
+    margin: auto;
+    border-radius: 100%;
+}
+
+.profile-description-input {
+    margin-top: 40px;
+    min-height: 150px;
+    padding: 7px;
+    border-radius: 3px;
+}
+
+.avatar-image-label {
+    margin-top: 40px;
+}
+
+.save-button {
+    width: 150px;
+    height: 30px;
+    background-color: var(--indian-red);
+    color: white;
+    border-bottom: 0;
+    border-radius: 2px;
+    margin: 30px auto;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.save-button:hover {
+    background-color: var(--my-red)
+}
+
+.error-message {
+    margin-left: 20px;
+    margin-bottom: 5px;
+}
+
+@media (min-width: 727px) {
+    .form-container {
+        margin: 0 auto;
+    }
+}

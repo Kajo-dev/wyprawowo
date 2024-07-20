@@ -1,7 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .models import User
+from .models import User, Question, Answer, UserResponse, Profile
 from django.contrib.auth.decorators import login_required
+import requests
+import json
+
 
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
@@ -9,6 +12,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
+from django.conf import settings
+
 
 
 def activate(request, uidb64, token):
@@ -53,6 +58,8 @@ def register_page(request):
     if request.method == 'POST':
         email = request.POST['email']
         first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
@@ -67,17 +74,25 @@ def register_page(request):
         }
 
         if len(error_list) == 0:
-            newUser = User.objects.create_user(email=email, first_name=first_name, password=password1)
+            newUser = User.objects.create_user(email=email, first_name=first_name, password=password1, last_name=last_name)
             newUser.save()
             activate_email(request, newUser, email)
             data_front = {
                 'first_name': first_name,
+                'last_name': last_name,
                 'email': email
             }
             return render(request, 'user_manager/confirmation_email.html', data_front)
         else:
             return render(request, 'user_manager/register.html', data_front)
     return render(request, 'user_manager/register.html', {})
+
+
+def policy_privacy(request):
+    return render(request, 'static/policy-privacy.html',{})
+
+def policy_rules(request):
+    return render(request, 'static/policy-rules.html',{})
 
 
 def login_page(request):
@@ -90,7 +105,8 @@ def login_page(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home_page')
+            return redirect('policy_rules') # Policy rules just for testing purposes
+
         else:
             error_list.append('Dane do logowania są nieprawidłowe')
             data_front = {
@@ -100,6 +116,77 @@ def login_page(request):
 
     return render(request, 'user_manager/login.html', {})
 
+
+@login_required(login_url='login_page')
+def question_view(request, question_id):
+    previous_question_id = question_id - 1 if question_id > 1 else 1
+    try:
+       question = Question.objects.get(id=question_id)
+    except Question.DoesNotExist:
+        next_question = Question.objects.filter(id__gt=question_id).order_by('id').first()
+
+        if next_question:
+            return redirect('question_page', question_id = next_question.id)
+        else:
+            return redirect('update_profile')
+
+    answers = Answer.objects.filter(question_id=question.id)
+
+    if request.method=='POST':
+        post_answers = request.POST.getlist('answer')
+        user = request.user
+        if not post_answers:
+            return render(request, 'user_manager/questions.html', {
+               'question': question,
+               'answers': answers,
+               'previous_question_id': previous_question_id,
+               'error_message': 'Prosze zaznaczyć odpowiedź!'})
+
+        for user_answer_id in post_answers:
+            user_response = UserResponse(user=user, question=question, answer_id=user_answer_id)
+            user_response.save()
+
+        next_question_id = question_id + 1
+
+        return redirect('question_view', question_id = next_question_id)
+
+
+
+    return render(request, 'user_manager/questions.html', {'question': question, 'answers': answers, 'current_number': question_id, 'previous_question_id': previous_question_id})
+
+
+def upload_photo_to_cloudflare(image):
+    account_id = settings.ACCOUNT_ID
+    url = f'https://api.cloudflare.com/client/v4/accounts/{account_id}/images/v1'
+    headers = {
+        'Authorization': f'Bearer {settings.API_KEY}',
+    }
+    if image:
+        files = {'file': image}
+        response = requests.post(url.format(ACCOUNT_ID=account_id), headers=headers, files=files)
+        if response.status_code == 200:
+            result = json.loads(response.text)['result']['variants'][0]
+            result = result[:result.rfind('/')]
+            return result
+
+
+@login_required(login_url=login_page)
+def update_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    if request.method == 'POST':
+        description = request.POST.get('description')
+        if request.FILES.get('avatar'):
+            profile.avatar = upload_photo_to_cloudflare(request.FILES.get('avatar'))
+        elif profile.avatar is None:
+            return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar,
+            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe!'})
+
+        profile.description = description
+        profile.save()
+
+        return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
+
+    return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
 
 @login_required(login_url='login_page')
 def logout_page(request):

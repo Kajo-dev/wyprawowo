@@ -1,0 +1,58 @@
+{% extends "main/base.html" %}
+{%load static %}
+<head>
+    {% block title %} <title>Uzupełnij profil - Wyprawowo.pl</title> {%endblock title%}
+
+    {% block content %}
+    <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+    <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/update_profile.css'%}"/>
+</head>
+
+<div class="register container">
+    <div class="register-left-panel">
+        <h2>
+            <span> 👋 </span> <br/> Uzupełnij profil!
+        </h2>
+        <span class="line"></span>
+        <p class="register-left-panel-paragraph">
+            Uzupełnij swój profil, żeby móc w pełni korzystać z platformy!
+        </p>
+
+    </div>
+    <div class="register-right-panel">
+
+        <div>
+            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
+        </div>
+
+        <div class="box form-container">
+            <form class="update-profile-form" method="POST" enctype="multipart/form-data">
+                {%csrf_token %}
+                <label class="avatar-image-label">
+                    <span class="avatar-square">
+                        {% if not profile_avatar %}
+                        <img class="avatar-image" src="{% static 'img/user-icon.svg' %}" alt="user icon"/>
+                        {% else %}
+                        <img class="avatar-image" src="{{profile_avatar}}/thumb" alt="user icon" style="height:100%;"/>
+                        {%endif %}
+                    </span>
+                    <span class="underline"> Wybierz swoje zdjęcie profilowe* </span>
+                    <input type="file" name="avatar" class="file-input"/>
+                </label>
+                <textarea class="profile-description-input" name="description"
+                          placeholder="Napisz coś o sobie">{{profile_description}}</textarea>
+                <input type="submit" value="Zapisz" class="save-button"/>
+            </form>
+            {% if error_message %}
+            <div class="error-message">
+                {{error_message}}
+            </div>
+            {%endif %}
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{%static 'js/user_manager/update_profile.js' %}"></script>
+
+
+{% endblock content%}
