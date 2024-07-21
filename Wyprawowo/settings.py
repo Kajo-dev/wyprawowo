@@ -25,6 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
+# SITE_URL = 'https://journify-landing-zb56z4tuja-lm.a.run.app/'
+SITE_URL = 'http://127.0.0.1:8000/'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,7 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_manager',
-    'socials'
+    'socials',
+    'payment_handle'
+
 ]
 
 AUTH_USER_MODEL = 'user_manager.User'
@@ -137,13 +142,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_FROM = 'Rejestracja@fiveseconds.pl'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_SSL_CERTFILE = certifi.where()
+
 
 PASSWORD_RESET_TIMEOUT = 14400  # 4h
 
@@ -151,3 +153,6 @@ PASSWORD_RESET_TIMEOUT = 14400  # 4h
 ACCOUNT_ID = os.getenv('ACCOUNT_ID')
 API_KEY = os.getenv('API_KEY')
 
+# stripe
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')

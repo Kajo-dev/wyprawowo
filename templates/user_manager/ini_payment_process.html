@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+
+{%block title%} <title>Opłata Rejestracujna</title> {%endblock title%}
+</head>
+    {% block content %}
+    <body>
+
+        <h3> Grosza daj wiedzmnowi </h3>
+
+        <form action="{% url 'create_checkout_session' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" id="checkout-button">Zapłace te 5zl</button>
+        </form>
+
+    </body>
+</html>
+{% endblock content%}
