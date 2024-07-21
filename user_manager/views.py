@@ -108,7 +108,7 @@ def  test_register(request):
         'last_name': "Figa",
         'email': "Email@gmail.com",
     }
-    return render(request, 'user_manager/confirmation_email.html', data_front)
+    return render(request, 'user_manager/acctive_account.html', data_front)
 
 
 def policy_privacy(request):
