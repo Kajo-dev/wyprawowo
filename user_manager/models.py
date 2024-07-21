@@ -24,17 +24,20 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, first_name, last_name, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_active', False)
+        extra_fields.setdefault('has_payment', False)
         extra_fields.setdefault('is_superuser', False)
 
         return self._create_user(email, password, first_name, last_name,  **extra_fields)
 
       
-    def create_superuser(self, email, password, first_name, **extra_fields):
+    def create_superuser(self, email, password, first_name, last_name, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('has_payment', True)
         extra_fields.setdefault('is_superuser', True)
 
-        return self._create_user(email, password, first_name, create_user, **extra_fields)
+        return self._create_user(email, password, first_name, last_name, **extra_fields)
+
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -45,6 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_staff = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
+    has_payment = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
     objects = CustomUserManager()
@@ -60,20 +64,20 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField(max_length=255, blank=True)
-    avatar = models.URLField(blank=True, null=True)
-    slug = models.SlugField(blank=False)
+    slug = models.SlugField(blank=True)
+    avatar = models.URLField(blank=False, null=False)
 
     def save(self, *args, **kwargs):
-            if not self.slug:
-                full_name = f"{self.user.first_name} {self.user.last_name}"
-                self.slug = slugify(full_name)
-                unique_slug = self.slug
-                num = 1
-                while Profile.objects.filter(slug=unique_slug).exists():
-                    unique_slug = f"{self.slug}-{num}"
-                    num += 1
-                self.slug = unique_slug
-            super().save(*args, **kwargs)
+        if not self.slug:
+            full_name = f"{self.user.first_name} {self.user.last_name}"
+            self.slug = slugify(full_name)
+            unique_slug = self.slug
+            num = 1
+            while Profile.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{self.slug}-{num}"
+                num += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return str(self.user)
@@ -86,7 +90,8 @@ def profile_create(sender, instance, created, *args, **kwargs):
 
 class Question(models.Model):
     text = models.CharField(max_length=200)
-    multiple_answer = models.BooleanField(default=False)
+    is_multiple_answer = models.BooleanField(default=False)
+    is_profile = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.text)

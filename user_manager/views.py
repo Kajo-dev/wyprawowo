@@ -4,14 +4,13 @@ from .models import User, Question, Answer, UserResponse, Profile
 from django.contrib.auth.decorators import login_required
 import requests
 import json
-
-
+import smtplib, ssl
+from email.message import EmailMessage
 from .tokens import account_activation_token
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import EmailMessage
 from django.conf import settings
 
 
@@ -28,7 +27,17 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        return redirect('login_page')
+        login(request, user)
+
+        first_question = Question.objects.first()
+        if first_question:
+            return redirect('question_view', question_id=first_question.id)
+        else:
+            error_list.append('Brak pytań w bazie')
+            data_front = {
+                'error_list': error_list
+            }
+            return render(request, 'starter/home.html', data_front)
     else:
         error_list.append('Link jest niepoprawny')
         data_front = {
@@ -38,7 +47,7 @@ def activate(request, uidb64, token):
 
 
 def activate_email(request, user, to_email):
-    mail_subject = "Aktywacja Konta."
+    msg = EmailMessage()
     message = render_to_string("user_manager/acctive_account.html", {
         'first_name': user.first_name,
         'domain': get_current_site(request).domain,
@@ -46,11 +55,17 @@ def activate_email(request, user, to_email):
         'token': account_activation_token.make_token(user),
         "protocol": 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    try:
-        email.send()
-    except Exception as e:
-        print("Failed to send email: %s", e)
+    msg.set_content(message)
+    msg["Subject"] = "Aktywacja Konta."
+    msg["From"] = settings.EMAIL_HOST_USER
+    msg["To"] = to_email
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT) as smtp:
+        smtp.starttls(context=context)
+        smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+        smtp.send_message(msg)
+
 
 
 def register_page(request):
@@ -175,16 +190,24 @@ def update_profile(request):
     profile = get_object_or_404(Profile, user=request.user)
     if request.method == 'POST':
         description = request.POST.get('description')
-        if request.FILES.get('avatar'):
-            profile.avatar = upload_photo_to_cloudflare(request.FILES.get('avatar'))
-        elif profile.avatar is None:
+        avatar = request.FILES.get('avatar')
+        if avatar and description:
+            try:
+                avatar_link = upload_photo_to_cloudflare(avatar)
+                if avatar_link:
+                    profile.avatar = avatar_link
+                    profile.description = description
+                    profile.save()
+                    return redirect('ini_payment_view')
+            except Exception as e:
+                return render(request, 'user_manager/update_profile.html',{
+                        'profile_avatar': profile.avatar,
+                        'profile_description': profile.description,
+                        'error_message': 'Skontaktuj się z administratorem błąd podczas ładowania avataru'}
+                )
+        else:
             return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar,
-            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe!'})
-
-        profile.description = description
-        profile.save()
-
-        return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
+            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe, oraz Opis!'})
 
     return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
 
@@ -192,3 +215,7 @@ def update_profile(request):
 def logout_page(request):
     logout(request)
     return render(request, 'user_manager/logout.html', {})
+
+@login_required(login_url='login_page')
+def ini_payment(request):
+    return render(request, 'user_manager/ini_payment_process.html', {})
