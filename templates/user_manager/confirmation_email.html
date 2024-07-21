@@ -1,12 +1,24 @@
 {% extends "main/base.html" %}
 
-{%block title%} <title>Potwierdzanie Email</title> {%endblock title%}
-</head>
-    {% block content %}
-    <body>
+{% load static %}
 
-        <h3> Witaj {{first_name}}, na emaila {{email}} została wysłana wiadomość z linkiem potwierdzającym rejestracje </h3>
+{%block title%} <title>Aktywuj konto - Wyprawowo.pl</title> {%endblock title%}
+{% block content %}
+<link rel="stylesheet" href="{% static  'css/user_manager/confirmation_email.css' %}">
+<body>
+<div class="confirm-email-wrapper">
+    <div class="box confirm-box">
+        <img src="{% static 'img/wyprawowo-black.svg' %}" alt="Wyprawowo logo" class="wyprawowo-logo"/>
+        <p class="hello-p"> Witaj {{first_name}}! </p>
+        <p> na emaila <span class="bold"> {{email}} </span> została wysłana wiadomość z linkiem potwierdzającym
+            rejestracje. </p>
+        <p class="action-p">Kliknij w tamten link, aby aktywować konto.</p>
 
-    </body>
-</html>
+        <i> - Zespół Wyprawowo.pl </i>
+    </div>
+</div>
+
+
+</body>
+
 {% endblock content%}
