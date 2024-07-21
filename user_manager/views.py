@@ -102,6 +102,14 @@ def register_page(request):
             return render(request, 'user_manager/register.html', data_front)
     return render(request, 'user_manager/register.html', {})
 
+def  test_register(request):
+    data_front = {
+        'first_name': "Kacper",
+        'last_name': "Figa",
+        'email': "Email@gmail.com",
+    }
+    return render(request, 'user_manager/confirmation_email.html', data_front)
+
 
 def policy_privacy(request):
     return render(request, 'static/policy-privacy.html',{})

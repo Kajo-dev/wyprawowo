@@ -11,4 +11,5 @@ urlpatterns = [
         path('regulamin/', user_manager_views.policy_rules, name="policy_rules"),
         path('pytania/<int:question_id>/', user_manager_views.question_view, name="question_view"),
         path('oplata-rejestracyjna', user_manager_views.ini_payment, name="ini_payment_view"),
+        path('test/', user_manager_views.test_register, name="test_register"),
     ]
