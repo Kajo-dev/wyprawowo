@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     {%load static%}
-    <link rel="stylesheet" type="text/css" href="{%static 'css/main.css'%}" />
+    <link rel="stylesheet" type="text/css" href="{%static 'css/main.css'%}"/>
     <script src="{% static 'js/main.js' %}" type="module"></script>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/icon.png' %}">
     {% block title %} {% endblock title %}
-  </head>
-    <nav>
-      <p><a href="{%url 'logout_page'%}">Wylogowanie</a></p>
-      <p><a href="{%url 'home_page'%}">Home</a></p>
-      <p><a href="{%url 'cart_page'%}">Koszyk</a></p>
-    </nav>
-    {% block content %} {% endblock content %}
+</head>
+<nav>
+    <p><a href="{%url 'logout_page'%}">Wylogowanie</a></p>
+    <p><a href="{%url 'home_page'%}">Home</a></p>
+    <p><a href="{%url 'cart_page'%}">Koszyk</a></p>
+</nav>
+{% block content %} {% endblock content %}
 
-    <footer>
-      To jest stopka
-    </footer>
-  </head>
+<footer>
+    To jest stopka
+</footer>
 </html>
