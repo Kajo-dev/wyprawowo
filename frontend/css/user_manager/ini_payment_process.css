@@ -43,3 +43,39 @@ h3 {
     display: block;
     margin: 0 auto;
 }
+
+.success {
+    color: #0fda0f;
+    font-weight: 600;
+}
+
+.register__form > .continue-button, .back-btn {
+    background-color: var(--indian-red);
+    border: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 35px;
+    margin: 20px auto;
+    transition: background-color 0.2s;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.continue-button:hover, .back-btn:hover {
+    background-color: var(--my-red)
+}
+
+.register-left-panel-paragraph.center {
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.payment-error-message {
+    margin-top: 30px;
+}
