@@ -1,0 +1,81 @@
+.payment-button {
+    background-color: #4583ff;
+    border: none;
+    color: white;
+    width: 140px;
+    height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px auto;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.payment-button:hover {
+    background-color: #2a70ff;
+
+}
+
+.form-container.box {
+    text-align: center;
+}
+
+.bold {
+    font-weight: 600;
+    color: var(--my-red);
+}
+
+h3 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-top: 10px;
+}
+
+.pricing {
+    padding-bottom: 10px;
+}
+
+.why-cost {
+    max-width: 400px;
+    display: block;
+    margin: 0 auto;
+}
+
+.success {
+    color: #0fda0f;
+    font-weight: 600;
+}
+
+.register__form > .continue-button, .back-btn {
+    background-color: var(--indian-red);
+    border: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 35px;
+    margin: 20px auto;
+    transition: background-color 0.2s;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.continue-button:hover, .back-btn:hover {
+    background-color: var(--my-red)
+}
+
+.register-left-panel-paragraph.center {
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.payment-error-message {
+    margin-top: 30px;
+}

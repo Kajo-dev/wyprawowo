@@ -1,17 +1,60 @@
 {% extends "main/base.html" %}
-
+{% load static %}
 {%block title%} <title>Opłata Rejestracujna</title> {%endblock title%}
-</head>
-    {% block content %}
-    <body>
+{% block content %}
+<link rel="stylesheet" href="{% static  'css/user_manager/confirmation_email.css' %}">
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/ini_payment_process.css'%}"/>
 
-        <h3> Grosza daj wiedzmnowi </h3>
 
-        <form action="{% url 'create_checkout_session' %}" method="POST">
-            {% csrf_token %}
-            <button type="submit" id="checkout-button">Zapłace te 5zl</button>
-        </form>
+<div class="register container">
+    <div class="register-left-panel">
+        <h2>
+            <span> 👋 </span> <br/> Opłata rejestracyjna
+        </h2>
+        <span class="line"></span>
+        <p class="register-left-panel-paragraph">
+            Bardzo nam miło, że chcesz dołączyć do grona wyprawowiczów!
+            <br/>
+            Prosimy o dokonanie opłaty rejestracyjnej.
+            <br/> Dowiedz się co otrzymasz w zamian:
+        </p>
+        <ul>
+            <li>✅ Bezpieczeństwo</li>
+            <li>✅ Inspirująca społeczność</li>
+            <li>✅ Nowe kontakty</li>
+            <li>✅ Niezapomiane wspomienia</li>
+        </ul>
+    </div>
+    <div class="register-right-panel">
 
-    </body>
-</html>
-{% endblock content%}
+        <div>
+            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
+        </div>
+
+        <div class="box form-container">
+            <h3>Opłać członkostwo</h3>
+            <p class="pricing"> Opłata rejestracyjna wynosi <span class="bold"> 5zł brutto </span></p>
+            <p class="why-cost"> Dzięki drobnej opłacie zapewniamy <span class="bold"> jakość i bezpieczeństwo </span>
+                podczas korzystania z
+                platformy</p>
+            <form action="{% url 'create_checkout_session' %}" class="register__form" method="POST">
+                {% csrf_token %}
+                <button type="submit" id="checkout-button" class="payment-button"><img
+                        src="{% static 'img/locker.svg' %}"> Płacę
+                </button>
+            </form>
+
+            <div id="messages">
+
+                {%for i in error_list%}
+                <label class="error-message">{{i}}</label>
+                {%endfor%}
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

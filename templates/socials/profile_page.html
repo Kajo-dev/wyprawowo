@@ -1,12 +1,10 @@
 {% extends "main/base.html" %}
 {%load static %}
-<head>
-    {% block title %} <title> user - Wyprawowo.pl</title> {%endblock title%}
+{% block title %} <title> user - Wyprawowo.pl</title> {%endblock title%}
 
-    {% block content %}
-    <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
-    <link rel="stylesheet" type="text/css" href="{%static 'css/socials/profile_page.css'%}"/>
-</head>
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{%static 'css/socials/profile_page.css'%}"/>
 <div class="profile-wrapper">
     <div class="profile-main-view">
         <div class="red-overlay">
