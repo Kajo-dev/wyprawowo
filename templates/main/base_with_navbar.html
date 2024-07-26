@@ -4,18 +4,94 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     {%load static%}
     <link rel="stylesheet" type="text/css" href="{%static 'css/main.css'%}"/>
-    <script src="{% static 'js/main.js' %}" type="module"></script>
+    <link rel="stylesheet" type="text/css" href="{%static 'css/components/navbar.css'%}"/>
+    <link rel="stylesheet" type="text/css" href="{%static 'css/components/style.css'%}"/>
+    <link rel="stylesheet" type="text/css" href="{%static 'css/components/footer.css'%}"/>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/icon.png' %}">
+    <script src="{% static 'js/main.js' %}" type="module"></script>
+    <script src="{% static 'js/navigation.js' %}" type="module"></script>
     {% block title %} {% endblock title %}
 </head>
-<nav>
+<div class="navbar mobile">
+    <div class="navbar-content">
+        <div class="left-nav">
+            <div class="logo-wrapper">
+                <img src="{% static 'img/wyprawowo-black.svg' %}" alt="wyprawowo logo" class="wyprawowo-logo"/>
+            </div>
+            <button class="search-button mobile">
+                <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon"/>
+            </button>
+            <button class="search-button desktop">
+                <img src="{% static 'img/search-icon.svg' %}" alt="search-icon"/>
+                Szukaj
+            </button>
+        </div>
+
+        <div class="right-nav">
+            {% if request.user.is_authenticated %}
+            <button class="btn-notification">
+                <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
+            </button>
+
+            <a href="/profil/{{request.user.profile.slug}}">
+                <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+            </a>
+            {% else %}
+            <a href="/login">Zaloguj</a>
+            {% endif %}
+            <button class="btn-menu">
+                <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon"/>
+            </button>
+        </div>
+    </div>
+
+</div>
+<nav class="menu">
+    <button class="btn-close">
+        <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
+    </button>
+    <div class="nav-container">
+        <div class="nav-content">
+            <a href="{% url 'worth_to_know' %}" class="menu-option">
+                Ludzie, których warto znać
+            </a>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="{% url 'logout_page' %}" class="btn-logout">Wyloguj</a>
+            <a href="polityka-prywatnosci">Polityka prywatności </a>
+            <a href="regulamin">regulamin</a>
+        </div>
+    </div>
 
 </nav>
 {% block content %} {% endblock content %}
 
-<footer>
-    To jest stopka
+<footer class="footer">
+    <div class="first-line">
+        <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="avatar-wyprawowo" class="wyprawowo-avatar"/>
+        Wyprawowo.pl - <span> Jeszcze nie wiesz, że chcesz </span>
+    </div>
+    <div class="second-line">
+        <div class="footer-nav">
+            <a href="polityka-prywatnosci">Polityka prywatności </a>
+            <a href="regulamin">regulamin</a>
+        </div>
+        <div class="social-media">
+            <div>
+                <a href="https://www.facebook.com/wyprawowopl" target="_blank">
+                    <img src="{% static 'img/fb-icon.svg' %}" alt="fb-icon"/>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="third-line">
+        © 2024 TRANSPLANET Radomir Ornowski. Wszystkie prawa zastrzeżone
+    </div>
 </footer>
 </html>
