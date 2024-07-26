@@ -1,0 +1,41 @@
+{% extends "main/base_with_navbar.html" %}
+{%load static %}
+{% block title %} <title> user - Wyprawowo.pl</title> {%endblock title%}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{%static 'css/socials/profile_page.css'%}"/>
+<div class="profile-wrapper">
+    <div class="red-overlay profile-right-panel-wrapper">
+        <div class="sidebar-content">
+            <div class="sidebar-content-header box">
+                <p>👋 Ludzie, których warto znać</p>
+            </div>
+
+            <div class="sidebar-content-body box">
+                {% for profile_wtk in worth_to_know_profiles %}
+                <div class="box user-box">
+                    <div class="user-box-top">
+                        <img class="profile-avatar" src="{{profile_wtk.avatar}}/thumb"
+                             alt="{{profile_wtk.user.first_name}}-avatar"/>
+                        <div class="profile_data">
+                            <p class="profile_name">
+                                {{profile_wtk.user.first_name}} {{profile_wtk.user.last_name}}
+                            </p>
+                            <p class="avatar-number">
+                                <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
+                                99</p>
+                        </div>
+                    </div>
+
+                    <p class="user-box-description"> {{profile_wtk.description}} </p>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock content%}

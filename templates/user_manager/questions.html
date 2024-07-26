@@ -36,7 +36,7 @@
                 {% for answer in answers %}
                 <div class="answer-box">
                     <label>
-                        {% if question.multiple_answer %}
+                        {% if question.is_multiple_answer %}
                         <input class="answer-option-radio" type="checkbox" name="answer"
                                value="{{ answer.id }}"/>
                         {% else %}
