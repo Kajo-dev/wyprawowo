@@ -76,6 +76,10 @@
     height: 80vh;
 }
 
+.sidebar-content.worth-know {
+    min-height: 80vh;
+}
+
 .profile-right-panel-wrapper {
     position: relative;
 }
