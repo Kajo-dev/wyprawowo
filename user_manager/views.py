@@ -105,7 +105,6 @@ def register_page(request):
             return render(request, 'user_manager/register.html', data_front)
     return render(request, 'user_manager/register.html', {})
 
-
 def policy_privacy(request):
     return render(request, 'static/policy-privacy.html',{})
 

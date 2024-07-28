@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'user_manager',
     'socials',
     'payment_handle'
+
 ]
 
 AUTH_USER_MODEL = 'user_manager.User'
@@ -155,5 +156,3 @@ API_KEY = os.getenv('API_KEY')
 # stripe
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
-
-
