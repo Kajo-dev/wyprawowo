@@ -1,0 +1,140 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{%block title%}<title>Profil - Wyprawowo</title>{%endblock title%}
+
+{% block content %}
+  <div class="profile-container">
+    <div class="profile-header">
+      <img src="{{ profile.avatar }}" alt="{{ profile.user.username }}'s avatar">
+      <h1>{{ profile.user.first_name }} {{ profile.user.last_name }}</h1>
+      <p>{{ profile.description }}</p>
+
+      <p>Lajki: {{ profile.likes_count }}</p>
+        <button id="like-button" data-profile-id="{{ profile.id }}">
+          {% if is_liked_by_user %}
+            Unlike
+          {% else %}
+            Like
+          {% endif %}
+        </button>
+
+      <div class="user-responses">
+        <h2>Odpowiedzi na pytania</h2>
+        {% for response in user_responses %}
+          <p><strong>{{ response.question.text }}:</strong> {{ response.answer.text }}</p>
+        {% endfor %}
+      </div>
+
+    </div>
+    <div class="profile-posts">
+      <h2>Posty</h2>
+       {% for post, is_post_liked_by_user, like_count, is_author, is_shared in posts_with_likes %}
+        <div class="post">
+          <p>{{ post.user.first_name }}{{ post.user.second_name }}</p>
+          <p>{{ post.post_type }}</p>
+          {% if post.post_type == 'event' %}
+            <h3>{{ post.event.title }}</h3>
+            <p>{{ post.content }}</p>
+            <p>Typ wydarzenia: {{ post.event.event_type }}</p>
+            <p>Typ gdzie : {{ post.event.where }}</p>
+            <p>Typ kiedy: {{ post.event.when }}</p>
+            <p>Typ cena: {{ post.event.price }}</p>
+          {% else %}
+            <p>{{ post.content }}</p>
+            <p>{{ post.hashtags }}</p>
+          {% endif %}
+          <span>{{ post.created_at }}</span>
+          <div>
+            <button class="like-post-button" data-post-id="{{ post.id }}">
+              {% if is_post_liked_by_user %}
+                Unlike
+              {% else %}
+                Like
+              {% endif %}
+            </button>
+            <span>{{ like_count }} lajków</span>
+          </div>
+          <div>
+            {% if not is_author %}
+              | <a href="{% url 'share_post' post_id=post.id %}">Udostępnij</a>
+            {% endif %}
+          </div>
+          <div>
+            <h4>Dodaj KOm:</h4>
+             <form method="post" action="{% url 'create_post_comment' post_id=post.id %}">
+                {% csrf_token %}
+                <label for="content_comment">zawartość kom</label>
+                <input type="text" name="content_comment" id="content_comment" >
+                <input type="submit" value="dodaj">
+             </form>
+            <h4>Komentarze:</h4>
+            {% for comment in post.comments.all %}
+              <p>{{ comment.content }} - {{ comment.user.first_name }}</p>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+     <div class="top-users">
+      <h2>Ludzie, których warto poznać</h2>
+      <ul>
+        {% for top_profile in top_profiles %}
+          {% if top_profile.slug %}
+            <li>
+              <a href="{%url 'profile_view' slug=top_profile.slug %}">
+                {{ top_profile.user.first_name }} - {{ top_profile.total_likes }} lajków
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+
+  </div>
+
+<script>
+    // Profile like button
+    document.getElementById('like-button').addEventListener('click', function() {
+      var profileId = this.getAttribute('data-profile-id');
+      var action = this.innerText === 'Like' ? 'like' : 'unlike';
+
+      fetch(`/profile/${profileId}/${action}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        }
+      }).then(response => response.json()).then(data => {
+        if (data.status === 'liked') {
+          this.innerText = 'Unlike';
+        } else if (data.status === 'unliked') {
+          this.innerText = 'Like';
+        }
+      });
+    });
+
+    // Post like buttons
+    document.querySelectorAll('.like-post-button').forEach(button => {
+      button.addEventListener('click', function() {
+        var postId = this.getAttribute('data-post-id');
+        var action = this.innerText === 'Like' ? 'like' : 'unlike';
+
+        fetch(`/post/${postId}/${action}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+          }
+        }).then(response => response.json()).then(data => {
+          if (data.status === 'liked') {
+            this.innerText = 'Unlike';
+          } else if (data.status === 'unliked') {
+            this.innerText = 'Like';
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}
