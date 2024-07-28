@@ -1,17 +1,17 @@
-*{
-  margin:0;
-  padding:0;
-  box-sizing: border-box;
-  font-family: "Inter";
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter";
 }
 
-:root{
-  --my-red: #AB2521;
-  --cherry:#800F0F;
-  --indian-red: #EB5757;
+:root {
+    --my-red: #AB2521;
+    --cherry: #800F0F;
+    --indian-red: #EB5757;
 }
 
-body{
-  background-color: #E7E7E7;
+body {
+    background-color: #E7E7E7;
 }
 

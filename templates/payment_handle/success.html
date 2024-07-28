@@ -1,12 +1,50 @@
 {% extends "main/base.html" %}
+{% load static %}
+{%block title%} <title>Płatność potwierdzona - Wyprawowo.pl</title> {%endblock title%}
+{% block content %}
+<link rel="stylesheet" href="{% static  'css/user_manager/confirmation_email.css' %}">
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/ini_payment_process.css'%}"/>
 
-{%block title%} <title>Success payment</title> {%endblock title%}
-</head>
-    {% block content %}
-    <body>
 
-        <h3> Success payment </h3>
+<div class="register container">
+    <div class="register-left-panel">
+        <h2>
+            <span> 🎉 </span> <br/> Dziękujemy!
+        </h2>
+        <span class="line"></span>
+        <p class="register-left-panel-paragraph center">
+            Wierzymy w to, że platforma wyprawowo.pl przyniesie Ci wiele niezapominanych chwil!
 
-    </body>
-</html>
-{% endblock content%}
+        </p>
+
+    </div>
+    <div class="register-right-panel">
+
+        <div>
+            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
+        </div>
+
+        <div class="box form-container">
+            <h3>Dziękujemy za płatność</h3>
+            <p class="pricing"> Rejestracyjna została <span class="success"> opłacona </span></p>
+            <p class="why-cost"> Możesz już korzystać z platformy </p>
+            <form action="{% url 'create_checkout_session' %}" class="register__form" method="POST">
+                {% csrf_token %}
+                <a href="/" class="continue-button"> Kontynuuj
+                </a>
+            </form>
+
+            <div id="messages">
+
+                {%for i in error_list%}
+                <label class="error-message">{{i}}</label>
+                {%endfor%}
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

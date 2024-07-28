@@ -1,0 +1,37 @@
+.confirm-email-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-box {
+    max-width: 600px;
+    padding: 15px;
+}
+
+.wyprawowo-logo {
+    height: 100px;
+    display: block;
+    margin: 20px auto;
+}
+
+.hello-p {
+    margin-top: 40px;
+    font-weight: 600;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.action-p {
+    margin-top: 5px;
+}
+
+.bold {
+    font-weight: 600;
+}
+
+i {
+    display: block;
+    margin-top: 10px;
+}
