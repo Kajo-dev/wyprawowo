@@ -2,10 +2,8 @@ from django.db import models
 from Wyprawowo import settings
 from django.db.models.signals import post_save
 from django.utils.text import slugify
-
-
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
+from django.utils import timezone
 
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, password, first_name, last_name, **extra_fields):
@@ -43,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(db_index=True, unique=True, max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-
+    created_at = models.DateTimeField(default=timezone.now)
 
     is_staff = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
@@ -81,6 +79,19 @@ class Profile(models.Model):
     def __str__(self):
         return str(self.user)
 
+    def like(self, user):
+        like, created = Like.objects.get_or_create(user=user, profile=self)
+        return created
+
+    def unlike(self, user):
+        Like.objects.filter(user=user, profile=self).delete()
+
+    def likes_count(self):
+        return Like.objects.filter(profile=self).count()
+
+    def is_liked_by(self, user):
+        return Like.objects.filter(user=user, profile=self).exists()
+
 
 def profile_create(sender, instance, created, *args, **kwargs):
     if created:
@@ -112,4 +123,72 @@ class UserResponse(models.Model):
     def __str__(self):
         return str(f'{self.user}: {self.question.text} - {self.answer.text}' )
 
-post_save.connect(profile_create, sender=settings.AUTH_USER_MODEL)
+# post_save.connect(profile_create, sender=settings.AUTH_USER_MODEL)
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'profile')
+
+    def __str__(self):
+        return f"{self.user} likes {self.profile}"
+
+
+class Post(models.Model):
+    POST_TYPE_CHOICES = [
+        ('text', 'Text'),
+        ('event', 'Event'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    post_type = models.CharField(max_length=5, choices=POST_TYPE_CHOICES, default='text')
+    content = models.TextField(blank=True, null=True)
+    hashtags = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.content if self.post_type == 'text' else f"{self.event.title}"
+
+
+class EventPost(models.Model):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='event')
+    title = models.CharField(max_length=255)
+    event_type = models.CharField(max_length=255)
+    when = models.DateTimeField(default=timezone.now)
+    where = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=20, decimal_places=2)
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.content
+
+
+class PostLike(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('post', 'user')
+
+    def __str__(self):
+        return f"{self.user.first_name} likes {self.post}"
+
+
+class SharedPost(models.Model):
+    original_post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='shared_posts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    shared_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.first_name} shared {self.original_post.content[:20]}"
+
