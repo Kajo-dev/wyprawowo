@@ -189,7 +189,7 @@ def upload_photo_to_cloudflare(image):
 
 @login_required(login_url=login_page)
 def update_profile(request):
-    profile = get_object_or_404(Profile, user=request.user)
+    profile = Profile.objects.get_or_create(user=request.user)[0]
     if request.method == 'POST':
         description = request.POST.get('description')
         avatar = request.FILES.get('avatar')
