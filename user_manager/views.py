@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .models import User, Question, Answer, UserResponse, Profile
+from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment
 from django.contrib.auth.decorators import login_required
 import requests
 import json
@@ -12,7 +12,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.db.models import Sum, Count
+from django.utils import timezone
 
 
 def activate(request, uidb64, token):
@@ -186,7 +189,7 @@ def upload_photo_to_cloudflare(image):
 
 @login_required(login_url=login_page)
 def update_profile(request):
-    profile = get_object_or_404(Profile, user=request.user)
+    profile = Profile.objects.get_or_create(user=request.user)[0]
     if request.method == 'POST':
         description = request.POST.get('description')
         avatar = request.FILES.get('avatar')
@@ -218,3 +221,157 @@ def logout_page(request):
 @login_required(login_url='login_page')
 def ini_payment(request):
     return render(request, 'user_manager/ini_payment_process.html', {})
+
+
+@login_required
+def profile_view(request, slug):
+    user_profile = get_object_or_404(Profile, slug=slug)
+    user_posts = user_profile.user.posts.all()
+    shared_posts = SharedPost.objects.filter(user=user_profile.user)
+
+    is_liked_by_user = Like.objects.filter(user=request.user, profile=user_profile).exists()
+
+    posts_with_likes = []
+    for post in user_posts:
+        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        like_count = post.likes.count()
+        is_author = post.user == request.user
+        is_shared = False
+        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
+
+    for shared_post in shared_posts:
+        original_post = shared_post.original_post
+        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=original_post).exists()
+        like_count = original_post.likes.count()
+        is_author = original_post.user == request.user
+        is_shared = True
+        post = original_post
+        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
+
+    profile_questions = Question.objects.filter(is_profile=True)
+    user_responses = UserResponse.objects.filter(user=user_profile.user, question__in=profile_questions)
+
+    top_profiles = (
+        Profile.objects
+        .annotate(total_likes=Count('user__posts__likes'))
+        .order_by('-total_likes')[:5]
+    )
+
+    context = {
+        'profile': user_profile,
+        'posts_with_likes': posts_with_likes,
+        'is_liked_by_user': is_liked_by_user,
+        'user_responses': user_responses,
+        'top_profiles': top_profiles,
+    }
+    return render(request, 'user_manager/profile.html', context)
+
+
+def create_post(request):
+    if request.method == 'POST':
+        post_type = request.POST.get('post_type')
+        content = request.POST.get('content')
+        hashtags = request.POST.get('hashtags')
+        title = request.POST.get('title')
+        event_type = request.POST.get('event_type')
+        when = request.POST.get('when')
+        where = request.POST.get('where')
+        price = request.POST.get('price')
+
+        post = Post.objects.create(
+            user=request.user,
+            post_type=post_type,
+            content=content,
+            hashtags=hashtags
+        )
+
+        if post_type == 'event':
+            EventPost.objects.create(
+                post=post,
+                title=title,
+                event_type=event_type,
+                when=when,
+                where=where,
+                price=price
+            )
+
+        return redirect('profile_view', slug=request.user.profile.slug)
+
+def create_post_comment(request, post_id):
+    if request.method == 'POST':
+        content = request.POST.get('content_comment')
+        post = get_object_or_404(Post, id=post_id)
+
+        Comment.objects.create(
+            user=request.user,
+            content=content,
+            post=post,
+        )
+
+        return redirect('home')
+
+
+@login_required
+def home_view(request):
+    posts = Post.objects.all().order_by('-created_at')
+    new_users = Profile.objects.all().order_by('-user__created_at')[:5]
+
+    posts_with_likes = []
+    for post in posts:
+        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        like_count = post.likes.count()
+        is_author = post.user == request.user
+        is_shared = False
+        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
+
+    popular_events = (
+        EventPost.objects
+        .filter(when__gte=timezone.now())
+        .annotate(total_likes=Count('post__likes'))
+        .order_by('-total_likes')[:3]
+    )
+
+    context = {
+        'posts': posts_with_likes,
+        'new_users': new_users,
+        'popular_events': popular_events,
+    }
+    return render(request, 'user_manager/home.html', context)
+
+
+@login_required
+@require_POST
+def like_profile(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id)
+    if profile.like(request.user):
+        return JsonResponse({'status': 'liked'})
+    else:
+        return JsonResponse({'status': 'already liked'})
+
+@login_required
+@require_POST
+def unlike_profile(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id)
+    profile.unlike(request.user)
+    return JsonResponse({'status': 'unliked'})
+
+@login_required
+@require_POST
+def like_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    PostLike.objects.get_or_create(user=request.user, post=post)
+    return JsonResponse({'status': 'liked'})
+
+@login_required
+@require_POST
+def unlike_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    PostLike.objects.filter(user=request.user, post=post).delete()
+    return JsonResponse({'status': 'unliked'})
+
+@login_required
+def share_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    print(post)
+    SharedPost.objects.get_or_create(user=request.user, original_post=post)
+    return redirect('profile_view', slug=request.user.profile.slug)

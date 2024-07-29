@@ -11,4 +11,13 @@ urlpatterns = [
         path('regulamin/', user_manager_views.policy_rules, name="policy_rules"),
         path('pytania/<int:question_id>/', user_manager_views.question_view, name="question_view"),
         path('oplata-rejestracyjna', user_manager_views.ini_payment, name="ini_payment_view"),
+        path('profile/<slug:slug>/', user_manager_views.profile_view, name='profile_view'),
+        path('profile/<int:profile_id>/like/', user_manager_views.like_profile, name='like_profile'),
+        path('profile/<int:profile_id>/unlike/', user_manager_views.unlike_profile, name='unlike_profile'),
+        path('post/<int:post_id>/like/', user_manager_views.like_post, name='like_post'),
+        path('post/<int:post_id>/unlike/', user_manager_views.unlike_post, name='unlike_post'),
+        path('post/<int:post_id>/share/', user_manager_views.share_post, name='share_post'),
+        path('post/create/', user_manager_views.create_post, name='create_post'),
+        path('post/create/comment/<int:post_id>/', user_manager_views.create_post_comment, name='create_post_comment'),
+        path('', user_manager_views.home_view, name='home'),
     ]

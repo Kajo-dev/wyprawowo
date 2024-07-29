@@ -1,0 +1,165 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %} <title>Main page</title> {%endblock title%}
+
+{% block content %}
+  <div class="home-container">
+    <div class="create-post">
+      <h2>Zainspiruj nas</h2>
+      <form method="post" action="{% url 'create_post' %}">
+          {% csrf_token %}
+          <div>
+            <label for="post_type">Typ postu:</label>
+            <select name="post_type" id="post_type">
+              <option value="text">Tekst</option>
+              <option value="event">Wydarzenie</option>
+            </select>
+          </div>
+
+        <div>
+          <label for="content">Treść:</label>
+          <textarea name="content" id="content" ></textarea>
+        </div>
+
+          <div id="text-fields">
+            <label for="hashtags">Hashtagi:</label>
+            <input type="text" name="hashtags" id="hashtags" >
+          </div>
+
+          <div id="event-fields" style="display: none;">
+            <label for="title">Tytuł:</label>
+            <input type="text" name="title" id="title" >
+            <label for="event_type">Typ wydarzenia:</label>
+            <input type="text" name="event_type" id="event_type" >
+            <label for="when">Kiedy:</label>
+            <input type="datetime-local" name="when" id="when" >
+            <label for="where">Gdzie:</label>
+            <input type="text" name="where" id="where" >
+            <label for="price">Cena:</label>
+            <input type="number" step="0.01" name="price" id="price" >
+          </div>
+
+          <input type="submit" value="Stwórz post">
+      </form>
+
+      <script>
+        document.querySelector('select[name="post_type"]').addEventListener('change', function() {
+          if (this.value === 'event') {
+            document.getElementById('event-fields').style.display = 'block';
+            document.getElementById('text-fields').style.display = 'none';
+          } else {
+            document.getElementById('event-fields').style.display = 'none';
+            document.getElementById('text-fields').style.display = 'block';
+          }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+          var postTypeSelect = document.querySelector('select[name="post_type"]');
+          if (postTypeSelect.value === 'event') {
+            document.getElementById('event-fields').style.display = 'block';
+            document.getElementById('text-fields').style.display = 'none';
+          } else {
+            document.getElementById('event-fields').style.display = 'none';
+            document.getElementById('text-fields').style.display = 'block';
+          }
+        });
+      </script>
+    </div>
+
+    <div class="post-list">
+      <h2>Wszystkie posty</h2>
+      {% for post, is_post_liked_by_user, like_count, is_author, is_shared in posts %}
+        <div class="post">
+          <h3>{{ post.user.first_name }} - {{ post.created_at }}</h3>
+          {% if post.post_type == 'event' and post.event %}
+            <h4>{{ post.event.title }}</h4>
+            <p>{{ post.event.content }}</p>
+            <p>Kiedy: {{ post.event.when }}</p>
+            <p>Gdzie: {{ post.event.where }}</p>
+            <p>Cena: {{ post.event.price }}</p>
+          {% else %}
+            <p>{{ post.content }}</p>
+          {% endif %}
+          <div>
+            <button class="like-post-button" data-post-id="{{ post.id }}">
+              {% if is_post_liked_by_user %}
+                Unlike
+              {% else %}
+                Like
+              {% endif %}
+            </button>
+            <span>{{ like_count }} lajków</span>
+          </div>
+          <div>
+            {% if not is_author %}
+              | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
+            {% endif %}
+          </div>
+          <h4>Dodaj KOm:</h4>
+             <form method="post" action="{% url 'create_post_comment' post_id=post.id %}">
+                {% csrf_token %}
+                <label for="content_comment">zawartość kom</label>
+                <input type="text" name="content_comment" id="content_comment" >
+                <input type="submit" value="dodaj">
+             </form>
+          <h4>Komentarze:</h4>
+            {% for comment in post.comments.all %}
+              <p>{{ comment.content }} - {{ comment.user.first_name }}</p>
+            {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="new-users">
+      <h2>Nowi użytkownicy</h2>
+      <ul>
+        {% for user in new_users %}
+          <li>
+            <a href="{% url 'profile_view' slug=user.slug %}">{{ user.user.first_name }}</a> - Dołączył: {{ user.user.created_at }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="popular-events">
+      <h2>Najpopularniejsze wydarzenia</h2>
+      <ul>
+        {% for event in popular_events %}
+          <li>
+            <a href="{% url 'profile_view' event.post.user.profile.slug %}">
+              {{ event.title }}
+            </a>
+            <p>{{ event.content }}</p>
+            <p>Kiedy: {{ event.when }}</p>
+            <p>Lubię to: {{ event.total_likes }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <script>
+
+     document.querySelectorAll('.like-post-button').forEach(button => {
+        button.addEventListener('click', function() {
+          var postId = this.getAttribute('data-post-id');
+          var action = this.innerText === 'Like' ? 'like' : 'unlike';
+
+          fetch(`/post/${postId}/${action}/`, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+              'Content-Type': 'application/json'
+            }
+          }).then(response => response.json()).then(data => {
+            if (data.status === 'liked') {
+              this.innerText = 'Unlike';
+            } else if (data.status === 'unliked') {
+              this.innerText = 'Like';
+            }
+          });
+        });
+      });
+  </script>
+
+{% endblock %}
