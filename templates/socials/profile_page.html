@@ -1,6 +1,7 @@
 {% extends "main/base_with_navbar.html" %}
 {%load static %}
-{% block title %} <title> user - Wyprawowo.pl</title> {%endblock title%}
+{% block title %} <title> {{profile.user.first_name}} {{ profile.user.last_name }} -
+    Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>

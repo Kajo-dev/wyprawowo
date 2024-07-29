@@ -42,7 +42,7 @@
                 <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
             </a>
             {% else %}
-            <a href="/login">Zaloguj</a>
+            <a class="login_link" href="/login">Zaloguj</a>
             {% endif %}
             <button class="btn-menu">
                 <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon"/>

@@ -109,6 +109,11 @@
     font-size: 14px;
 }
 
+.login_link {
+    color: #fff;
+    font-size: 14px;
+}
+
 .nav-container {
     display: flex;
     flex-direction: column;
