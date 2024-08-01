@@ -1,165 +1,304 @@
-{% extends "main/base.html" %}
+{% extends "main/base_with_navbar.html" %}
 {% load static %}
+{% load custom_filters %}
 
-{% block title %} <title>Main page</title> {%endblock title%}
+{% block title %} <title>Aktualności - Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
-  <div class="home-container">
-    <div class="create-post">
-      <h2>Zainspiruj nas</h2>
-      <form method="post" action="{% url 'create_post' %}">
-          {% csrf_token %}
-          <div>
-            <label for="post_type">Typ postu:</label>
-            <select name="post_type" id="post_type">
-              <option value="text">Tekst</option>
-              <option value="event">Wydarzenie</option>
-            </select>
-          </div>
+<link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
 
-        <div>
-          <label for="content">Treść:</label>
-          <textarea name="content" id="content" ></textarea>
+
+<div class="popular-events red-overlay mobile">
+    <div class="box">
+        <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
+    </div>
+<div>
+    <div class="popular-events-wrapper box">
+        {% for event in popular_events %}
+        <div class="box popular-event-box">
+            <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
+                {{ event.title }}
+            </a>
+            <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
+            <div class="popular-event-box-bottom">
+
+                <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
+
+                <button class="see-details">
+                    Otwórz
+                </button>
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+</div>
+
+<div class="my-grid-container activity-panel">
+
+    <div class="my-grid-container-left-panel">
+        {% if request.user.is_authenticated %}
+        <div class="inspire-us box">
+            <a href="/profil/{{request.user.profile.slug}}">
+                <img src="{{request.user.profile.avatar}}/thumb" alt="profile avatar"/>
+            </a>
+            <button class="inspire-us-button"> Zainspiruj nas</button>
+        </div>
+        {% endif %}
+        <div class="create-post overlay">
+            <div class="create-post-wrapper box">
+                <p class="title-box">Dodaj wpis</p>
+                <form method="post" class="form-create-post" action="{% url 'create_post' %}">
+                    {% csrf_token %}
+                    <div class="post-type-wrapper">
+                        <label class="post-type-label" for="post_type">Typ wpisu:</label>
+                        <select name="post_type" id="post_type">
+                            <option value="text">Tekst</option>
+                            <option value="event">Wydarzenie</option>
+                        </select>
+                    </div>
+
+                    <div class="fields-wrapper">
+
+                    <div>
+                        <textarea class="post-content" name="content"  id="content" placeholder="Zainspiruj nas"></textarea>
+                    </div>
+
+                    <div id="text-fields">
+                        <label for="hashtags">Hashtagi:</label>
+                        <input type="text" name="hashtags" id="hashtags">
+                    </div>
+
+                    <div id="event-fields" style="display: none;">
+                        <label for="title">Tytuł:</label>
+                        <input type="text" name="title" id="title">
+                        <label for="event_type">Typ wydarzenia:</label>
+                        <input type="text" name="event_type" id="event_type">
+                        <label for="when">Kiedy:</label>
+                        <input type="datetime-local" name="when" id="when">
+                        <label for="where">Gdzie:</label>
+                        <input type="text" name="where" id="where">
+                        <label for="price">Cena (zł):</label>
+                        <input type="number" step="0.01" name="price" id="price">
+                    </div>
+                    <div class="buttons-container">
+                        <button  class="btn-cancel">Zamknij</button>
+                        <input type="submit" value="Dodaj" class="btn-create-post">
+                    </div>
+                </form>
+            </div>
+            </div>
+
         </div>
 
-          <div id="text-fields">
-            <label for="hashtags">Hashtagi:</label>
-            <input type="text" name="hashtags" id="hashtags" >
-          </div>
+        <div class="post-list">
+            {% for post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared in posts %}
+            <div class="post box">
+                <div class="post-topbar">
+                    <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
+                        <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
+                    </a>
+                    <div class="user-data">
+                        <p>
+                            {{post.user.first_name}} {{post.user.last_name}}
+                        </p>
+                        {% if post.post_type == 'event' and post.event %}
+                            <p class="event-type"> {{ post.event.event_type  }} </p>
+                        {% else %}
+                            <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
+                        {%endif %}
+                    </div>
+                </div>
+                {% if post.post_type == 'event' and post.event %}
+                <div class="post-text">
+                    <h4 class="event-title">{{ post.event.title }}</h4>
+                    <p class="short-content">
+                        {{ post.content|truncatechars:255 }}
+                    </p>
+                    <p class="full-content" style="display: none;">
+                        {{ post.content }}
+                    </p>
+                    {% if post.content|char_count > 255 %}
+                    <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                    {% endif %}
+                    <div class="event-character">
+                        <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
+                        <div class="event-character-box"> {{ post.event.where }}</div>
+                        <div class="event-character-box">{{ post.event.price }} zł</div>
+                    </div>
+                </div>
 
-          <div id="event-fields" style="display: none;">
-            <label for="title">Tytuł:</label>
-            <input type="text" name="title" id="title" >
-            <label for="event_type">Typ wydarzenia:</label>
-            <input type="text" name="event_type" id="event_type" >
-            <label for="when">Kiedy:</label>
-            <input type="datetime-local" name="when" id="when" >
-            <label for="where">Gdzie:</label>
-            <input type="text" name="where" id="where" >
-            <label for="price">Cena:</label>
-            <input type="number" step="0.01" name="price" id="price" >
-          </div>
+                {% else %}
+                <div class="post-text">
 
-          <input type="submit" value="Stwórz post">
-      </form>
+                    <p class="short-content">
+                        {{ post.content|truncatechars:255 }}
+                    </p>
+                    <p class="full-content" style="display: none;">
+                        {{ post.content }}
+                    </p>
+                    {% if post.content|char_count > 255 %}
+                    <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                    {% endif %}
 
-      <script>
-        document.querySelector('select[name="post_type"]').addEventListener('change', function() {
-          if (this.value === 'event') {
-            document.getElementById('event-fields').style.display = 'block';
-            document.getElementById('text-fields').style.display = 'none';
-          } else {
-            document.getElementById('event-fields').style.display = 'none';
-            document.getElementById('text-fields').style.display = 'block';
-          }
-        });
+                </div>
+                {% endif %}
+                <div class="hashtags">
+                    {% with post.hashtags|split:" " as hashtags_list %}
+                        {% for tag in hashtags_list %}
+                    <div class="tag-box"> {{tag}}</div>
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+                <div class="actions-counter">
+                    <div class="avatars-counter">
+                        {% if is_post_liked_by_user %}
+                            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
+                        {% else %}
+                            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
+                        {% endif %}
 
-        document.addEventListener('DOMContentLoaded', function() {
-          var postTypeSelect = document.querySelector('select[name="post_type"]');
-          if (postTypeSelect.value === 'event') {
-            document.getElementById('event-fields').style.display = 'block';
-            document.getElementById('text-fields').style.display = 'none';
-          } else {
-            document.getElementById('event-fields').style.display = 'none';
-            document.getElementById('text-fields').style.display = 'block';
-          }
-        });
-      </script>
-    </div>
+                        {{ like_count }}
+                          <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
+                        </button>
+                    </div>
+                    <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+                </div>
 
-    <div class="post-list">
-      <h2>Wszystkie posty</h2>
-      {% for post, is_post_liked_by_user, like_count, is_author, is_shared in posts %}
-        <div class="post">
-          <h3>{{ post.user.first_name }} - {{ post.created_at }}</h3>
-          {% if post.post_type == 'event' and post.event %}
-            <h4>{{ post.event.title }}</h4>
-            <p>{{ post.event.content }}</p>
-            <p>Kiedy: {{ post.event.when }}</p>
-            <p>Gdzie: {{ post.event.where }}</p>
-            <p>Cena: {{ post.event.price }}</p>
-          {% else %}
-            <p>{{ post.content }}</p>
-          {% endif %}
-          <div>
-            <button class="like-post-button" data-post-id="{{ post.id }}">
-              {% if is_post_liked_by_user %}
-                Unlike
-              {% else %}
-                Like
-              {% endif %}
-            </button>
-            <span>{{ like_count }} lajków</span>
-          </div>
-          <div>
-            {% if not is_author %}
-              | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
-            {% endif %}
-          </div>
-          <h4>Dodaj KOm:</h4>
-             <form method="post" action="{% url 'create_post_comment' post_id=post.id %}">
-                {% csrf_token %}
-                <label for="content_comment">zawartość kom</label>
-                <input type="text" name="content_comment" id="content_comment" >
-                <input type="submit" value="dodaj">
-             </form>
-          <h4>Komentarze:</h4>
-            {% for comment in post.comments.all %}
-              <p>{{ comment.content }} - {{ comment.user.first_name }}</p>
+
+                <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
+
+                {% if request.user.is_authenticated %}
+                <div>
+                    {% if not is_author %}
+                    | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
+                    {% endif %}
+                </div>
+
+                <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
+                    {% csrf_token %}
+                    <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
+                    <input type="submit" value="dodaj" class="btn-add-comment">
+                </form>
+
+                {% endif %}
+
+                <div class="comments-section">
+                    {% for comment in post.comments.all %}
+                    <div class="comment-box">
+                        <a href="/profil/{{comment.user.profile.slug}}">
+                        <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                        </a>
+                        <div>
+                            <p class="comment-box-user">
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
+                            </p>
+                            <p class="comment-box-content">{{ comment.content }} </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+                </div>
             {% endfor %}
         </div>
-      {% endfor %}
     </div>
 
-    <div class="new-users">
-      <h2>Nowi użytkownicy</h2>
-      <ul>
-        {% for user in new_users %}
-          <li>
-            <a href="{% url 'profile_view' slug=user.slug %}">{{ user.user.first_name }}</a> - Dołączył: {{ user.user.created_at }}
-          </li>
-        {% endfor %}
-      </ul>
+    <div class="my-grid-container-right-panel activity-panel">
+
+        <div class="new-users red-overlay">
+            <div class="box">
+                <h3 class="new-users-heading">👋 Nowi użytkownicy</h3>
+            </div>
+            <div class="box">
+
+            <div class="new-users-wrapper">
+                {% for user in new_users %}
+                <div class="new-users-box">
+                <div class="new-users-name-box">
+                    <a href="/profil/{{ user.user.profile.slug }}">
+                    <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                        {{ user.user.first_name }} {{ user.user.last_name }} </a>
+                </div>
+                <div class="new-users-box-date">
+                    Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}
+                </div>
+                <div class="new-users-see-more">
+                    <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
+                </div>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="popular-events red-overlay">
+            <div class="box">
+            <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
+        </div>
+            <div class="popular-events-wrapper box">
+            {% for event in popular_events %}
+                <div class="box popular-event-box">
+                    <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
+                        {{ event.title }}
+                    </a>
+                    <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
+                    <div class="popular-event-box-bottom">
+
+                    <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
+
+                    <button class="see-details">
+                        Pokaż szczegóły
+                    </button>
+
+                    </div>
+             </div>
+                {% endfor %}
+            </div>
+
+
+    </div>
+    </div>
     </div>
 
-    <div class="popular-events">
-      <h2>Najpopularniejsze wydarzenia</h2>
-      <ul>
-        {% for event in popular_events %}
-          <li>
-            <a href="{% url 'profile_view' event.post.user.profile.slug %}">
-              {{ event.title }}
-            </a>
-            <p>{{ event.content }}</p>
-            <p>Kiedy: {{ event.when }}</p>
-            <p>Lubię to: {{ event.total_likes }}</p>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-  <script>
-
-     document.querySelectorAll('.like-post-button').forEach(button => {
-        button.addEventListener('click', function() {
-          var postId = this.getAttribute('data-post-id');
-          var action = this.innerText === 'Like' ? 'like' : 'unlike';
-
-          fetch(`/post/${postId}/${action}/`, {
-            method: 'POST',
-            headers: {
-              'X-CSRFToken': '{{ csrf_token }}',
-              'Content-Type': 'application/json'
-            }
-          }).then(response => response.json()).then(data => {
-            if (data.status === 'liked') {
-              this.innerText = 'Unlike';
-            } else if (data.status === 'unliked') {
-              this.innerText = 'Like';
-            }
-          });
+<script>
+    document.querySelectorAll('.like-post-button').forEach(button => {
+        button.addEventListener('click', function () {
+            console.log(this)
+            const postId = this.getAttribute('data-post-id');
+            const action = this.getAttribute('data-action');
+            fetch(`/post/${postId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
         });
-      });
-  </script>
+    });
+
+    const toggleContent = (button) => {
+        const postTextDiv = button.parentElement;
+        const shortContent = postTextDiv.querySelector('.short-content');
+        const fullContent = postTextDiv.querySelector('.full-content');
+
+        if (fullContent.style.display === 'none') {
+            fullContent.style.display = 'block';
+            shortContent.style.display = 'none';
+            button.innerText = 'Pokaż mniej';
+        } else {
+            fullContent.style.display = 'none';
+            shortContent.style.display = 'block';
+            button.innerText = 'Pokaż więcej';
+        }
+    }
+</script>
+
+<script src="{% static 'js/activity_panel.js' %}" type="module"></script>
 
 {% endblock %}

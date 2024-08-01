@@ -122,7 +122,7 @@ def login_page(request):
 
         if user is not None:
             login(request, user)
-            return redirect('policy_rules') # Policy rules just for testing purposes
+            return redirect('home') # Policy rules just for testing purposes
 
         else:
             error_list.append('Dane do logowania są nieprawidłowe')
@@ -313,16 +313,17 @@ def create_post_comment(request, post_id):
 
 @login_required
 def home_view(request):
-    posts = Post.objects.all().order_by('-created_at')
+    posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
     new_users = Profile.objects.all().order_by('-user__created_at')[:5]
 
     posts_with_likes = []
     for post in posts:
         is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
         like_count = post.likes.count()
+        comment_count = post.comment_count
         is_author = post.user == request.user
         is_shared = False
-        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
+        posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
 
     popular_events = (
         EventPost.objects
@@ -372,6 +373,5 @@ def unlike_post(request, post_id):
 @login_required
 def share_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    print(post)
     SharedPost.objects.get_or_create(user=request.user, original_post=post)
     return redirect('profile_view', slug=request.user.profile.slug)
