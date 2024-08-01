@@ -1,12 +1,13 @@
 {% extends "main/base_with_navbar.html" %}
 {%load static %}
-{% block title %} <title> user - Wyprawowo.pl</title> {%endblock title%}
+{% block title %} <title> {{profile.user.first_name}} {{ profile.user.last_name }} -
+    Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{%static 'css/socials/profile_page.css'%}"/>
-<div class="profile-wrapper">
-    <div class="profile-left-panel">
+<div class="my-grid-container">
+    <div class="my-grid-container-left-panel">
         <div class="profile-main-view">
             <div class="red-overlay">
                 <div class="profile-box box-no-shadow">
@@ -50,8 +51,8 @@
         </div>
     </div>
 
-    <div class="profile-right-panel">
-        <div class="red-overlay profile-right-panel-wrapper">
+    <div class="my-grid-container-right-panel">
+        <div class="red-overlay my-grid-container-right-panel-wrapper">
             <div class="sidebar-content">
                 <div class="sidebar-content-header box">
                     <p>👋 Ludzie, których warto znać</p>
