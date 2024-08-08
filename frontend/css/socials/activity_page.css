@@ -445,6 +445,8 @@ button.avatars-counter:hover {
     text-decoration: underline;
     cursor: pointer;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
 }
 
 .popular-event-box-bottom .see-details:hover {

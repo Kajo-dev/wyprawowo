@@ -329,7 +329,7 @@ def home_view(request):
         EventPost.objects
         .filter(when__gte=timezone.now())
         .annotate(total_likes=Count('post__likes'))
-        .order_by('-total_likes')[:3]
+        .order_by('-total_likes')[:4]
     )
 
     context = {
@@ -339,6 +339,26 @@ def home_view(request):
     }
     return render(request, 'user_manager/home.html', context)
 
+
+def post_view(request, post_id):
+    posts = Post.objects.filter(id=post_id).annotate(comment_count=Count('comments'))
+
+    posts_with_likes = []
+    for post in posts:
+        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        like_count = post.likes.count()
+        comment_count = post.comment_count
+        is_author = post.user == request.user
+        is_shared = False
+        posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
+
+
+    context = {
+        'posts': posts_with_likes,
+    }
+
+
+    return render(request, 'user_manager/post_view.html', context)
 
 @login_required
 @require_POST
