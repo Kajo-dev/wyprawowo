@@ -1,0 +1,13 @@
+.comments-section-wrapper {
+    display: block;
+}
+
+.post-list {
+    max-width: 500px;
+    margin: 80px auto;
+}
+
+.post-panel {
+    min-height: 70vh;
+    margin-bottom: 80px;
+}
