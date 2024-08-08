@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Sum, Count
 from django.utils import timezone
+from django_user_agents.utils import get_user_agent
 
 
 def activate(request, uidb64, token):
@@ -313,7 +314,13 @@ def create_post_comment(request, post_id):
 
 @login_required
 def home_view(request):
-    posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
+    query_type = request.GET.get('type')
+
+    if query_type=='event':
+        posts = Post.objects.filter(post_type='event').annotate(comment_count=Count('comments')).order_by('-created_at')
+    else:
+        posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
+
     new_users = Profile.objects.all().order_by('-user__created_at')[:5]
 
     posts_with_likes = []
@@ -325,12 +332,18 @@ def home_view(request):
         is_shared = False
         posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
 
-    popular_events = (
-        EventPost.objects
-        .filter(when__gte=timezone.now())
-        .annotate(total_likes=Count('post__likes'))
-        .order_by('-total_likes')[:4]
-    )
+
+    if request.user_agent.is_mobile:
+        popular_events = (
+            EventPost.objects
+            .filter(when__gte=timezone.now())
+            .annotate(total_likes=Count('post__likes'))
+            .order_by('-total_likes')[:2]
+        )
+    else:
+        popular_events = (
+            EventPost.objects.filter(when__gte=timezone.now()).annotate(total_likes=Count('post__likes')).order_by('-total_likes')[:4]
+        )
 
     context = {
         'posts': posts_with_likes,
@@ -342,6 +355,8 @@ def home_view(request):
 
 def post_view(request, post_id):
     posts = Post.objects.filter(id=post_id).annotate(comment_count=Count('comments'))
+    if not posts:
+        return redirect('home')
 
     posts_with_likes = []
     for post in posts:
