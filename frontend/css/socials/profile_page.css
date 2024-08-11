@@ -1,7 +1,7 @@
-.profile-wrapper {
+.my-grid-container {
     min-height: 100vh;
     max-width: 1200px;
-    margin: 50px auto 0;
+    margin: 50px auto;
     padding: 0 5px;
 }
 
@@ -51,7 +51,7 @@
     text-align: center;
 }
 
-.profile-wrapper {
+.my-grid-container {
     max-width: 1200px;
 }
 
@@ -80,8 +80,9 @@
     min-height: 80vh;
 }
 
-.profile-right-panel-wrapper {
-    position: relative;
+.my-grid-container-right-panel-wrapper {
+    position: sticky;
+    top: 100px;
 }
 
 .user-box {
@@ -216,18 +217,22 @@
     height: 20px;
 }
 
-.profile-right-panel {
+.my-grid-container-right-panel {
     display: none;
 }
 
+.my-grid-container-left-panel {
+    min-height: 300px;
+}
+
 @media (min-width: 727px) {
-    .profile-wrapper {
+    .my-grid-container {
         display: grid;
         grid-template-columns: 4fr 3fr;
         gap: 50px;
     }
 
-    .profile-right-panel {
+    .my-grid-container-right-panel {
         display: block;
     }
 

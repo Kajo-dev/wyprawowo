@@ -7,8 +7,15 @@
     z-index: 1;
 }
 
-.logo-wrapper > .wyprawowo-logo {
-    height: 30px;
+.logo-wrapper .wyprawowo-logo {
+    height: 40px;
+    display: block;
+}
+
+.logo-wrapper .wyprawowo-logo img {
+    height: 40px;
+    display: block;
+    padding: 5px;
 }
 
 .navbar {
@@ -20,6 +27,8 @@
     width: fit-content;
     padding: 2px 6px;
     border-radius: 5px;
+    height: 40px;
+
 }
 
 .search-button, .btn-notification, .btn-menu {
@@ -106,6 +115,11 @@
 
 .bottom-nav a {
     color: #000;
+    font-size: 14px;
+}
+
+.login_link {
+    color: #fff;
     font-size: 14px;
 }
 
