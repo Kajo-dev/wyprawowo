@@ -222,51 +222,6 @@ def logout_page(request):
 def ini_payment(request):
     return render(request, 'user_manager/ini_payment_process.html', {})
 
-
-@login_required
-def profile_view(request, slug):
-    user_profile = get_object_or_404(Profile, slug=slug)
-    user_posts = user_profile.user.posts.all()
-    shared_posts = SharedPost.objects.filter(user=user_profile.user)
-
-    is_liked_by_user = Like.objects.filter(user=request.user, profile=user_profile).exists()
-
-    posts_with_likes = []
-    for post in user_posts:
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
-        like_count = post.likes.count()
-        is_author = post.user == request.user
-        is_shared = False
-        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
-
-    for shared_post in shared_posts:
-        original_post = shared_post.original_post
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=original_post).exists()
-        like_count = original_post.likes.count()
-        is_author = original_post.user == request.user
-        is_shared = True
-        post = original_post
-        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
-
-    profile_questions = Question.objects.filter(is_profile=True)
-    user_responses = UserResponse.objects.filter(user=user_profile.user, question__in=profile_questions)
-
-    top_profiles = (
-        Profile.objects
-        .annotate(total_likes=Count('user__posts__likes'))
-        .order_by('-total_likes')[:5]
-    )
-
-    context = {
-        'profile': user_profile,
-        'posts_with_likes': posts_with_likes,
-        'is_liked_by_user': is_liked_by_user,
-        'user_responses': user_responses,
-        'top_profiles': top_profiles,
-    }
-    return render(request, 'user_manager/profile.html', context)
-
-
 def create_post(request):
     if request.method == 'POST':
         post_type = request.POST.get('post_type')

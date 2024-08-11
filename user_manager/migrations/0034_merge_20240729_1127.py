@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "user_manager",
-            "0032_rename_multiple_answer_question_is_multiple_answer_and_more",
+            "0033_user_created_at",
         ),
         ("user_manager", "0033_user_created_at"),
     ]
