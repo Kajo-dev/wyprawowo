@@ -314,6 +314,7 @@ def create_post_comment(request, post_id):
 @login_required
 def home_view(request):
     posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
+
     new_users = Profile.objects.all().order_by('-user__created_at')[:5]
 
     posts_with_likes = []
@@ -324,6 +325,7 @@ def home_view(request):
         is_author = post.user == request.user
         is_shared = False
         posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
+
 
     popular_events = (
         EventPost.objects
@@ -360,6 +362,7 @@ def post_view(request, post_id):
 
     return render(request, 'user_manager/post_view.html', context)
 
+  
 @login_required
 @require_POST
 def like_profile(request, profile_id):
