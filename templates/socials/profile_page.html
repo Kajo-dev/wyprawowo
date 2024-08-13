@@ -132,7 +132,7 @@
                                     <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
                                 </button>
                         </div>
-                        <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+                        <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ post.comments.all|length }} odpowiedzi</button>
                     </div>
 
 
