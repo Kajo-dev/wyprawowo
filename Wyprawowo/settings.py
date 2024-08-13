@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_manager',
     'socials',
-    'payment_handle'
-
+    'payment_handle',
+    'django_user_agents',
 ]
 
 AUTH_USER_MODEL = 'user_manager.User'
@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'Wyprawowo.urls'
