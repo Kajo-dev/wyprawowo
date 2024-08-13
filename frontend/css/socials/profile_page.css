@@ -70,7 +70,7 @@
     position: sticky;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     top: 0;
     left: 0;
     height: 80vh;
@@ -111,6 +111,16 @@
     gap: 10px;
     border-bottom: 1px solid #9999;
     padding-bottom: 10px;
+}
+
+.profile-post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-post-list .post {
+    margin: 0;
 }
 
 .user-box-top > .profile_data > .profile_name {
@@ -170,7 +180,6 @@
     transition: background-color 0.2s;
     padding-left: 5px;
     align-self: start;
-    width: 165px;
 }
 
 .btn-avatar:hover {

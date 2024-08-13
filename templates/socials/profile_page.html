@@ -1,11 +1,15 @@
 {% extends "main/base_with_navbar.html" %}
 {%load static %}
+{% load custom_filters %}
+
 {% block title %} <title> {{profile.user.first_name}} {{ profile.user.last_name }} -
     Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{%static 'css/socials/profile_page.css'%}"/>
+
 <div class="my-grid-container">
     <div class="my-grid-container-left-panel">
         <div class="profile-main-view">
@@ -35,16 +39,18 @@
                             <p class="characteristics-box"><strong>{{ response.question.text }}:</strong> {{ response.answer.text }}</p>
                             {% endfor %}
                         </div>
-                        <button class="btn-avatar" id="like-button" data-profile-id="{{ profile.id }}">
-                            {% if is_liked_by_user %}
-                                Zabieram avatar
-                            {% else %}
-                                Zostaw avatar
-                            {% endif %}
-                            <span class="avatar-wrapper">
-                            <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
-                            </span>
-                        </button>
+                        {% if request.user != profile.user %}
+                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}">
+                                {% if is_liked_by_user %}
+                                    Zabieram avatar
+                                {% else %}
+                                    Zostaw avatar
+                                {% endif %}
+                                <span class="avatar-wrapper">
+                                <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
+                                </span>
+                            </button>
+                        {% endif %}
                     </div>
 
                 </div>
@@ -55,56 +61,119 @@
             {% if not posts_with_likes %}
                 <p class="no-posts"> Brak wpisów użytkownika </p>
             {% else %}
-            <div class="profile-posts">
-                <h2>Posty</h2>
+            <div class="post-list profile-post-list">
                 {% for post, is_post_liked_by_user, like_count, is_author, is_shared in posts_with_likes %}
-                    <div class="post">
-                        <p>{{ post.user.first_name }}{{ post.user.second_name }}</p>
-                        <p>{{ post.post_type }}</p>
-                        {% if post.post_type == 'event' %}
-                            <h3>{{ post.event.title }}</h3>
-                            <p>{{ post.content }}</p>
-                            <p>Typ wydarzenia: {{ post.event.event_type }}</p>
-                            <p>Typ gdzie : {{ post.event.where }}</p>
-                            <p>Typ kiedy: {{ post.event.when }}</p>
-                            <p>Typ cena: {{ post.event.price }}</p>
-                        {% else %}
-                            <p>{{ post.content }}</p>
-                            <p>{{ post.hashtags }}</p>
-                        {% endif %}
-                        <span>{{ post.created_at }}</span>
-                        <div>
-                            <button class="like-post-button" data-post-id="{{ post.id }}">
-                                {% if is_post_liked_by_user %}
-                                    Unlike
-                                {% else %}
-                                    Like
-                                {% endif %}
-                            </button>
-                            <span>{{ like_count }} lajków</span>
+                <div class="post box">
+                    <div class="post-topbar">
+                        <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
+                            <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
+                        </a>
+                        <div class="user-data">
+                            <p>
+                                {{post.user.first_name}} {{post.user.last_name}}
+                            </p>
+                            {% if post.post_type == 'event' and post.event %}
+                            <p class="event-type"> {{ post.event.event_type  }} </p>
+                            {% else %}
+                            <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
+                            {%endif %}
                         </div>
+                    </div>
+                    {% if post.post_type == 'event' and post.event %}
+                    <div class="post-text">
+                        <h4 class="event-title">{{ post.event.title }}</h4>
+                        <p class="short-content">
+                            {{ post.content|truncatechars:255 }}
+                        </p>
+                        <p class="full-content" style="display: none;">
+                            {{ post.content }}
+                        </p>
+                        {% if post.content|char_count > 255 %}
+                        <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                        {% endif %}
+                        <div class="event-character">
+                            <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
+                            <div class="event-character-box"> {{ post.event.where }}</div>
+                            <div class="event-character-box">{{ post.event.price }} zł</div>
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <div class="post-text">
+
+                        <p class="short-content">
+                            {{ post.content|truncatechars:255 }}
+                        </p>
+                        <p class="full-content" style="display: none;">
+                            {{ post.content }}
+                        </p>
+                        {% if post.content|char_count > 255 %}
+                        <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                        {% endif %}
+
+                    </div>
+                    {% endif %}
+                    <div class="hashtags">
+                        {% with post.hashtags|split:" " as hashtags_list %}
+                        {% for tag in hashtags_list %}
+                        <div class="tag-box"> {{tag}}</div>
+                        {% endfor %}
+                        {% endwith %}
+                    </div>
+                    <div class="actions-counter">
+                        <div class="avatars-counter">
+                            {% if is_post_liked_by_user %}
+                            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
+                                {% else %}
+                                <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
+                                    {% endif %}
+
+                                    {{ like_count }}
+                                    <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
+                                </button>
+                        </div>
+                        <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+                    </div>
+
+
+                    <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
+
+                        {% if request.user.is_authenticated %}
                         <div>
                             {% if not is_author %}
-                                | <a href="{% url 'share_post' post_id=post.id %}">Udostępnij</a>
+                            | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
                             {% endif %}
                         </div>
-                        <div>
-                            <h4>Dodaj KOm:</h4>
-                            <form method="post" action="{% url 'create_post_comment' post_id=post.id %}">
-                                {% csrf_token %}
-                                <label for="content_comment">zawartość kom</label>
-                                <input type="text" name="content_comment" id="content_comment">
-                                <input type="submit" value="dodaj">
-                            </form>
-                            <h4>Komentarze:</h4>
+
+                        <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
+                            {% csrf_token %}
+                            <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
+                            <input type="submit" value="dodaj" class="btn-add-comment">
+                        </form>
+
+                        {% endif %}
+
+                        <div class="comments-section">
                             {% for comment in post.comments.all %}
-                                <p>{{ comment.content }} - {{ comment.user.first_name }}</p>
+                            <div class="comment-box">
+                                <a href="/profil/{{comment.user.profile.slug}}">
+                                    <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                                </a>
+                                <div>
+                                    <p class="comment-box-user">
+                                        {{ comment.user.first_name }} {{ comment.user.last_name }}
+                                    </p>
+                                    <p class="comment-box-content">{{ comment.content }} </p>
+                                </div>
+                            </div>
                             {% endfor %}
                         </div>
                     </div>
+                </div>
                 {% endfor %}
             </div>
-        {% endif %}
+
+            {% endif %}
         </div>
     </div>
 
@@ -144,48 +213,39 @@
 
 </div>
 
-    <script>
-    // Profile like button
-    document.getElementById('like-button').addEventListener('click', function() {
-      var profileId = this.getAttribute('data-profile-id');
-      var action = this.innerText === 'Zostaw avatar' ? 'like' : 'unlike';
-
-      fetch(`/profile/${profileId}/${action}/`, {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': '{{ csrf_token }}',
-          'Content-Type': 'application/json'
-        }
-      }).then(response => response.json()).then(data => {
-        if (data.status === 'liked') {
-          this.innerText = 'Unlike';
-        } else if (data.status === 'unliked') {
-          this.innerText = 'Like';
-        }
-      });
-    });
-
-    // Post like buttons
+<script>
     document.querySelectorAll('.like-post-button').forEach(button => {
-      button.addEventListener('click', function() {
-        var postId = this.getAttribute('data-post-id');
-        var action = this.innerText === 'Like' ? 'like' : 'unlike';
-
-        fetch(`/post/${postId}/${action}/`, {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json'
-          }
-        }).then(response => response.json()).then(data => {
-          if (data.status === 'liked') {
-            this.innerText = 'Unlike';
-          } else if (data.status === 'unliked') {
-            this.innerText = 'Like';
-          }
+        button.addEventListener('click', function () {
+            console.log(this)
+            const postId = this.getAttribute('data-post-id');
+            const action = this.getAttribute('data-action');
+            fetch(`/post/${postId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
         });
-      });
     });
-  </script>
+
+    const toggleContent = (button) => {
+        const postTextDiv = button.parentElement;
+        const shortContent = postTextDiv.querySelector('.short-content');
+        const fullContent = postTextDiv.querySelector('.full-content');
+
+        if (fullContent.style.display === 'none') {
+            fullContent.style.display = 'block';
+            shortContent.style.display = 'none';
+            button.innerText = 'Pokaż mniej';
+        } else {
+            fullContent.style.display = 'none';
+            shortContent.style.display = 'block';
+            button.innerText = 'Pokaż więcej';
+        }
+    }
+</script>
+
+<script src="{% static 'js/activity_panel.js' %}" type="module"></script>
 
 {% endblock content%}

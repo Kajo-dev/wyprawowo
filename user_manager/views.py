@@ -296,7 +296,7 @@ def create_post(request):
                 price=price
             )
 
-        return redirect('profile_view', slug=request.user.profile.slug)
+        return redirect('/')
 
 def create_post_comment(request, post_id):
     if request.method == 'POST':
