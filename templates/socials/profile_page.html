@@ -21,7 +21,8 @@
                             </p>
                             <p class="avatar-number">
                                 <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
-                                99</p>
+                                {{profile.likes_count}}
+                            </p>
                         </div>
                     </div>
 
@@ -30,12 +31,16 @@
                     </p>
                     <div class="profile-bottom-panel">
                         <div class="characteristics-container">
-                            {% for character in characteristics %}
-                            <p class="characteristics-box">{{character}}</p>
+                            {% for response in user_responses %}
+                            <p class="characteristics-box"><strong>{{ response.question.text }}:</strong> {{ response.answer.text }}</p>
                             {% endfor %}
                         </div>
-                        <button class="btn-avatar">
-                            Zostaw avatar
+                        <button class="btn-avatar" id="like-button" data-profile-id="{{ profile.id }}">
+                            {% if is_liked_by_user %}
+                                Zabieram avatar
+                            {% else %}
+                                Zostaw avatar
+                            {% endif %}
                             <span class="avatar-wrapper">
                             <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
                             </span>
@@ -47,7 +52,59 @@
         </div>
         <div class="profile-side-bar"></div>
         <div class="profile-activity red-overlay">
-            <p class="no-posts"> Brak wpisów użytkownika </p>
+            {% if not posts_with_likes %}
+                <p class="no-posts"> Brak wpisów użytkownika </p>
+            {% else %}
+            <div class="profile-posts">
+                <h2>Posty</h2>
+                {% for post, is_post_liked_by_user, like_count, is_author, is_shared in posts_with_likes %}
+                    <div class="post">
+                        <p>{{ post.user.first_name }}{{ post.user.second_name }}</p>
+                        <p>{{ post.post_type }}</p>
+                        {% if post.post_type == 'event' %}
+                            <h3>{{ post.event.title }}</h3>
+                            <p>{{ post.content }}</p>
+                            <p>Typ wydarzenia: {{ post.event.event_type }}</p>
+                            <p>Typ gdzie : {{ post.event.where }}</p>
+                            <p>Typ kiedy: {{ post.event.when }}</p>
+                            <p>Typ cena: {{ post.event.price }}</p>
+                        {% else %}
+                            <p>{{ post.content }}</p>
+                            <p>{{ post.hashtags }}</p>
+                        {% endif %}
+                        <span>{{ post.created_at }}</span>
+                        <div>
+                            <button class="like-post-button" data-post-id="{{ post.id }}">
+                                {% if is_post_liked_by_user %}
+                                    Unlike
+                                {% else %}
+                                    Like
+                                {% endif %}
+                            </button>
+                            <span>{{ like_count }} lajków</span>
+                        </div>
+                        <div>
+                            {% if not is_author %}
+                                | <a href="{% url 'share_post' post_id=post.id %}">Udostępnij</a>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h4>Dodaj KOm:</h4>
+                            <form method="post" action="{% url 'create_post_comment' post_id=post.id %}">
+                                {% csrf_token %}
+                                <label for="content_comment">zawartość kom</label>
+                                <input type="text" name="content_comment" id="content_comment">
+                                <input type="submit" value="dodaj">
+                            </form>
+                            <h4>Komentarze:</h4>
+                            {% for comment in post.comments.all %}
+                                <p>{{ comment.content }} - {{ comment.user.first_name }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         </div>
     </div>
 
@@ -59,23 +116,23 @@
                 </div>
 
                 <div class="sidebar-content-body box">
-                    {% for profile_wtk in worth_to_know_profiles %}
+                    {% for top_profile in top_profiles %}
                     <div class="box user-box">
-                        <a href="{{profile_wtk.slug}}">
+                        <a href="{{top_profile.slug}}">
                             <div class="user-box-top">
-                                <img class="profile-avatar" src="{{profile_wtk.avatar}}/thumb"
-                                     alt="{{profile_wtk.user.first_name}}-avatar"/>
+                                <img class="profile-avatar" src="{{top_profile.avatar}}/thumb"
+                                     alt="{{top_profile.user.first_name}}-avatar"/>
                                 <div class="profile_data">
                                     <p class="profile_name">
-                                        {{profile_wtk.user.first_name}} {{profile_wtk.user.last_name}}
+                                        {{top_profile.user.first_name}} {{top_profile.user.last_name}}
                                     </p>
                                     <p class="avatar-number">
                                         <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
-                                        99</p>
+                                        {{ top_profile.total_likes }}</p>
                                 </div>
                             </div>
 
-                            <p class="user-box-description"> {{profile_wtk.description}} </p>
+                            <p class="user-box-description"> {{top_profile.description}} </p>
                         </a>
                     </div>
                     {% endfor %}
@@ -86,5 +143,49 @@
     </div>
 
 </div>
+
+    <script>
+    // Profile like button
+    document.getElementById('like-button').addEventListener('click', function() {
+      var profileId = this.getAttribute('data-profile-id');
+      var action = this.innerText === 'Zostaw avatar' ? 'like' : 'unlike';
+
+      fetch(`/profile/${profileId}/${action}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        }
+      }).then(response => response.json()).then(data => {
+        if (data.status === 'liked') {
+          this.innerText = 'Unlike';
+        } else if (data.status === 'unliked') {
+          this.innerText = 'Like';
+        }
+      });
+    });
+
+    // Post like buttons
+    document.querySelectorAll('.like-post-button').forEach(button => {
+      button.addEventListener('click', function() {
+        var postId = this.getAttribute('data-post-id');
+        var action = this.innerText === 'Like' ? 'like' : 'unlike';
+
+        fetch(`/post/${postId}/${action}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+          }
+        }).then(response => response.json()).then(data => {
+          if (data.status === 'liked') {
+            this.innerText = 'Unlike';
+          } else if (data.status === 'unliked') {
+            this.innerText = 'Like';
+          }
+        });
+      });
+    });
+  </script>
 
 {% endblock content%}
