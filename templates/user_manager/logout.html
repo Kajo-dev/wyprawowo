@@ -1,11 +1,39 @@
 {% extends "main/base.html" %}
-  
-{% block title %} <title>logout</title> {%endblock title%}
-</head>
+{% load static %}
+{%block title%} <title>Wylogowano - Wyprawowo.pl</title> {%endblock title%}
 {% block content %}
-<body>
-    <h1>logout</h1>
-    <p><a href="{%url 'login_page'%}">logowanie</a></p>
-</body>
-</html>
-{% endblock content%}
+<link rel="stylesheet" href="{% static  'css/user_manager/confirmation_email.css' %}">
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/ini_payment_process.css'%}"/>
+
+
+<div class="register container">
+
+    <div class="register-right-panel">
+
+        <div>
+            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
+        </div>
+
+        <div class="box form-container">
+            <h3>Zostałeś wylogowany</h3>
+            <p>Dziękujemy za korzystanie z naszej platformy!</p>
+            <form action="{% url 'create_checkout_session' %}" class="register__form" method="POST">
+                {% csrf_token %}
+                <a href="{% url 'login_page' %}" class="continue-button"> Zaloguj
+                </a>
+            </form>
+
+            <div id="messages">
+
+                {%for i in error_list%}
+                <label class="error-message">{{i}}</label>
+                {%endfor%}
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
