@@ -530,10 +530,15 @@ button.avatars-counter:hover {
 }
 
 .my-grid-container-right-panel.activity-panel {
-    position: -webkit-sticky;
+    top: 60px;
+    height: 100%;
+}
+
+.sticky-container-activity-panel {
     position: sticky;
-    top: 100px;
-    height: 500px;
+    position: -webkit-sticky;
+    top: 55px;
+    left: 0;
 }
 
 .my-grid-container.activity-panel {
