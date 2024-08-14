@@ -516,15 +516,16 @@ button.avatars-counter:hover {
     margin-left: 5px;
 }
 
-.comment-counter {
+.comment-counter, .btn-share {
     border: 0;
     background-color: var(--my-red);
     border-radius: 5px;
     color: #fff;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.comment-counter:hover {
+.comment-counter:hover, .btn-share:hover {
     background-color: #730000;
 }
 
