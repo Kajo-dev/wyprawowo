@@ -171,17 +171,16 @@
                         </button>
                     </div>
                     <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+
+                    {% if not is_author %}
+                    <a  class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
+                    {% endif %}
                 </div>
 
 
                 <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
 
                 {% if request.user.is_authenticated %}
-                <div>
-                    {% if not is_author %}
-                    | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
-                    {% endif %}
-                </div>
 
                 <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
                     {% csrf_token %}
@@ -234,8 +233,9 @@
                 <div class="new-users-see-more">
                     <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
                 </div>
+                </div>
+
                 {% endfor %}
-            </div>
             </div>
         </div>
         </div>
