@@ -70,23 +70,20 @@
                         {% else %}
                         <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
                             {% endif %}
-
-                            {{ like_count }}
+                            <p>{{ like_count }}</p>
                             <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
                         </button>
                 </div>
                 <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+                {% if not is_author %}
+                <a class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
+                {% endif %}
             </div>
 
 
             <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
 
                 {% if request.user.is_authenticated %}
-                <div>
-                    {% if not is_author %}
-                    | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
-                    {% endif %}
-                </div>
 
                 <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
                     {% csrf_token %}
@@ -130,6 +127,15 @@
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
                     'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                const likeCounter =  this.querySelector('p');
+                if(action==='like'){
+                    this.setAttribute('data-action', 'unlike')
+                    likeCounter.textContent =  Number(likeCounter.textContent) + 1;
+                }else{
+                    this.setAttribute('data-action', 'like')
+                    likeCounter.textContent =  Number(likeCounter.textContent) - 1;
                 }
             })
         });
