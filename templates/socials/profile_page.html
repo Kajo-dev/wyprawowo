@@ -214,7 +214,6 @@
 <script>
     document.querySelectorAll('.like-post-button').forEach(button => {
         button.addEventListener('click', function () {
-            console.log(this)
             const postId = this.getAttribute('data-post-id');
             const action = this.getAttribute('data-action');
             fetch(`/post/${postId}/${action}/`, {
