@@ -165,8 +165,9 @@
                         {% else %}
                             <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
                         {% endif %}
-
-                        {{ like_count }}
+                            <p class="like-count">
+                            {{ like_count }}
+                            </p>
                           <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
                         </button>
                     </div>
@@ -287,6 +288,15 @@
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
                     'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                const likeCounter =  this.querySelector('p');
+                if(action==='like'){
+                    this.setAttribute('data-action', 'unlike')
+                    likeCounter.textContent =  Number(likeCounter.textContent) + 1;
+                }else{
+                    this.setAttribute('data-action', 'like')
+                    likeCounter.textContent =  Number(likeCounter.textContent) -1;
                 }
             })
         });
