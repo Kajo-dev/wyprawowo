@@ -5,6 +5,7 @@
     left: 0;
     width: 100%;
     z-index: 1;
+    padding: 4px 10px;
 }
 
 .logo-wrapper .wyprawowo-logo {
@@ -18,8 +19,22 @@
     padding: 5px;
 }
 
-.navbar {
-    padding: 4px 10px;
+.sticky-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+.btn-avatar-option {
+    border-radius: 100%;
+    outline: none;
+    border: 0;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .logo-wrapper {
@@ -52,6 +67,52 @@
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.navbar-desktop-menu {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background-color: #cccccc;
+    width: 200px;
+    transform: translateX(-60%);
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 5px 5px;
+}
+
+.navbar-desktop-menu a:hover {
+    background-color: #dcdcdc;
+}
+
+.navbar-desktop-menu a {
+    color: black;
+    text-decoration: none;
+    border-bottom: 1px solid #b7b7b7;
+    padding: 3px 0;
+    transition: background-color 0.2s;
+}
+
+.desktop-menu-container {
+    position: relative;
+}
+
+.navbar-desktop-menu .btn-close {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.navbar-desktop-menu.active {
+    display: flex
+}
+
+.navbar-desktop-menu .btn-close img {
+    width: 100%;
 }
 
 .menu {
@@ -207,7 +268,7 @@
         cursor: pointer;
     }
 
-    .se 3 managearch-button.mobile {
+    .search-button.mobile {
         display: none;
     }
 }
