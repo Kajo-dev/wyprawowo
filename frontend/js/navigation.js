@@ -1,3 +1,6 @@
+const container = document.querySelector('.my-grid-container')
+
+
 if (window.innerWidth < 768) {
 
     const openButton = document.querySelector('.btn-menu');
@@ -16,22 +19,32 @@ if (window.innerWidth < 768) {
     const profileAvatar = document.querySelector('.btn-avatar-option')
     const closeButtonDesktop = document.querySelector('.btn-close');
     const navigation = document.querySelector('.navbar-desktop-menu');
-    const activityPanel = document.querySelector('.activity-panel')
 
     profileAvatar.addEventListener('click', () => {
         navigation.classList.toggle('active');
-        activityPanel.addEventListener('click', closeMenu)
+        container.addEventListener('click', closeMenu)
     })
 
     closeButtonDesktop.addEventListener('click', () => {
         navigation.classList.remove('active');
-        activityPanel.addEventListener('click', closeMenu)
+        container.addEventListener('click', closeMenu)
     })
 
     const closeMenu = () => {
         navigation.classList.remove('active');
-        activityPanel.removeEventListener('click', () => {
+        container.removeEventListener('click', () => {
         })
     }
 }
 
+const openNotificationsBtn = document.querySelector('.btn-notification');
+const notificationsContainer = document.querySelector('.notifications-container');
+openNotificationsBtn.addEventListener('click', () => {
+    notificationsContainer.classList.toggle('active');
+    container.addEventListener('click', () => {
+        notificationsContainer.classList.remove('active');
+        container.removeEventListener('click', () => {
+        })
+    })
+
+})

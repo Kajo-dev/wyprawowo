@@ -35,9 +35,22 @@
                     </p>
                     <div class="profile-bottom-panel">
                         <div class="characteristics-container">
-                            {% for response in user_responses %}
-                            <p class="characteristics-box"><strong>{{ response.question.text }}:</strong> {{ response.answer.text }}</p>
+                            {% for response in user_responses|slice:":3" %}
+                            <p class="characteristics-box" title="{{response.question.text}}">{{ response.answer.text }}</p>
                             {% endfor %}
+
+                            {% if user_responses|length > 3 %}
+                            <p class="see-more-characteristics"> Pokaż więcej </p>
+                            {% endif %}
+
+                            <div class="characteristics-box-modal box">
+                                <button class="btn-close">
+                                    <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
+                                </button>
+                                {% for response in user_responses %}
+                                <p class="characteristics-box"> <strong> {{ response.question.text }} </strong> {{ response.answer.text }}</p>
+                                {% endfor %}
+                            </div>
                         </div>
                         {% if request.user != profile.user %}
                             <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}">
@@ -243,5 +256,6 @@
 </script>
 
 <script src="{% static 'js/activity_panel.js' %}" type="module"></script>
+<script src="{% static 'js/profile_page.js' %}" type="module"></script>
 
 {% endblock content%}

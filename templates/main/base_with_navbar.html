@@ -36,9 +36,35 @@
 
         <div class="right-nav">
             {% if request.user.is_authenticated %}
-            <button class="btn-notification">
-                <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
-            </button>
+            <div class="notifications-wrapper">
+
+                <button class="btn-notification">
+                    <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
+                </button>
+
+                <div class="notifications-container box">
+                    <div class="notification-box ">
+                        <a href="/">
+                            <img src="{{user.profile.avatar}}/thumb" alt="profile avatar">
+                            <p><strong> {{request.user.first_name}} {{request.user.last_name}} </strong> zostawił avatar
+                                pod
+                                Twoim
+                                profilem!</p>
+                        </a>
+                    </div>
+
+
+                    <div class="notification-box">
+                        <a href="/">
+                            <img src="{{user.profile.avatar}}/thumb" alt="profile avatar">
+                            <p><strong> {{request.user.first_name}} {{request.user.last_name}} i 2 innych </strong>
+                                użytkowników odpowiedziało
+                                na Twój wpis: <i> "Niewiarygodny wpis porywający tłum..." </i></p>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
 
             {% if request.user_agent.is_mobile %}
             <a href="/profil/{{request.user.profile.slug}}">
