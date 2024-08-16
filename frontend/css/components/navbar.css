@@ -224,9 +224,89 @@
     display: none;
 }
 
+.notifications-wrapper {
+    position: relative;
+}
+
+.notifications-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    transform: translateX(-65%);
+    width: 320px;
+    padding: 5px;
+    font-size: 13px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1;
+}
+
+.notifications-container.active {
+    display: flex;
+}
+
+.notification-box i {
+    color: #757575;
+}
+
+.notification-box a {
+    text-decoration: none;
+}
+
+.notification-box, .notification-box a {
+    display: flex;
+    gap: 10px;
+    padding: 10px 5px;
+    border-radius: 5px;
+    color: #000;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+
+.notification-box {
+    padding: 5px;
+    border-bottom: 1px solid #efefef;
+}
+
+.notification-box p {
+    line-height: 135%;
+}
+
+.notification-box.unread a {
+    background-color: var(--indian-red);
+    color: #fff;
+}
+
+.btn-notification.unread::after {
+    content: "";
+    position: absolute;
+    top: -10%;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background-color: #ff0a00;
+    border-radius: 100%;
+}
+
+.btn-notification.unread {
+    animation: ring 1s infinite;
+}
+
+.notification-box img {
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+}
+
 @media (min-width: 768px) {
     .btn-menu {
         display: none;
+    }
+
+    .notifications-container {
+        transform: translateX(-90%);
     }
 
     .domain-list {
@@ -270,5 +350,23 @@
 
     .search-button.mobile {
         display: none;
+    }
+}
+
+@keyframes ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(30deg);
+    }
+    50% {
+        transform: rotate(0deg);
+    }
+    75% {
+        transform: rotate(-30deg);
+    }
+    100% {
+        transform: rotate(0deg);
     }
 }
