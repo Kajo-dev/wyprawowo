@@ -192,6 +192,12 @@ select:focus, textarea:focus {
     margin-top: 10px;
 }
 
+.post-img {
+    width: 100%;
+    object-fit: contain;
+    max-height: 300px;
+}
+
 #hashtags:focus {
     border-bottom: 1px solid var(--indian-red);
 }
@@ -638,6 +644,9 @@ button.avatars-counter:hover {
     background-color: #730000;
 }
 
+.post-assets {
+    margin-top: 10px;
+}
 
 .outbox-events {
     padding-bottom: 5px;
