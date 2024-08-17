@@ -55,7 +55,6 @@
         {% endif %}
         <div class="create-post overlay">
             <div class="create-post-wrapper box">
-                <p class="title-box">Dodaj wpis</p>
                 <form method="post" class="form-create-post" action="{% url 'create_post' %}">
                     {% csrf_token %}
                     <div class="post-type-wrapper">
@@ -71,6 +70,22 @@
                     <div>
                         <textarea class="post-content" name="content"  id="content" placeholder="Zainspiruj nas"></textarea>
                     </div>
+
+                        <div>
+                            <label class="photo-input-label">
+                                Dodaj zdjęcie
+                                <img src="{% static  '/img/photo-icon.svg' %}"/>
+                                <input type="file" name="photo_input" class="photo_input"/>
+                            </label>
+<!--                                if user choose an image replace image element bellow by it -->
+                                <img src="{% static '/img/test.jpg' %}" class="choose-image" alt="choosed image"/>
+                        </div>
+
+                        <div class="video_field">
+                            <label for="title">Link do filmu:</label>
+                            <input type="text" name="video_url" id="video_url">
+                        </div>
+
 
                     <div id="text-fields">
                         <label for="hashtags">Hashtagi:</label>
