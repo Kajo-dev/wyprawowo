@@ -7,7 +7,7 @@ if (window.location.pathname === '/') {
 
     document.querySelector('select[name="post_type"]').addEventListener('change', function () {
         if (this.value === 'event') {
-            document.getElementById('event-fields').style.display = 'flex';
+            document.getElementById('event-fields').style.display = 'grid';
             document.getElementById('text-fields').style.display = 'none';
         } else {
             document.getElementById('event-fields').style.display = 'none';
@@ -18,7 +18,7 @@ if (window.location.pathname === '/') {
     document.addEventListener('DOMContentLoaded', function () {
         const postTypeSelect = document.querySelector('select[name="post_type"]');
         if (postTypeSelect.value === 'event') {
-            document.getElementById('event-fields').style.display = 'flex';
+            document.getElementById('event-fields').style.display = 'grid';
             document.getElementById('text-fields').style.display = 'none';
         } else {
             document.getElementById('event-fields').style.display = 'none';
