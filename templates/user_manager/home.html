@@ -4,6 +4,7 @@
 {% block title %} <title>Aktualności - Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/components/slider.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/style.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
@@ -144,6 +145,24 @@
                     {% if post.content|char_count > 255 %}
                     <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
                     {% endif %}
+
+                    <div class="post-assets">
+                        <div class="carousel">
+                            <div class="carousel-images">
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{% static '/img/test.jpg' %} " alt="Image {{ forloop.counter }}" class="post-img">
+                                </div>
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{% static '/img/test.jpg' %} " alt="Image {{ forloop.counter }}" class="post-img">
+                                </div>
+                            </div>
+                            <div class="carousel-controls">
+                                <button class="prev">❮</button>
+                                <button class="next">❯</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="event-character">
                         <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
                         <div class="event-character-box"> {{ post.event.where }}</div>
@@ -164,8 +183,27 @@
                     <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
                     {% endif %}
 
+                    <div class="post-assets">
+
+                    <div class="carousel">
+                            <div class="carousel-images">
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{% static '/img/test.jpg' %} " alt="Image {{ forloop.counter }}" class="post-img">
+                                </div>
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{% static '/img/test-m.jpg' %} " alt="Image {{ forloop.counter }}" class="post-img">
+                                </div>
+                            </div>
+                            <div class="carousel-controls">
+                                <button class="prev">❮</button>
+                                <button class="next">❯</button>
+                            </div>
+                            </div>
+                        </div>
+
                 </div>
                 {% endif %}
+
                 <div class="hashtags">
                     {% with post.hashtags|split:" " as hashtags_list %}
                         {% for tag in hashtags_list %}
@@ -335,5 +373,7 @@
 </script>
 
 <script src="{% static 'js/activity_panel.js' %}" type="module"></script>
+<script src="{% static 'js/slider.js' %}" type="module"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
 
 {% endblock %}
