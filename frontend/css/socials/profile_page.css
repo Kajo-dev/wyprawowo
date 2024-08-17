@@ -219,6 +219,16 @@
     cursor: pointer;
 }
 
+.shared-info {
+    padding: 2px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: var(--my-red);
+    font-weight: 500;
+    width: min-content;
+    border-bottom: 1px solid #e8e8e8;
+}
+
 .characteristics-box-modal {
     position: absolute;
     top: 0;
