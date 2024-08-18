@@ -1,6 +1,7 @@
 {% extends "main/base_with_navbar.html" %}
 {% load static %}
 {% load custom_filters %}
+
 {% block title %} <title>Aktualności - Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
@@ -9,11 +10,11 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
 
-
 <div class="popular-events red-overlay mobile">
     <div class="box">
         <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
     </div>
+
 <div class="box outbox-events">
     <div class="popular-events-wrapper">
         {% for event in popular_events %}
@@ -31,8 +32,10 @@
                 </button>
 
             </div>
+            {% endfor %}
         </div>
         {% endfor %}
+
     </div>
     {% if popular_events %}
     <a href="?type=event" class="btn-show-more"> Pokaż wszystkie  </a>
@@ -41,10 +44,7 @@
     {% endif %}
 </div>
 
-</div>
-
 <div class="my-grid-container activity-panel">
-
     <div class="my-grid-container-left-panel">
         {% if request.user.is_authenticated %}
         <div class="inspire-us box">
@@ -65,7 +65,6 @@
                             <option value="event">Wydarzenie</option>
                         </select>
                     </div>
-
                     <div class="fields-wrapper">
 
                     <div>
@@ -108,13 +107,11 @@
                     <div class="buttons-container">
                         <button  class="btn-cancel">Zamknij</button>
                         <input type="submit" value="Dodaj" class="btn-create-post">
+
                     </div>
                 </form>
             </div>
-            </div>
-
         </div>
-
         <div class="post-list">
             {% for post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared in posts %}
             <div class="post box">
@@ -123,25 +120,19 @@
                         <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
                     </a>
                     <div class="user-data">
-                        <p>
-                            {{post.user.first_name}} {{post.user.last_name}}
-                        </p>
+                        <p>{{post.user.first_name}} {{post.user.last_name}}</p>
                         {% if post.post_type == 'event' and post.event %}
-                            <p class="event-type"> {{ post.event.event_type  }} </p>
+                        <p class="event-type">{{ post.event.event_type }}</p>
                         {% else %}
-                            <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
-                        {%endif %}
+                        <p class="post-date">{{ post.created_at|date:"d.m.Y" }}</p>
+                        {% endif %}
                     </div>
                 </div>
                 {% if post.post_type == 'event' and post.event %}
                 <div class="post-text">
                     <h4 class="event-title">{{ post.event.title }}</h4>
-                    <p class="short-content">
-                        {{ post.content|truncatechars:255 }}
-                    </p>
-                    <p class="full-content" style="display: none;">
-                        {{ post.content }}
-                    </p>
+                    <p class="short-content">{{ post.content|truncatechars:255 }}</p>
+                    <p class="full-content" style="display: none;">{{ post.content }}</p>
                     {% if post.content|char_count > 255 %}
                     <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
                     {% endif %}
@@ -165,20 +156,14 @@
 
                     <div class="event-character">
                         <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
-                        <div class="event-character-box"> {{ post.event.where }}</div>
+                        <div class="event-character-box">{{ post.event.where }}</div>
                         <div class="event-character-box">{{ post.event.price }} zł</div>
                     </div>
                 </div>
-
                 {% else %}
                 <div class="post-text">
-
-                    <p class="short-content">
-                        {{ post.content|truncatechars:255 }}
-                    </p>
-                    <p class="full-content" style="display: none;">
-                        {{ post.content }}
-                    </p>
+                    <p class="short-content">{{ post.content|truncatechars:255 }}</p>
+                    <p class="full-content" style="display: none;">{{ post.content }}</p>
                     {% if post.content|char_count > 255 %}
                     <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
                     {% endif %}
@@ -206,17 +191,17 @@
 
                 <div class="hashtags">
                     {% with post.hashtags|split:" " as hashtags_list %}
-                        {% for tag in hashtags_list %}
-                    <div class="tag-box"> {{tag}}</div>
-                        {% endfor %}
+                    {% for tag in hashtags_list %}
+                    <div class="tag-box">{{ tag }}</div>
+                    {% endfor %}
                     {% endwith %}
                 </div>
                 <div class="actions-counter">
                     <div class="avatars-counter">
                         {% if is_post_liked_by_user %}
-                            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
+                        <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
                         {% else %}
-                            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
+                        <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
                         {% endif %}
                             <p class="like-count">
                             {{ like_count }}
@@ -230,8 +215,6 @@
                     <a  class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
                     {% endif %}
                 </div>
-
-
                 <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
 
                 {% if request.user.is_authenticated %}
@@ -256,38 +239,38 @@
                             </p>
                             <p class="comment-box-content">{{ comment.content }} </p>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
-                </div>
             {% endfor %}
         </div>
     </div>
-
     <div class="my-grid-container-right-panel activity-panel">
+
         <div class="sticky-container-activity-panel">
         <div class="new-users red-overlay">
             <div class="box">
                 <h3 class="new-users-heading">👋 Nowi użytkownicy</h3>
             </div>
             <div class="box">
-
-            <div class="new-users-wrapper">
-                {% for user in new_users %}
-                <div class="new-users-box">
-                <div class="new-users-name-box">
-                    <a href="/profil/{{ user.user.profile.slug }}">
-                    <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
-                        {{ user.user.first_name }} {{ user.user.last_name }} </a>
+                <div class="new-users-wrapper">
+                    {% for user in new_users %}
+                    <div class="new-users-box">
+                        <div class="new-users-name-box">
+                            <a href="/profil/{{ user.user.profile.slug }}">
+                                <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                                {{ user.user.first_name }} {{ user.user.last_name }}
+                            </a>
+                        </div>
+                        <div class="new-users-box-date">Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}</div>
+                        <div class="new-users-see-more">
+                            <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="new-users-box-date">
-                    Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}
-                </div>
-                <div class="new-users-see-more">
-                    <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
-                </div>
-                </div>
+               </div>
 
                 {% endfor %}
             </div>
@@ -300,21 +283,17 @@
             <div class="box outbox-events">
             <div class="popular-events-wrapper">
             {% for event in popular_events %}
+
                 <div class="box popular-event-box">
                     <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
                         {{ event.title }}
                     </a>
                     <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
                     <div class="popular-event-box-bottom">
-
-                    <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
-
-                    <a class="see-details" href="/post/{{event.post_id}}">
-                        Pokaż szczegóły
-                    </a>
-
+                        <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
+                        <a class="see-details" href="/post/{{event.post_id}}">Pokaż szczegóły</a>
                     </div>
-             </div>
+                </div>
                 {% endfor %}
 
             </div>
@@ -324,6 +303,7 @@
                 <p class="no-events">Brak wydarzeń</p>
                 {% endif %}
             </div>
+
 
         </div>
         </div>
