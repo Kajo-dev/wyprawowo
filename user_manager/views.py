@@ -16,7 +16,8 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Sum, Count
 from django.utils import timezone
-
+from socials.utils import create_notification
+from django.urls import reverse
 
 def activate(request, uidb64, token):
     error_list = []
@@ -249,8 +250,11 @@ def create_post(request):
                 where=where,
                 price=price
             )
-
-        return redirect('profile_view', slug=request.user.profile.slug)
+        followers = Like.objects.filter(profile=request.user.profile)
+        for follower in followers:
+            print("follower", follower)
+            create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
+        return redirect(reverse('profile_view', kwargs={'slug_profile': request.user.profile.slug}))
 
 def create_post_comment(request, post_id):
     if request.method == 'POST':
@@ -323,6 +327,7 @@ def post_view(request, post_id):
 def like_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     if profile.like(request.user):
+        create_notification(profile.user, f'{request.user.username} liked your profile.')
         return JsonResponse({'status': 'liked'})
     else:
         return JsonResponse({'status': 'already liked'})

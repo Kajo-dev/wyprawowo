@@ -3,7 +3,7 @@ from user_manager.models import Profile, UserResponse
 from user_manager.models import Like, PostLike, SharedPost, Question
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
-from django.utils import timezone
+from django.http import JsonResponse
 
 # def profile_view(request, slug_profile):
 #     profile = get_object_or_404(Profile, slug=slug_profile)
@@ -17,7 +17,6 @@ from django.utils import timezone
 def worth_to_know(request):
     worth_to_know_profiles = Profile.objects.all()
     return render(request, 'socials/worth_to_know.html', {'worth_to_know_profiles':worth_to_know_profiles})
-
 
 
 @login_required
@@ -62,3 +61,9 @@ def profile_view(request, slug_profile):
         'top_profiles': top_profiles,
     }
     return render(request, 'socials/profile_page.html', context)
+
+@login_required
+def get_notifications(request):
+    notifications = request.user.notifications.filter(is_read=False)
+    notifications_list = [{'message': n.message, 'created_at': n.created_at} for n in notifications]
+    return JsonResponse({'notifications': notifications_list})

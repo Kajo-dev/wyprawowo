@@ -37,15 +37,22 @@
 
         <div class="right-nav">
             {% if request.user.is_authenticated %}
-            <button class="btn-notification">
-                <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
-            </button>
+                <div class="notification-wrapper">
+                    <button class="btn-notification">
+                        <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
+                    </button>
+                    <div class="notification-dropdown" style="display: none;">
+                        <ul id="notification-list">
+                            <!-- Notifications will be dynamically inserted here -->
+                        </ul>
+                    </div>
+                </div>
 
-            <a href="/profil/{{request.user.profile.slug}}">
-                <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
-            </a>
+                <a href="/profil/{{ request.user.profile.slug }}">
+                    <img src="{{ request.user.profile.avatar }}/thumb" alt="avatar" class="avatar-profile"/>
+                </a>
             {% else %}
-            <a class="login_link" href="/login">Zaloguj</a>
+                <a class="login_link" href="/login">Zaloguj</a>
             {% endif %}
             <button class="btn-menu">
                 <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon"/>
@@ -97,4 +104,44 @@
         © 2024 TRANSPLANET Radomir Ornowski. Wszystkie prawa zastrzeżone
     </div>
 </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const notificationButton = document.querySelector('.btn-notification');
+    const notificationDropdown = document.querySelector('.notification-dropdown');
+    const notificationList = document.getElementById('notification-list');
+
+    notificationButton.addEventListener('click', function () {
+        if (notificationDropdown.style.display === 'none') {
+            fetchNotifications();
+            notificationDropdown.style.display = 'block';
+        } else {
+            notificationDropdown.style.display = 'none';
+        }
+    });
+
+    function fetchNotifications() {
+        fetch('powiadomienia/', {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            notificationList.innerHTML = '';
+            data.notifications.forEach(notification => {
+                const li = document.createElement('li');
+                li.textContent = `${notification.message} - ${new Date(notification.created_at).toLocaleString()}`;
+                notificationList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error fetching notifications:', error));
+    }
+});
+</script>
+
 </html>
+
+
