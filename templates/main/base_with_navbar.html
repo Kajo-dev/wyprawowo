@@ -53,32 +53,29 @@
                 </a>
             {% else %}
                 <a class="login_link" href="/login">Zaloguj</a>
-
-            {% if request.user_agent.is_mobile %}
-            <a href="/profil/{{request.user.profile.slug}}">
-                <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
-            </a>
-            {% else %}
-            <div class="desktop-menu-container">
-                <button class="btn-avatar-option">
-                    <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
-                </button>
-                <div class="navbar-desktop-menu box">
-                    <button class="btn-close">
-                        <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
-                    </button>
-                    <a href="profil/{{request.user.profile.slug}}"> Twoje konto </a>
-                    <a href="/polityka-prywatnosci"> Polityka prywatności </a>
-                    <a href="/regulamin"> Regulamin </a>
-                    <a href="/logout"> Wyloguj </a>
-
-                </div>
-            </div>
-
             {% endif %}
 
+
+            {% if request.user_agent.is_mobile %}
+                <a href="/profil/{{request.user.profile.slug}}">
+                    <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+                </a>
             {% else %}
-            <a class="login_link" href="/login">Zaloguj</a>
+                <div class="desktop-menu-container">
+                    <button class="btn-avatar-option">
+                        <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+                    </button>
+                    <div class="navbar-desktop-menu box">
+                        <button class="btn-close">
+                            <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
+                        </button>
+                        <a href="profil/{{request.user.profile.slug}}"> Twoje konto </a>
+                        <a href="/polityka-prywatnosci"> Polityka prywatności </a>
+                        <a href="/regulamin"> Regulamin </a>
+                        <a href="/logout"> Wyloguj </a>
+
+                    </div>
+                </div>
             {% endif %}
             <button class="btn-menu">
                 <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon"/>
@@ -164,7 +161,7 @@
     });
 
     function fetchNotifications() {
-        fetch('powiadomienia/', {
+        fetch('profil/powiadomienia/', {
             method: 'GET',
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
