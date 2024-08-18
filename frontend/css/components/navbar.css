@@ -5,6 +5,7 @@
     left: 0;
     width: 100%;
     z-index: 1;
+    padding: 4px 10px;
 }
 
 .logo-wrapper .wyprawowo-logo {
@@ -18,8 +19,22 @@
     padding: 5px;
 }
 
-.navbar {
-    padding: 4px 10px;
+.sticky-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+}
+
+.btn-avatar-option {
+    border-radius: 100%;
+    outline: none;
+    border: 0;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .logo-wrapper {
@@ -54,11 +69,57 @@
     gap: 10px;
 }
 
+.navbar-desktop-menu {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background-color: #cccccc;
+    width: 200px;
+    transform: translateX(-60%);
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 5px 5px;
+}
+
+.navbar-desktop-menu a:hover {
+    background-color: #dcdcdc;
+}
+
+.navbar-desktop-menu a {
+    color: black;
+    text-decoration: none;
+    border-bottom: 1px solid #b7b7b7;
+    padding: 3px 0;
+    transition: background-color 0.2s;
+}
+
+.desktop-menu-container {
+    position: relative;
+}
+
+.navbar-desktop-menu .btn-close {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.navbar-desktop-menu.active {
+    display: flex
+}
+
+.navbar-desktop-menu .btn-close img {
+    width: 100%;
+}
+
 .menu {
     position: fixed;
     top: 0;
     right: 0;
-    background-color: rgba(239, 239, 239, 0.95);
+    background-color: rgb(255, 255, 255);
     width: 75%;
     height: 100%;
     transform: translateX(100%);
@@ -72,6 +133,10 @@
     z-index: 2;
 }
 
+.menu .menu-option {
+
+}
+
 .menu .menu-option, .nav-content > a {
     border: 0;
     border-bottom: 1px solid #676767;
@@ -82,6 +147,7 @@
     display: block;
     text-decoration: none;
     color: #000000;
+    font-size: 14px;
 }
 
 .search-button.desktop {
@@ -95,6 +161,7 @@
     display: block;
     cursor: pointer;
     background-color: transparent;
+    margin-top: 5px;
 }
 
 .menu .btn-close img {
@@ -111,6 +178,20 @@
     flex-direction: column;
     gap: 5px;
     justify-self: flex-end;
+}
+
+.bottom-nav-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 2px;
+    border-bottom: 1px solid #676767;
+}
+
+.bottom-nav-top img {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
 }
 
 .bottom-nav a {
@@ -139,9 +220,117 @@
     justify-content: space-between;
 }
 
+.domain-list {
+    display: none;
+}
+
+.notifications-wrapper {
+    position: relative;
+}
+
+.notifications-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    transform: translateX(-65%);
+    width: 320px;
+    padding: 5px;
+    font-size: 13px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1;
+}
+
+.notifications-container.active {
+    display: flex;
+}
+
+.notification-box i {
+    color: #757575;
+}
+
+.notification-box a {
+    text-decoration: none;
+}
+
+.notification-box, .notification-box a {
+    display: flex;
+    gap: 10px;
+    padding: 10px 5px;
+    border-radius: 5px;
+    color: #000;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+
+.notification-box {
+    padding: 5px;
+    border-bottom: 1px solid #efefef;
+}
+
+.notification-box p {
+    line-height: 135%;
+}
+
+.notification-box.unread a {
+    background-color: var(--indian-red);
+    color: #fff;
+}
+
+.btn-notification.unread::after {
+    content: "";
+    position: absolute;
+    top: -10%;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background-color: #ff0a00;
+    border-radius: 100%;
+}
+
+.btn-notification.unread {
+    animation: ring 1s infinite;
+}
+
+.notification-box img {
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+}
+
 @media (min-width: 768px) {
     .btn-menu {
         display: none;
+    }
+
+    .notifications-container {
+        transform: translateX(-90%);
+    }
+
+    .domain-list {
+        background-color: #D9D9D9;
+        display: block;
+    }
+
+    .domain-list-content {
+        margin: 0 auto;
+        max-width: 1350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0px 20px;
+        flex-wrap: wrap;
+
+    }
+
+    .domain-list .domain-item {
+        font-size: 13px;
+    }
+
+    .domain-list img {
+        height: 30px;
     }
 
     .right-nav, .left-nav {
@@ -161,5 +350,23 @@
 
     .search-button.mobile {
         display: none;
+    }
+}
+
+@keyframes ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(30deg);
+    }
+    50% {
+        transform: rotate(0deg);
+    }
+    75% {
+        transform: rotate(-30deg);
+    }
+    100% {
+        transform: rotate(0deg);
     }
 }

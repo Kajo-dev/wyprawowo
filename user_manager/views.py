@@ -19,6 +19,8 @@ from django.utils import timezone
 from socials.utils import create_notification
 from django.urls import reverse
 
+from django_user_agents.utils import get_user_agent
+
 def activate(request, uidb64, token):
     error_list = []
     User = get_user_model()
@@ -256,6 +258,7 @@ def create_post(request):
             create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
         return redirect(reverse('profile_view', kwargs={'slug_profile': request.user.profile.slug}))
 
+
 def create_post_comment(request, post_id):
     if request.method == 'POST':
         content = request.POST.get('content_comment')
@@ -272,7 +275,12 @@ def create_post_comment(request, post_id):
 
 @login_required
 def home_view(request):
-    posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
+    query_type = request.GET.get('type')
+
+    if query_type=='event':
+        posts = Post.objects.filter(post_type='event').annotate(comment_count=Count('comments')).order_by('-created_at')
+    else:
+        posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
 
     new_users = Profile.objects.all().order_by('-user__created_at')[:5]
 
@@ -286,12 +294,17 @@ def home_view(request):
         posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
 
 
-    popular_events = (
-        EventPost.objects
-        .filter(when__gte=timezone.now())
-        .annotate(total_likes=Count('post__likes'))
-        .order_by('-total_likes')[:4]
-    )
+    if request.user_agent.is_mobile:
+        popular_events = (
+            EventPost.objects
+            .filter(when__gte=timezone.now())
+            .annotate(total_likes=Count('post__likes'))
+            .order_by('-total_likes')[:2]
+        )
+    else:
+        popular_events = (
+            EventPost.objects.filter(when__gte=timezone.now()).annotate(total_likes=Count('post__likes')).order_by('-total_likes')[:4]
+        )
 
     context = {
         'posts': posts_with_likes,
@@ -303,6 +316,8 @@ def home_view(request):
 
 def post_view(request, post_id):
     posts = Post.objects.filter(id=post_id).annotate(comment_count=Count('comments'))
+    if not posts:
+        return redirect('home')
 
     posts_with_likes = []
     for post in posts:
@@ -321,7 +336,6 @@ def post_view(request, post_id):
 
     return render(request, 'user_manager/post_view.html', context)
 
-  
 @login_required
 @require_POST
 def like_profile(request, profile_id):

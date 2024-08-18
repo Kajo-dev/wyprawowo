@@ -5,6 +5,7 @@
 {% block title %} <title>Aktualności - Wyprawowo.pl</title> {%endblock title%}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/components/slider.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/style.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
@@ -39,6 +40,23 @@
                     {{ post.content }}
                 </p>
 
+                <div class="post-assets">
+                    <div class="carousel">
+                        <div class="carousel-images">
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{% static '/img/test.jpg' %} " alt="Image {{ forloop.counter }}" class="post-img">
+                            </div>
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{% static '/img/test.jpg' %} " alt="Image {{ forloop.counter }}" class="post-img">
+                            </div>
+                        </div>
+                        <div class="carousel-controls">
+                            <button class="prev">❮</button>
+                            <button class="next">❯</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="event-character">
                     <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
                     <div class="event-character-box"> {{ post.event.where }}</div>
@@ -70,23 +88,20 @@
                         {% else %}
                         <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
                             {% endif %}
-
-                            {{ like_count }}
+                            <p>{{ like_count }}</p>
                             <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
                         </button>
                 </div>
                 <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+                {% if not is_author %}
+                <a class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
+                {% endif %}
             </div>
 
 
             <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
 
                 {% if request.user.is_authenticated %}
-                <div>
-                    {% if not is_author %}
-                    | <a href="{% url 'share_post' post.id %}">Udostępnij</a>
-                    {% endif %}
-                </div>
 
                 <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
                     {% csrf_token %}
@@ -123,7 +138,6 @@
 <script>
     document.querySelectorAll('.like-post-button').forEach(button => {
         button.addEventListener('click', function () {
-            console.log(this)
             const postId = this.getAttribute('data-post-id');
             const action = this.getAttribute('data-action');
             fetch(`/post/${postId}/${action}/`, {
@@ -132,11 +146,22 @@
                     'X-CSRFToken': '{{ csrf_token }}',
                     'Content-Type': 'application/json'
                 }
+            }).then(response => {
+                const likeCounter =  this.querySelector('p');
+                if(action==='like'){
+                    this.setAttribute('data-action', 'unlike')
+                    likeCounter.textContent =  Number(likeCounter.textContent) + 1;
+                }else{
+                    this.setAttribute('data-action', 'like')
+                    likeCounter.textContent =  Number(likeCounter.textContent) - 1;
+                }
             })
         });
     });
 </script>
 
 <script src="{% static 'js/post_view.js' %}" type="module"></script>
+<script src="{% static 'js/slider.js' %}" type="module"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
 
 {% endblock %}

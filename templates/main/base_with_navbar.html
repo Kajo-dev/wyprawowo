@@ -13,7 +13,6 @@
     <link rel="stylesheet" type="text/css" href="{%static 'css/components/style.css'%}"/>
     <link rel="stylesheet" type="text/css" href="{%static 'css/components/footer.css'%}"/>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/icon.png' %}">
-    <script src="{% static 'js/main.js' %}" type="module"></script>
     <script src="{% static 'js/navigation.js' %}" type="module"></script>
     {% block title %} {% endblock title %}
 </head>
@@ -37,6 +36,7 @@
 
         <div class="right-nav">
             {% if request.user.is_authenticated %}
+
                 <div class="notification-wrapper">
                     <button class="btn-notification">
                         <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
@@ -53,11 +53,49 @@
                 </a>
             {% else %}
                 <a class="login_link" href="/login">Zaloguj</a>
+
+            {% if request.user_agent.is_mobile %}
+            <a href="/profil/{{request.user.profile.slug}}">
+                <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+            </a>
+            {% else %}
+            <div class="desktop-menu-container">
+                <button class="btn-avatar-option">
+                    <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+                </button>
+                <div class="navbar-desktop-menu box">
+                    <button class="btn-close">
+                        <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
+                    </button>
+                    <a href="profil/{{request.user.profile.slug}}"> Twoje konto </a>
+                    <a href="/polityka-prywatnosci"> Polityka prywatności </a>
+                    <a href="/regulamin"> Regulamin </a>
+                    <a href="/logout"> Wyloguj </a>
+
+                </div>
+            </div>
+
+            {% endif %}
+
+            {% else %}
+            <a class="login_link" href="/login">Zaloguj</a>
             {% endif %}
             <button class="btn-menu">
                 <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon"/>
             </button>
         </div>
+    </div>
+</div>
+<div class="domain-list">
+    <div class="domain-list-content">
+        <div class="domain-item">WYPRAWOWO.PL</div>
+        <div class="domain-item">WYPRAWOWO.EU</div>
+        <div class="domain-item">WYPRAWOWO.COM</div>
+        <div class="domain-item">WYPRAWOWO.NET</div>
+        <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
+        <div class="domain-item">WYPRAWOWO.FUN</div>
+        <div class="domain-item">WYPRAWOWO.CAMP</div>
+        <div class="domain-item">WYPRAWOWO.TRAVEL</div>
     </div>
 
 </div>
@@ -73,7 +111,12 @@
         </div>
 
         <div class="bottom-nav">
-            <a href="{% url 'logout_page' %}" class="btn-logout">Wyloguj</a>
+            {% if request.user.is_authenticated %}
+            <div class="bottom-nav-top">
+                <img src="{{request.user.profile.avatar}}/thumb"/>
+                <a href="{% url 'logout_page' %}" class="btn-logout">Wyloguj</a>
+            </div>
+            {% endif %}
             <a href="polityka-prywatnosci">Polityka prywatności </a>
             <a href="regulamin">regulamin</a>
         </div>
