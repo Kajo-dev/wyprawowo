@@ -19,6 +19,8 @@ from django.db.models import Sum, Count
 from django.utils import timezone
 from socials.utils import create_notification
 from django.urls import reverse
+from django.db.models import Q
+
 
 from django_user_agents.utils import get_user_agent
 
@@ -408,3 +410,27 @@ def share_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     SharedPost.objects.get_or_create(user=request.user, original_post=post)
     return redirect('profile_view', slug=request.user.profile.slug)
+
+
+def search(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(
+            Q(content__icontains=query) | Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query))
+        users = User.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
+    else:
+        posts = Post.objects.none()
+        users = User.objects.none()
+
+    print(posts, 'posts')
+    events = posts.filter(post_type='event')
+    texts = posts.filter(post_type='text')
+    print(events)
+    print(texts)
+    context = {
+        'posts_events': events,
+        'posts_texts': texts,
+        'users': users,
+        'query': query,
+    }
+    return render(request, 'user_manager/search_results.html', context)

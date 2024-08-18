@@ -25,13 +25,20 @@
                     <img src="{% static 'img/wyprawowo-black.svg' %}" alt="wyprawowo logo"/>
                 </a>
             </div>
-            <button class="search-button mobile">
-                <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon"/>
-            </button>
-            <button class="search-button desktop">
-                <img src="{% static 'img/search-icon.svg' %}" alt="search-icon"/>
-                Szukaj
-            </button>
+            <form method="GET" action="{% url 'search' %}" class="search-form">
+                <input type="text" name="q" placeholder="Szukaj..." required>
+                <button type="submit">
+                    <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon"/>
+                    Szukaj
+                </button>
+            </form>
+{#            <button class="search-button mobile">#}
+{##}
+{#            </button>#}
+{#            <button class="search-button desktop">#}
+{#                <img src="{% static 'img/search-icon.svg' %}" alt="search-icon"/>#}
+{#                Szukaj#}
+{#            </button>#}
         </div>
 
         <div class="right-nav">
