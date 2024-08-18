@@ -193,3 +193,16 @@ class SharedPost(models.Model):
     def __str__(self):
         return f"{self.user.first_name} shared {self.original_post.content[:20]}"
 
+
+class PostAttachment(models.Model):
+    Attachment_TYPE_CHOICES = [
+        ('photo', 'photo'),
+        ('video', 'video'),
+        ('file', 'file'),
+    ]
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='attachments')
+    type = models.CharField(choices=Attachment_TYPE_CHOICES, max_length=6)
+    attachment_url = models.URLField()
+
+    def __str__(self):
+        return self.attachment_url

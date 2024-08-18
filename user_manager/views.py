@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment
+from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment, \
+    PostAttachment
 from django.contrib.auth.decorators import login_required
 import requests
 import json
@@ -189,6 +190,21 @@ def upload_photo_to_cloudflare(image):
             result = result[:result.rfind('/')]
             return result
 
+def upload_video_to_cloudflare(video):
+    account_id = settings.ACCOUNT_ID
+    url = f'https://api.cloudflare.com/client/v4/accounts/{account_id}/stream'
+    headers = {
+        'Authorization': f'Bearer {settings.API_KEY}',
+    }
+    if video:
+        files = {'file': video}
+        response = requests.post(url.format(ACCOUNT_ID=account_id), headers=headers, files=files)
+        print(response.text, 'response')
+        if response.status_code == 200:
+            result = json.loads(response.text)
+            print(result, 'result')
+            return result
+    return None
 
 @login_required(login_url=login_page)
 def update_profile(request):
@@ -243,6 +259,27 @@ def create_post(request):
             hashtags=hashtags
         )
 
+        attachments = request.FILES.getlist('photos')
+        for attachment in attachments:
+            attachment_url = upload_photo_to_cloudflare(attachment)
+            if attachment_url:
+                PostAttachment.objects.create(
+                    post=post,
+                    type="photo",
+                    attachment_url=attachment_url
+                )
+
+        video = request.FILES.getlist('video')
+        if video:
+            print(video, 'video jest ale trzeba karte podlonczyc')
+            # attachment_url = upload_video_to_cloudflare(video[0])
+            # if attachment_url:
+            #     PostAttachment.objects.create(
+            #         post=post,
+            #         type="video",
+            #         attachment_url=attachment_url
+            #     )
+
         if post_type == 'event':
             EventPost.objects.create(
                 post=post,
@@ -254,7 +291,6 @@ def create_post(request):
             )
         followers = Like.objects.filter(profile=request.user.profile)
         for follower in followers:
-            print("follower", follower)
             create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
         return redirect(reverse('profile_view', kwargs={'slug_profile': request.user.profile.slug}))
 
