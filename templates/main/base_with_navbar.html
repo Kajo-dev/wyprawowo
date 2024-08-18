@@ -47,6 +47,7 @@
             {% else %}
                 <a class="login_link" href="/login">Zaloguj</a>
             {% endif %}
+
             {% if request.user_agent.is_mobile %}
                 <a href="/profil/{{request.user.profile.slug}}">
                     <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
