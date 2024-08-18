@@ -1,0 +1,45 @@
+<!-- File: templates/user_manager/search_results.html -->
+{% extends 'main/base_with_navbar.html' %}
+
+{% block content %}
+    <h1>Wyniki wyszukiwania dla "{{ query }}"</h1>
+
+    <h2>Posty Event</h2>
+    {% if posts_events %}
+        <ul>
+            {% for post in posts_events %}
+                <li>
+                    <a href="{% url 'post' post.id %}">{{ post.content }} {{ post.user.first_name }} {{ post.user.last_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak postów pasujących do frazy "{{ query }}"</p>
+    {% endif %}
+
+    <h2>Posty text</h2>
+    {% if posts_texts %}
+        <ul>
+            {% for post in posts_texts %}
+                <li>
+                    <a href="{% url 'post' post.id %}">{{ post.content }} {{ post.user.first_name }} {{ post.user.last_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak postów pasujących do frazy "{{ query }}"</p>
+    {% endif %}
+
+    <h2>Użytkownicy</h2>
+    {% if users %}
+        <ul>
+            {% for user in users %}
+                <li>
+                <a href="/profil/{{user.profile.slug}}">{{ user.first_name }} {{ user.last_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Brak użytkowników pasujących do frazy "{{ query }}"</p>
+    {% endif %}
+{% endblock %}

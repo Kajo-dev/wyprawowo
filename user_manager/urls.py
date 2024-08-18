@@ -19,6 +19,6 @@ urlpatterns = [
         path('post/create/', user_manager_views.create_post, name='create_post'),
         path('post/create/comment/<int:post_id>/', user_manager_views.create_post_comment, name='create_post_comment'),
         path('', user_manager_views.home_view, name='home'),
-        path('post/<int:post_id>/', user_manager_views.post_view, name='home'),
-
+        path('post/<int:post_id>/', user_manager_views.post_view, name='post'),
+        path('search/', user_manager_views.search, name='search'),
     ]
