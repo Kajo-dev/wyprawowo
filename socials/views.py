@@ -68,5 +68,5 @@ def profile_view(request, slug_profile):
 @login_required
 def get_notifications(request):
     notifications = request.user.notifications.filter(is_read=False)
-    notifications_list = [{'message': n.message, 'created_at': n.created_at} for n in notifications]
-    return JsonResponse({'notifications': notifications_list})
+    context = {'notifications': notifications}
+    return render(request, 'socials/notifications.html', context)

@@ -1,0 +1,14 @@
+{% if notifications %}
+    {% for notification in notifications %}
+        <div class="notification-box">
+            <a href="{{ notification.link }}">
+                <img src="{{ notification.user.profile.avatar }}/thumb" alt="profile avatar">
+                <p><strong>{{ notification.user.first_name }} {{ notification.user.last_name }}</strong> {{ notification.message }}</p>
+            </a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="notification-box">
+        <p><strong>Brak Powiadomień</strong></p>
+    </div>
+{% endif %}
