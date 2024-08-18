@@ -16,8 +16,10 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Sum, Count
 from django.utils import timezone
-from django_user_agents.utils import get_user_agent
+from socials.utils import create_notification
+from django.urls import reverse
 
+from django_user_agents.utils import get_user_agent
 
 def activate(request, uidb64, token):
     error_list = []
@@ -223,51 +225,6 @@ def logout_page(request):
 def ini_payment(request):
     return render(request, 'user_manager/ini_payment_process.html', {})
 
-
-@login_required
-def profile_view(request, slug):
-    user_profile = get_object_or_404(Profile, slug=slug)
-    user_posts = user_profile.user.posts.all()
-    shared_posts = SharedPost.objects.filter(user=user_profile.user)
-
-    is_liked_by_user = Like.objects.filter(user=request.user, profile=user_profile).exists()
-
-    posts_with_likes = []
-    for post in user_posts:
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
-        like_count = post.likes.count()
-        is_author = post.user == request.user
-        is_shared = False
-        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
-
-    for shared_post in shared_posts:
-        original_post = shared_post.original_post
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=original_post).exists()
-        like_count = original_post.likes.count()
-        is_author = original_post.user == request.user
-        is_shared = True
-        post = original_post
-        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
-
-    profile_questions = Question.objects.filter(is_profile=True)
-    user_responses = UserResponse.objects.filter(user=user_profile.user, question__in=profile_questions)
-
-    top_profiles = (
-        Profile.objects
-        .annotate(total_likes=Count('user__posts__likes'))
-        .order_by('-total_likes')[:5]
-    )
-
-    context = {
-        'profile': user_profile,
-        'posts_with_likes': posts_with_likes,
-        'is_liked_by_user': is_liked_by_user,
-        'user_responses': user_responses,
-        'top_profiles': top_profiles,
-    }
-    return render(request, 'user_manager/profile.html', context)
-
-
 def create_post(request):
     if request.method == 'POST':
         post_type = request.POST.get('post_type')
@@ -295,8 +252,12 @@ def create_post(request):
                 where=where,
                 price=price
             )
+        followers = Like.objects.filter(profile=request.user.profile)
+        for follower in followers:
+            print("follower", follower)
+            create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
+        return redirect(reverse('profile_view', kwargs={'slug_profile': request.user.profile.slug}))
 
-        return redirect('/')
 
 def create_post_comment(request, post_id):
     if request.method == 'POST':
@@ -380,6 +341,7 @@ def post_view(request, post_id):
 def like_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     if profile.like(request.user):
+        create_notification(profile.user, f'{request.user.username} liked your profile.')
         return JsonResponse({'status': 'liked'})
     else:
         return JsonResponse({'status': 'already liked'})

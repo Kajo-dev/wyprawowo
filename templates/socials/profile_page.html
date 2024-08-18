@@ -36,6 +36,7 @@
                     </p>
                     <div class="profile-bottom-panel">
                         <div class="characteristics-container">
+
                             {% for response in user_responses|slice:":3" %}
                             <p class="characteristics-box" title="{{response.question.text}}">{{ response.answer.text }}</p>
                             {% endfor %}
@@ -53,6 +54,7 @@
                                 {% endfor %}
                             </div>
                         </div>
+
                         {% if request.user != profile.user %}
                             <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}">
                                 {% if is_liked_by_user %}
@@ -75,6 +77,7 @@
             {% if not posts_with_likes %}
                 <p class="no-posts"> Brak wpisów użytkownika </p>
             {% else %}
+
             <div class="post-list profile-post-list">
                 {% for post, is_post_liked_by_user, like_count, is_author, is_shared in posts_with_likes %}
                 <div class="post box">
