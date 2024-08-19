@@ -72,7 +72,8 @@
                         <textarea class="post-content" name="content"  id="content" placeholder="Zainspiruj nas"></textarea>
                     </div>
 
-                    <div>
+                    <div class="assets-btn">
+
                         <label class="photo-input-label">
                             Dodaj zdjęcie
                             <img src="{% static '/img/photo-icon.svg' %}"/>
@@ -81,11 +82,14 @@
 
                          <label class="photo-input-label">
                             Dodaj film
-                             <img src="{% static '/img/photo-icon.svg' %}"/>
+                             <img src="{% static '/img/video-icon.svg' %}"/>
                             <input type="file" name="video" class="photo_input" accept="video/*"/>
                          </label>
 
+                    </div>
 
+
+                    <div>
                         <!-- if user choose an image replace image element below by it -->
 {#                        <img src="{% static '/img/test.jpg' %}" class="choose-image" alt="choosed image"/>#}
                     </div>

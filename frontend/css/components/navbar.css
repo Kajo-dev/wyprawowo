@@ -300,6 +300,64 @@
     border-radius: 100%;
 }
 
+.search-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2px);
+    display: none;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.search-layer.active {
+    display: flex;
+}
+
+.search-layer form {
+    margin-top: 10%;
+    display: flex;
+    height: 50px;
+    max-width: 400px;
+    width: 90%;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+
+.search-layer form input {
+    border: 0;
+    flex-grow: 1;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.search-layer img {
+    width: 20px;
+}
+
+.search-layer form button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+    border: 0;
+    background-color: var(--indian-red);
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.2s;
+}
+
+.search-layer form button:hover {
+    background-color: var(--my-red)
+}
+
 @media (min-width: 768px) {
     .btn-menu {
         display: none;
