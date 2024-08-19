@@ -82,7 +82,11 @@
 
 .my-grid-container-right-panel-wrapper {
     position: sticky;
-    top: 100px;
+    top: 50px;
+}
+
+.worth_to_know_container .my-grid-container-right-panel-wrapper {
+    position: static;
 }
 
 .user-box {

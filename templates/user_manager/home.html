@@ -158,14 +158,21 @@
                     {% endif %}
 
                     <div class="post-assets">
+                        {% with attachments=post.attachments.all %}
+                        {% if attachments|length > 1 %}
                         <div class="carousel">
                             <div class="carousel-images">
-                                {% for attachment in post.attachments.all %}
+                                {% for attachment in attachments %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     {% if attachment.type == 'photo' %}
-                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                            <img src="{{attachment.attachment_url}}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
-                                        </div>
+                                    <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
+                                    {% elif attachment.type == 'video' %}
+                                    <video controls class="post-video">
+                                        <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
                                     {% endif %}
+                                </div>
                                 {% endfor %}
                             </div>
                             <div class="carousel-controls">
@@ -173,6 +180,22 @@
                                 <button class="next">❯</button>
                             </div>
                         </div>
+                        {% elif attachments|length == 1 %}
+                        {% with attachment=attachments.0 %}
+                        <div class="carousel-item ">
+                            {% if attachment.type == 'photo' %}
+                            <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
+                            {% elif attachment.type == 'video' %}
+                            <video controls class="post-video">
+                                <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                        {% endif %}
+                        {% endwith %}
+
                     </div>
 
                     <div class="event-character">
@@ -196,14 +219,21 @@
                     {% endif %}
 
                     <div class="post-assets">
+                        {% with attachments=post.attachments.all %}
+                        {% if attachments|length > 1 %}
                         <div class="carousel">
                             <div class="carousel-images">
-                                {% for attachment in post.attachments.all %}
+                                {% for attachment in attachments %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     {% if attachment.type == 'photo' %}
-                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                            <img src="{{ attachment.attachment_url}}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
-                                        </div>
+                                    <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
+                                    {% elif attachment.type == 'video' %}
+                                    <video controls class="post-video">
+                                        <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
                                     {% endif %}
+                                </div>
                                 {% endfor %}
                             </div>
                             <div class="carousel-controls">
@@ -211,6 +241,22 @@
                                 <button class="next">❯</button>
                             </div>
                         </div>
+                        {% elif attachments|length == 1 %}
+                        {% with attachment=attachments.0 %}
+                        <div class="carousel-item ">
+                            {% if attachment.type == 'photo' %}
+                            <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
+                            {% elif attachment.type == 'video' %}
+                            <video controls class="post-video">
+                                <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                        {% endif %}
+                        {% endwith %}
+
                     </div>
 
                 </div>
@@ -385,6 +431,6 @@
 
 <script src="{% static 'js/activity_panel.js' %}" type="module"></script>
 <script src="{% static 'js/slider.js' %}" type="module"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+
 
 {% endblock %}
