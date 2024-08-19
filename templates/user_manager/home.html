@@ -400,6 +400,7 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => {
+                console.log('tutaj')
                 const likeCounter =  this.querySelector('p');
                 if(action==='like'){
                     this.setAttribute('data-action', 'unlike')
