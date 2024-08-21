@@ -9,24 +9,29 @@ const closeModal = () => {
     container.removeEventListener('click', closeModal);
 }
 
-[...showCharacteristicsModalTriggers, seeMoreCharacteristicsBtn].forEach((trigger) => {
 
-    trigger.addEventListener('click', (event) => {
-        event.stopPropagation();
-        characteristicsModal.classList.toggle('active');
-        setTimeout(() => {
-            container.addEventListener('click', closeModal)
-        }, 0)
+const triggersShowCharacteristicsModal = [...showCharacteristicsModalTriggers, seeMoreCharacteristicsBtn]
+
+if (triggersShowCharacteristicsModal.length > 0 && triggersShowCharacteristicsModal[0] !== null) {
+    [...showCharacteristicsModalTriggers, seeMoreCharacteristicsBtn]?.forEach((trigger) => {
+
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            characteristicsModal.classList.toggle('active');
+            setTimeout(() => {
+                container.addEventListener('click', closeModal)
+            }, 0)
+        });
+
     });
 
-});
+    closeCharacterModal.addEventListener('click', (event) => {
+        event.stopPropagation();
+        characteristicsModal.classList.remove('active');
+        container.removeEventListener('click', closeModal);
+    });
 
-closeCharacterModal.addEventListener('click', (event) => {
-    event.stopPropagation();
-    characteristicsModal.classList.remove('active');
-    container.removeEventListener('click', closeModal);
-});
-
-characteristicsModal.addEventListener('click', (event) => {
-    event.stopPropagation();
-});
+    characteristicsModal.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+}

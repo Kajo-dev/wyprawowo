@@ -18,7 +18,7 @@ const openMenu = (openBtnSelector, menuSelector, closeBtnSelector) => {
     if (openButton && navigation && closeButton) {
         openButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            navigation.classList.add('active');
+            navigation.classList.toggle('active');
             container.addEventListener('click', () => closeMenu(menuSelector));
         });
 
@@ -55,7 +55,6 @@ notificationsContainer?.addEventListener('click', (event) => {
     event.stopPropagation();
 });
 
-// Search Modal handling
 const openSearchBtns = document.querySelectorAll('.search-button');
 const searchModal = document.querySelector('.search-layer');
 const searchForm = document.querySelector('.search-layer form');
