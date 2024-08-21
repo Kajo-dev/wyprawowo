@@ -83,10 +83,17 @@
                          <label class="photo-input-label">
                             Dodaj film
                              <img src="{% static '/img/video-icon.svg' %}"/>
-                            <input type="file" name="video" class="photo_input" accept="video/*"/>
+                            <input type="file" name="video" class="photo_input video-input" accept="video/*"/>
                          </label>
 
                     </div>
+
+                        <div class="assets-block">
+
+                            <div class="images-block"> </div>
+                            <div class="videos-block"> </div>
+
+                        </div>
 
 
                     <div>
@@ -400,7 +407,6 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => {
-                console.log('tutaj')
                 const likeCounter =  this.querySelector('p');
                 if(action==='like'){
                     this.setAttribute('data-action', 'unlike')

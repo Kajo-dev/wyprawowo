@@ -666,9 +666,39 @@ button.avatars-counter:hover {
     gap: 20px;
 }
 
+.assets-block {
+    display: flex;
+    gap: 5px;
+    margin: 5px 0;
+}
+
+.images-block, .videos-block {
+    display: flex;
+    gap: 5px;
+}
+
+.images-block img, .videos-block video {
+    height: 40px
+}
+
+.images-block img.open, .videos-block video.open {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: auto;
+    width: 90%;
+    transform: translate(-50%, -50%);
+}
+
 @media (min-width: 768px) {
     .popular-events.mobile {
         display: none;
+    }
+
+    .images-block img.open, .videos-block video.open {
+        max-height: 80%;
+        width: 80%;
+        object-fit: contain;
     }
 
     .create-post-wrapper {
