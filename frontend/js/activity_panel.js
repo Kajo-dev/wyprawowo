@@ -6,6 +6,9 @@ const assetsField = document.querySelector('.photo_input');
 const videosField = document.querySelector('.video-input');
 const imagesBlock = document.querySelector('.images-block');
 const videoBlock = document.querySelector('.videos-block');
+const moreDaysCheckbox = document.querySelector('#longer_then_one_day');
+const moreDaysLabel = document.querySelector('.end_date_label');
+const moreDaysInput = document.querySelector('#date_end');
 
 function toggleModal(open) {
     if (open) {
@@ -100,3 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     initializeEventListeners();
 });
+
+moreDaysCheckbox.addEventListener('click', () => {
+    moreDaysLabel.classList.toggle('active')
+    moreDaysInput.classList.toggle('active')
+})

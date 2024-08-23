@@ -26,9 +26,9 @@
 
                 <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
 
-                <button class="see-details">
+                <a class="see-details" href="/post/{{event.post_id}}">
                     Otwórz
-                </button>
+                </a>
 
             </div>
         </div>
@@ -115,9 +115,21 @@
                         <label for="title">Tytuł:</label>
                         <input type="text" name="title" id="title">
                         <label for="event_type">Typ wydarzenia:</label>
-                        <input type="text" name="event_type" id="event_type">
+                        <select name="event_type" id="event_type">
+                            {% for event_type in event_types %}
+                            <option value="{{ event_type.text }}">{{ event_type.text }}</option>
+                            {% endfor %}
+                        </select>
                         <label for="when">Kiedy:</label>
                         <input type="datetime-local" name="when" id="when">
+                        <label for="longer_then_one_day">
+                            Wydarzenie trwa dłużej niż jeden dzień?
+                            <input type="checkbox" name="longer_then_one_day" id="longer_then_one_day"/>
+                        </label>
+                        <label for="date_end" class="end_date_label">Data końcowa:</label>
+                        <input type="datetime-local" name="date_end" id="date_end">
+                        <label for="number_of_people">Liczba osób:</label>
+                        <input type="number" name="number_of_people" id="number_of_people">
                         <label for="where">Gdzie:</label>
                         <input type="text" name="where" id="where">
                         <label for="price">Cena (zł):</label>
@@ -206,9 +218,17 @@
                     </div>
 
                     <div class="event-character">
-                        <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
+                        <div class="event-character-box">
+                            {{ post.event.when|date:"d.m.Y" }}
+                            {% if post.event.date_end %}
+                            - {{ post.event.date_end|date:"d.m.Y" }}
+                            {% endif %}
+                        </div>
                         <div class="event-character-box"> {{ post.event.where }}</div>
                         <div class="event-character-box">{{ post.event.price }} zł</div>
+                        {% if post.event.number_of_people %}
+                            <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -374,7 +394,7 @@
                     <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
 
                     <a class="see-details" href="/post/{{event.post_id}}">
-                        Pokaż szczegóły
+                        Otwórz
                     </a>
 
                     </div>

@@ -156,9 +156,17 @@
 
 
                         <div class="event-character">
-                            <div class="event-character-box">{{ post.event.when|date:"d.m.Y" }}</div>
+                            <div class="event-character-box">
+                                {{ post.event.when|date:"d.m.Y" }}
+                                {% if post.event.date_end %}
+                                - {{ post.event.date_end|date:"d.m.Y" }}
+                                {% endif %}
+                            </div>
                             <div class="event-character-box"> {{ post.event.where }}</div>
                             <div class="event-character-box">{{ post.event.price }} zł</div>
+                            {% if post.event.number_of_people %}
+                                <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
+                            {% endif %}
                         </div>
                     </div>
 
