@@ -154,8 +154,17 @@ class Post(models.Model):
         return self.content if self.post_type == 'text' else f"{self.event.title}"
 
 
+
+class EventPostType(models.Model):
+    text = models.CharField(default='Nieznany', max_length=255)
+
+    def __str__(self):
+        return self.text
+
+
 class EventPost(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='event')
+    event_type = models.ForeignKey(EventPostType, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
     event_type = models.CharField(max_length=255)
     when = models.DateTimeField(default=timezone.now)
@@ -163,6 +172,9 @@ class EventPost(models.Model):
     where = models.CharField(max_length=255)
     number_of_people = models.IntegerField(blank=True, null=True)
     price = models.DecimalField(max_digits=20, decimal_places=2)
+
+    def __str__(self):
+        return self.title
 
 
 class Comment(models.Model):

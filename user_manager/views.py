@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment, \
-    PostAttachment
+from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment, PostAttachment, EventPostType
 from django.contrib.auth.decorators import login_required
 import requests
 import json
@@ -255,6 +254,7 @@ def create_post(request):
         price = request.POST.get('price')
         number_of_people = request.POST.get('number_of_people')
 
+
         post = Post.objects.create(
             user=request.user,
             post_type=post_type,
@@ -316,6 +316,7 @@ def create_post_comment(request, post_id):
 @login_required
 def home_view(request):
     query_type = request.GET.get('type')
+    event_post_types = EventPostType.objects.all()
 
     if query_type=='event':
         posts = Post.objects.filter(post_type='event').annotate(comment_count=Count('comments')).order_by('-created_at')
@@ -350,6 +351,7 @@ def home_view(request):
         'posts': posts_with_likes,
         'new_users': new_users,
         'popular_events': popular_events,
+        'event_types': event_post_types,
     }
     return render(request, 'user_manager/home.html', context)
 

@@ -115,7 +115,11 @@
                         <label for="title">Tytuł:</label>
                         <input type="text" name="title" id="title">
                         <label for="event_type">Typ wydarzenia:</label>
-                        <input type="text" name="event_type" id="event_type">
+                        <select name="event_type" id="event_type">
+                            {% for event_type in event_types %}
+                            <option value="{{ event_type.text }}">{{ event_type.text }}</option>
+                            {% endfor %}
+                        </select>
                         <label for="when">Kiedy:</label>
                         <input type="datetime-local" name="when" id="when">
                         <label for="longer_then_one_day">

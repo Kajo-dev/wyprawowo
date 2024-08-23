@@ -198,11 +198,16 @@ select:focus, textarea:focus {
     max-height: 300px;
 }
 
+#event-fields select {
+    border: 0;
+    padding: 4px 5px;
+}
+
 #hashtags:focus {
     border-bottom: 1px solid var(--indian-red);
 }
 
-#event-fields input {
+#event-fields input, #event-fields select {
     width: 100%;
     border-bottom: 1px solid rgba(153, 153, 153, 0.6);
 
