@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
 
         return self._create_user(email, password, first_name, last_name,  **extra_fields)
 
-      
+
     def create_superuser(self, email, password, first_name, last_name, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
@@ -159,7 +159,9 @@ class EventPost(models.Model):
     title = models.CharField(max_length=255)
     event_type = models.CharField(max_length=255)
     when = models.DateTimeField(default=timezone.now)
+    date_end = models.DateTimeField(blank=True, null=True)
     where = models.CharField(max_length=255)
+    number_of_people = models.IntegerField(blank=True, null=True)
     price = models.DecimalField(max_digits=20, decimal_places=2)
 
 

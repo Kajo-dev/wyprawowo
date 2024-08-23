@@ -427,6 +427,7 @@ select:focus, textarea:focus {
 .event-character {
     background-color: #D9D9D9;
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     margin-top: 10px;
     padding: 5px;
@@ -689,6 +690,28 @@ button.avatars-counter:hover {
     width: 90%;
     transform: translate(-50%, -50%);
 }
+
+label[for='longer_then_one_day'] {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 15px;
+    font-size: 13px;
+}
+
+label[for='longer_then_one_day'] input {
+    width: auto !important;
+}
+
+label[for='date_end'], #date_end {
+    display: none
+}
+
+label[for='date_end'].active, #date_end.active {
+    display: block
+}
+
 
 @media (min-width: 768px) {
     .popular-events.mobile {

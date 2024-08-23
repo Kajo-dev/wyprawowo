@@ -253,6 +253,7 @@ def create_post(request):
         when = request.POST.get('when')
         where = request.POST.get('where')
         price = request.POST.get('price')
+        number_of_people = request.POST.get('number_of_people')
 
         post = Post.objects.create(
             user=request.user,
@@ -289,7 +290,8 @@ def create_post(request):
                 event_type=event_type,
                 when=when,
                 where=where,
-                price=price
+                price=price,
+                number_of_people=number_of_people,
             )
         followers = Like.objects.filter(profile=request.user.profile)
         for follower in followers:
