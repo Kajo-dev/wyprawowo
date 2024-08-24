@@ -80,6 +80,7 @@
                             <input type="file" name="photos" class="photo_input" accept="image/*" multiple/>
                         </label>
 
+
                          <label class="photo-input-label">
                             Dodaj film
                              <img src="{% static '/img/video-icon.svg' %}"/>
@@ -97,6 +98,7 @@
 
 
                     <div>
+
                         <!-- if user choose an image replace image element below by it -->
 {#                        <img src="{% static '/img/test.jpg' %}" class="choose-image" alt="choosed image"/>#}
                     </div>
@@ -181,6 +183,7 @@
                         {% if attachments|length > 1 %}
                         <div class="carousel">
                             <div class="carousel-images">
+
                                 {% for attachment in attachments %}
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     {% if attachment.type == 'photo' %}
@@ -192,6 +195,7 @@
                                     </video>
                                     {% endif %}
                                 </div>
+
                                 {% endfor %}
                             </div>
                             <div class="carousel-controls">
@@ -224,6 +228,7 @@
                             - {{ post.event.date_end|date:"d.m.Y" }}
                             {% endif %}
                         </div>
+
                         <div class="event-character-box"> {{ post.event.where }}</div>
                         <div class="event-character-box">{{ post.event.price }} zł</div>
                         {% if post.event.number_of_people %}
@@ -261,6 +266,7 @@
                                     </video>
                                     {% endif %}
                                 </div>
+
                                 {% endfor %}
                             </div>
                             <div class="carousel-controls">
@@ -283,6 +289,7 @@
                         {% endwith %}
                         {% endif %}
                         {% endwith %}
+
 
                     </div>
 
@@ -394,7 +401,9 @@
                     <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
 
                     <a class="see-details" href="/post/{{event.post_id}}">
+
                         Otwórz
+
                     </a>
 
                     </div>
