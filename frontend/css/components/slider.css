@@ -6,26 +6,24 @@
     border-radius: 5px;
 }
 
-/* Images inside the carousel */
 .carousel-images {
     display: flex;
     transition: transform 0.5s ease-in-out;
 }
 
-/* Individual carousel item */
 .carousel-item {
     min-width: 100%;
     box-sizing: border-box;
+    background-color: #dedede;
+    border-radius: 5px;
 }
 
-/* Hide all images by default */
 .carousel-item img {
     display: block;
     width: 100%;
     height: auto;
 }
 
-/* Carousel controls */
 .carousel-controls {
     position: absolute;
     top: 50%;

@@ -1,66 +1,71 @@
 const container = document.querySelector('body');
 
-const closeMenu = () => {
-    const navigation = window.innerWidth < 768
-        ? document.querySelector('.menu')
-        : document.querySelector('.navbar-desktop-menu');
-    navigation.classList.remove('active');
-    container.removeEventListener('click', closeMenu);
+// Function to close a menu/modal
+const closeMenu = (selector) => {
+    const navigation = document.querySelector(selector);
+    if (navigation) {
+        navigation.classList.remove('active');
+    }
+    container.removeEventListener('click', () => closeMenu(selector));
 };
 
+// Function to open a menu/modal
+const openMenu = (openBtnSelector, menuSelector, closeBtnSelector) => {
+    const openButton = document.querySelector(openBtnSelector);
+    const navigation = document.querySelector(menuSelector);
+    const closeButton = document.querySelector(closeBtnSelector);
+
+    if (openButton && navigation && closeButton) {
+        openButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            navigation.classList.toggle('active');
+            container.addEventListener('click', () => closeMenu(menuSelector));
+        });
+
+        closeButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            closeMenu(menuSelector);
+        });
+    }
+};
+
+// Mobile or Desktop specific menu handling
 if (window.innerWidth < 768) {
-    const openButton = document.querySelector('.btn-menu');
-    const navigation = document.querySelector('.menu');
-    const closeButton = document.querySelector('.btn-close');
-
-    openButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        navigation.classList.add('active');
-        container.addEventListener('click', closeMenu);
-    });
-
-    closeButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        navigation.classList.remove('active');
-        container.removeEventListener('click', closeMenu);
-    });
+    openMenu('.btn-menu', '.menu', '.btn-close');
 } else {
-    const profileAvatar = document.querySelector('.btn-avatar-option');
-    const closeButtonDesktop = document.querySelector('.btn-close');
-    const navigation = document.querySelector('.navbar-desktop-menu');
+    openMenu('.btn-avatar-option', '.navbar-desktop-menu', '.btn-close');
 
-    profileAvatar.addEventListener('click', (event) => {
+    const desktopMenu = document.querySelector('.navbar-desktop-menu');
+    desktopMenu?.addEventListener('click', (event) => {
         event.stopPropagation();
-        navigation.classList.toggle('active');
-        container.addEventListener('click', closeMenu);
-    });
-
-    closeButtonDesktop.addEventListener('click', (event) => {
-        event.stopPropagation();
-        navigation.classList.remove('active');
-        container.removeEventListener('click', closeMenu);
     });
 }
 
+// Notifications handling
 const openNotificationsBtn = document.querySelector('.btn-notification');
 const notificationsContainer = document.querySelector('.notifications-container');
 
-openNotificationsBtn.addEventListener('click', (event) => {
+openNotificationsBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
     notificationsContainer.classList.toggle('active');
-    container.addEventListener('click', () => {
-        notificationsContainer.classList.remove('active');
-        container.removeEventListener('click', closeMenu);
-    });
+    container.addEventListener('click', () => closeMenu('.notifications-container'));
 });
 
-notificationsContainer.addEventListener('click', (event) => {
+notificationsContainer?.addEventListener('click', (event) => {
     event.stopPropagation();
 });
 
-if (window.innerWidth >= 768) {
-    const desktopMenu = document.querySelector('.navbar-desktop-menu');
-    desktopMenu.addEventListener('click', (event) => {
+const openSearchBtns = document.querySelectorAll('.search-button');
+const searchModal = document.querySelector('.search-layer');
+const searchForm = document.querySelector('.search-layer form');
+
+openSearchBtns.forEach((btn) => {
+    btn.addEventListener('click', (event) => {
         event.stopPropagation();
+        searchModal.classList.add('active');
+        container.addEventListener('click', () => closeMenu('.search-layer'));
     });
-}
+});
+searchForm?.addEventListener('click', (event) => {
+    event.stopPropagation();
+});

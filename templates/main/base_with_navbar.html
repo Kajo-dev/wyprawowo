@@ -17,6 +17,17 @@
     {% block title %} {% endblock title %}
 </head>
 <body>
+<div class="search-layer">
+    <form method="GET" action="{% url 'search' %}" class="search-form">
+        <input type="text" name="q" placeholder="Wpisz coś..." required>
+        <button type="submit">
+            <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon"/>
+            Szukaj
+        </button>
+    </form>
+</div>
+
+
 <div class="navbar mobile">
     <div class="navbar-content">
         <div class="left-nav">
@@ -43,37 +54,40 @@
 
         <div class="right-nav">
             {% if request.user.is_authenticated %}
-                <div class="notifications-wrapper">
-                    <button class="btn-notification">
-                        <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
-                    </button>
-                    <div class="notifications-container box">
-                        {% include 'socials/notifications.html' %}
-                    </div>
+
+            <div class="notifications-wrapper">
+                <button class="btn-notification">
+                    <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
+                </button>
+                <div class="notifications-container box">
+                    {% include 'socials/notifications.html' %}
                 </div>
+            </div>
+
             {% else %}
-                <a class="login_link" href="/login">Zaloguj</a>
+            <a class="login_link" href="/login">Zaloguj</a>
             {% endif %}
 
             {% if request.user_agent.is_mobile %}
-                <a href="/profil/{{request.user.profile.slug}}">
-                    <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
-                </a>
+            <a href="/profil/{{request.user.profile.slug}}">
+                <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+            </a>
             {% else %}
-                <div class="desktop-menu-container">
-                    <button class="btn-avatar-option">
-                        <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+            <div class="desktop-menu-container">
+                <button class="btn-avatar-option">
+                    <img src="{{request.user.profile.avatar}}/thumb" alt="avatar" class="avatar-profile"/>
+                </button>
+                <div class="navbar-desktop-menu box">
+                    <button class="btn-close">
+                        <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
                     </button>
-                    <div class="navbar-desktop-menu box">
-                        <button class="btn-close">
-                            <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
-                        </button>
-                        <a href="profil/{{request.user.profile.slug}}"> Twoje konto </a>
-                        <a href="/polityka-prywatnosci"> Polityka prywatności </a>
-                        <a href="/regulamin"> Regulamin </a>
-                        <a href="/logout"> Wyloguj </a>
-                    </div>
+                    <a href="profil/{{request.user.profile.slug}}"> Twoje konto </a>
+                    <a href="/polityka-prywatnosci"> Polityka prywatności </a>
+                    <a href="/regulamin"> Regulamin </a>
+                    <a href="/logout"> Wyloguj </a>
+
                 </div>
+            </div>
             {% endif %}
             <button class="btn-menu">
                 <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon"/>

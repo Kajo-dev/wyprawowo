@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     const carousels = document.querySelectorAll('.carousel');
-    const colorThief = new ColorThief();
 
     carousels.forEach(function (carousel) {
         const carouselId = carousel.id.split('-')[1];
@@ -13,12 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function updateBackgroundColor(imageElement) {
             if (imageElement.complete) {
-                const dominantColor = colorThief.getColor(imageElement);
-                carousel.style.backgroundColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
             } else {
                 imageElement.addEventListener('load', function () {
-                    const dominantColor = colorThief.getColor(imageElement);
-                    carousel.style.backgroundColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
                 });
             }
         }
