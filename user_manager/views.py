@@ -419,23 +419,35 @@ def share_post(request, post_id):
 
 def search(request):
     query = request.GET.get('q')
+    posts = Post.objects.none()
+    profiles = Profile.objects.none()
+    posts_with_likes = []
+
     if query:
         posts = Post.objects.filter(
-            Q(content__icontains=query) | Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query))
-        users = User.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
-    else:
-        posts = Post.objects.none()
-        users = User.objects.none()
+            Q(content__icontains=query) | Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
+        ).annotate(comment_count=Count('comments')).order_by('-created_at')
 
-    print(posts, 'posts')
-    events = posts.filter(post_type='event')
+        profiles = Profile.objects.filter(
+            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
+        )
+
+        for post in posts:
+            is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+            like_count = post.likes.count()
+            comment_count = post.comment_count
+            is_author = post.user == request.user
+            is_shared = False
+            posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
+
+    events = posts.filter(post_type='event').select_related('event')
     texts = posts.filter(post_type='text')
-    print(events)
-    print(texts)
+
     context = {
         'posts_events': events,
         'posts_texts': texts,
-        'users': users,
+        'profiles': profiles,
         'query': query,
     }
+
     return render(request, 'user_manager/search_results.html', context)
