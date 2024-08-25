@@ -9,384 +9,451 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
 
-<h1>Wyniki wyszukiwania dla "{{ query }}"</h1>
+<style>
+    .tab-container {
+        display: flex;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
 
-<h2>Posty Event</h2>
-{% if posts_events %}
-<div class="post-list">
-    {% for post in posts_events %}
-    <div class="post box">
-    <div class="post-topbar">
-        <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
-            <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
-        </a>
-        <div class="user-data">
-            <p>
-                {{post.user.first_name}} {{post.user.last_name}}
-            </p>
-            <p class="event-type"> {{ post.event.event_type  }} </p>
-        </div>
-    </div>
-    {% if post.post_type == 'event' and post.event %}
-    <div class="post-text">
-        <h4 class="event-title">{{ post.event.title }}</h4>
-        <p class="short-content">
-            {{ post.content|truncatechars:255 }}
-        </p>
-        <p class="full-content" style="display: none;">
-            {{ post.content }}
-        </p>
-        {% if post.content|char_count > 255 %}
-        <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
-        {% endif %}
+    .tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        border-bottom: none;
+        transition: background-color 0.3s;
+    }
 
-        <div class="post-assets">
-            {% with attachments=post.attachments.all %}
-            {% if attachments|length > 1 %}
-            <div class="carousel">
-                <div class="carousel-images">
-                    {% for attachment in attachments %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        {% if attachment.type == 'photo' %}
-                        <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
-                        {% elif attachment.type == 'video' %}
-                        <video controls class="post-video">
-                            <source src="{{ attachment.attachment_url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="carousel-controls">
-                    <button class="prev">❮</button>
-                    <button class="next">❯</button>
-                </div>
-            </div>
-            {% elif attachments|length == 1 %}
-            {% with attachment=attachments.0 %}
-            <div class="carousel-item ">
-                {% if attachment.type == 'photo' %}
-                <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
-                {% elif attachment.type == 'video' %}
-                <video controls class="post-video">
-                    <source src="{{ attachment.attachment_url }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                {% endif %}
-            </div>
-            {% endwith %}
-            {% endif %}
-            {% endwith %}
+    .tab:hover {
+        background-color: #ddd;
+    }
 
-        </div>
+    .tab.active {
+        background-color: #fff;
+        border-bottom: 1px solid #fff;
+    }
 
-        <div class="event-character">
-            <div class="event-character-box">
-                {{ post.event.when|date:"d.m.Y" }}
-                {% if post.event.date_end %}
-                - {{ post.event.date_end|date:"d.m.Y" }}
-                {% endif %}
-            </div>
-            <div class="event-character-box"> {{ post.event.where }}</div>
-            <div class="event-character-box">{{ post.event.price }} zł</div>
-            {% if post.event.number_of_people %}
-            <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
-            {% endif %}
-        </div>
-    </div>
+    .tab-content {
+        display: none;
+        border: 1px solid #ccc;
+        padding: 20px;
+        background-color: #fff;
+    }
 
-    {% else %}
-    <div class="post-text">
+    .tab-content.active {
+        display: block;
+    }
+</style>
 
-        <p class="short-content">
-            {{ post.content|truncatechars:255 }}
-        </p>
-        <p class="full-content" style="display: none;">
-            {{ post.content }}
-        </p>
-        {% if post.content|char_count > 255 %}
-        <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
-        {% endif %}
+<div class="tab-container">
+    <div class="tab active" onclick="openTab(event, 'events')">Event Posts</div>
+    <div class="tab" onclick="openTab(event, 'texts')">Text Posts</div>
+    <div class="tab" onclick="openTab(event, 'users')">Users</div>
+</div>
 
-        <div class="post-assets">
-            {% with attachments=post.attachments.all %}
-            {% if attachments|length > 1 %}
-            <div class="carousel">
-                <div class="carousel-images">
-                    {% for attachment in attachments %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        {% if attachment.type == 'photo' %}
-                        <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
-                        {% elif attachment.type == 'video' %}
-                        <video controls class="post-video">
-                            <source src="{{ attachment.attachment_url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="carousel-controls">
-                    <button class="prev">❮</button>
-                    <button class="next">❯</button>
-                </div>
-            </div>
-            {% elif attachments|length == 1 %}
-            {% with attachment=attachments.0 %}
-            <div class="carousel-item ">
-                {% if attachment.type == 'photo' %}
-                <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
-                {% elif attachment.type == 'video' %}
-                <video controls class="post-video">
-                    <source src="{{ attachment.attachment_url }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                {% endif %}
-            </div>
-            {% endwith %}
-            {% endif %}
-            {% endwith %}
-
-        </div>
-
-    </div>
-    {% endif %}
-
-    <div class="hashtags">
-        {% with post.hashtags|split:" " as hashtags_list %}
-        {% for tag in hashtags_list %}
-        <div class="tag-box"> {{tag}}</div>
-        {% endfor %}
-        {% endwith %}
-    </div>
-    <div class="actions-counter">
-        <div class="avatars-counter">
-            {% if is_post_liked_by_user %}
-            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
-                {% else %}
-                <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
-                    {% endif %}
-                    <p class="like-count">
-                        {{ like_count }}
-                    </p>
-                    <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
-                </button>
-        </div>
-        <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
-
-        {% if not is_author %}
-        <a  class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
-        {% endif %}
-    </div>
-
-    <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
-
-        {% if request.user.is_authenticated %}
-
-        <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
-            {% csrf_token %}
-            <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
-            <input type="submit" value="dodaj" class="btn-add-comment">
-        </form>
-
-        {% endif %}
-
-        <div class="comments-section">
-            {% for comment in post.comments.all %}
-            <div class="comment-box">
-                <a href="/profil/{{comment.user.profile.slug}}">
-                    <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
+<div id="events" class="tab-content active">
+    <h2>Event Posts</h2>
+    {% if posts_events %}
+    <div class="post-list">
+        {% for post in posts_events %}
+        <div class="post box">
+            <div class="post-topbar">
+                <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
+                    <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
                 </a>
-                <div>
-                    <p class="comment-box-user">
-                        {{ comment.user.first_name }} {{ comment.user.last_name }}
+                <div class="user-data">
+                    <p>
+                        {{post.user.first_name}} {{post.user.last_name}}
                     </p>
-                    <p class="comment-box-content">{{ comment.content }} </p>
+                    <p class="event-type"> {{ post.event.event_type  }} </p>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-    {% endfor %}
-</div>
-{% else %}
-<p>Brak postów pasujących do frazy "{{ query }}"</p>
-{% endif %}
-
-<h2>Posty text</h2>
-{% if posts_texts %}
-<div class="post-list">
-    {% for post in posts_texts %}
-    <div class="post box">
-        <div class="post-topbar">
-            <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
-                <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
-            </a>
-            <div class="user-data">
-                <p>
-                    {{post.user.first_name}} {{post.user.last_name}}
+            {% if post.post_type == 'event' and post.event %}
+            <div class="post-text">
+                <h4 class="event-title">{{ post.event.title }}</h4>
+                <p class="short-content">
+                    {{ post.content|truncatechars:255 }}
                 </p>
-                <p class="event-type"> {{ post.event.event_type  }} </p>
-            </div>
-        </div>
-        <div class="post-text">
-            <h4 class="event-title">{{ post.event.title }}</h4>
-            <p class="short-content">
-                {{ post.content|truncatechars:255 }}
-            </p>
-            <p class="full-content" style="display: none;">
-                {{ post.content }}
-            </p>
-            {% if post.content|char_count > 255 %}
-            <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
-            {% endif %}
+                <p class="full-content" style="display: none;">
+                    {{ post.content }}
+                </p>
+                {% if post.content|char_count > 255 %}
+                <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                {% endif %}
 
-            <div class="post-assets">
-                {% with attachments=post.attachments.all %}
-                {% if attachments|length > 1 %}
-                <div class="carousel">
-                    <div class="carousel-images">
-                        {% for attachment in attachments %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            {% if attachment.type == 'photo' %}
-                            <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
-                            {% elif attachment.type == 'video' %}
-                            <video controls class="post-video">
-                                <source src="{{ attachment.attachment_url }}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                            {% endif %}
+                <div class="post-assets">
+                    {% with attachments=post.attachments.all %}
+                    {% if attachments|length > 1 %}
+                    <div class="carousel">
+                        <div class="carousel-images">
+                            {% for attachment in attachments %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                {% if attachment.type == 'photo' %}
+                                <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
+                                {% elif attachment.type == 'video' %}
+                                <video controls class="post-video">
+                                    <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <div class="carousel-controls">
+                            <button class="prev">❮</button>
+                            <button class="next">❯</button>
+                        </div>
                     </div>
-                    <div class="carousel-controls">
-                        <button class="prev">❮</button>
-                        <button class="next">❯</button>
-                    </div>
-                </div>
-                {% elif attachments|length == 1 %}
-                {% with attachment=attachments.0 %}
-                <div class="carousel-item ">
-                    {% if attachment.type == 'photo' %}
-                    <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
-                    {% elif attachment.type == 'video' %}
-                    <video controls class="post-video">
-                        <source src="{{ attachment.attachment_url }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                    {% endif %}
-                </div>
-                {% endwith %}
-                {% endif %}
-                {% endwith %}
-
-            </div>
-
-            <div class="event-character">
-                <div class="event-character-box">
-                    {{ post.event.when|date:"d.m.Y" }}
-                    {% if post.event.date_end %}
-                    - {{ post.event.date_end|date:"d.m.Y" }}
-                    {% endif %}
-                </div>
-                <div class="event-character-box"> {{ post.event.where }}</div>
-                <div class="event-character-box">{{ post.event.price }} zł</div>
-                {% if post.event.number_of_people %}
-                <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
-                {% endif %}
-            </div>
-        </div>
-
-
-
-        <div class="hashtags">
-            {% with post.hashtags|split:" " as hashtags_list %}
-            {% for tag in hashtags_list %}
-            <div class="tag-box"> {{tag}}</div>
-            {% endfor %}
-            {% endwith %}
-        </div>
-        <div class="actions-counter">
-            <div class="avatars-counter">
-                {% if is_post_liked_by_user %}
-                <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
-                    {% else %}
-                    <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
+                    {% elif attachments|length == 1 %}
+                    {% with attachment=attachments.0 %}
+                    <div class="carousel-item ">
+                        {% if attachment.type == 'photo' %}
+                        <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
+                        {% elif attachment.type == 'video' %}
+                        <video controls class="post-video">
+                            <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                         {% endif %}
-                        <p class="like-count">
-                            {{ like_count }}
-                        </p>
-                        <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
-                    </button>
+                    </div>
+                    {% endwith %}
+                    {% endif %}
+                    {% endwith %}
+
+                </div>
+
+                <div class="event-character">
+                    <div class="event-character-box">
+                        {{ post.event.when|date:"d.m.Y" }}
+                        {% if post.event.date_end %}
+                        - {{ post.event.date_end|date:"d.m.Y" }}
+                        {% endif %}
+                    </div>
+                    <div class="event-character-box"> {{ post.event.where }}</div>
+                    <div class="event-character-box">{{ post.event.price }} zł</div>
+                    {% if post.event.number_of_people %}
+                    <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
+                    {% endif %}
+                </div>
             </div>
-            <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
 
-            {% if not is_author %}
-            <a  class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
+            {% else %}
+            <div class="post-text">
+
+                <p class="short-content">
+                    {{ post.content|truncatechars:255 }}
+                </p>
+                <p class="full-content" style="display: none;">
+                    {{ post.content }}
+                </p>
+                {% if post.content|char_count > 255 %}
+                <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                {% endif %}
+
+                <div class="post-assets">
+                    {% with attachments=post.attachments.all %}
+                    {% if attachments|length > 1 %}
+                    <div class="carousel">
+                        <div class="carousel-images">
+                            {% for attachment in attachments %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                {% if attachment.type == 'photo' %}
+                                <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
+                                {% elif attachment.type == 'video' %}
+                                <video controls class="post-video">
+                                    <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-controls">
+                            <button class="prev">❮</button>
+                            <button class="next">❯</button>
+                        </div>
+                    </div>
+                    {% elif attachments|length == 1 %}
+                    {% with attachment=attachments.0 %}
+                    <div class="carousel-item ">
+                        {% if attachment.type == 'photo' %}
+                        <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
+                        {% elif attachment.type == 'video' %}
+                        <video controls class="post-video">
+                            <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        {% endif %}
+                    </div>
+                    {% endwith %}
+                    {% endif %}
+                    {% endwith %}
+
+                </div>
+
+            </div>
             {% endif %}
+
+            <div class="hashtags">
+                {% with post.hashtags|split:" " as hashtags_list %}
+                {% for tag in hashtags_list %}
+                <div class="tag-box"> {{tag}}</div>
+                {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="actions-counter">
+                <div class="avatars-counter">
+                    {% if is_post_liked_by_user %}
+                    <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
+                        {% else %}
+                        <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
+                            {% endif %}
+                            <p class="like-count">
+                                {{ like_count }}
+                            </p>
+                            <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
+                        </button>
+                </div>
+                <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+
+                {% if not is_author %}
+                <a  class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
+                {% endif %}
+            </div>
+
+            <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
+
+                {% if request.user.is_authenticated %}
+
+                <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
+                    {% csrf_token %}
+                    <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
+                    <input type="submit" value="dodaj" class="btn-add-comment">
+                </form>
+
+                {% endif %}
+
+                <div class="comments-section">
+                    {% for comment in post.comments.all %}
+                    <div class="comment-box">
+                        <a href="/profil/{{comment.user.profile.slug}}">
+                            <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                        </a>
+                        <div>
+                            <p class="comment-box-user">
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
+                            </p>
+                            <p class="comment-box-content">{{ comment.content }} </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Brak postów pasujących do frazy "{{ query }}"</p>
+    {% endif %}
+</div>
 
-        <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
+<div id="texts" class="tab-content">
+    <h2>Text Posts</h2>
+    {% if posts_texts %}
+    <div class="post-list">
+        {% for post in posts_texts %}
+        <div class="post box">
+            <div class="post-topbar">
+                <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
+                    <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
+                </a>
+                <div class="user-data">
+                    <p>
+                        {{post.user.first_name}} {{post.user.last_name}}
+                    </p>
+                    <p class="event-type"> {{ post.event.event_type  }} </p>
+                </div>
+            </div>
+            <div class="post-text">
+                <h4 class="event-title">{{ post.event.title }}</h4>
+                <p class="short-content">
+                    {{ post.content|truncatechars:255 }}
+                </p>
+                <p class="full-content" style="display: none;">
+                    {{ post.content }}
+                </p>
+                {% if post.content|char_count > 255 %}
+                <button class="btn-continue-reading" onclick="toggleContent(this)">Pokaż więcej</button>
+                {% endif %}
 
-            {% if request.user.is_authenticated %}
+                <div class="post-assets">
+                    {% with attachments=post.attachments.all %}
+                    {% if attachments|length > 1 %}
+                    <div class="carousel">
+                        <div class="carousel-images">
+                            {% for attachment in attachments %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                {% if attachment.type == 'photo' %}
+                                <img src="{{ attachment.attachment_url }}/thumb" alt="Image {{ forloop.counter }}" class="post-img">
+                                {% elif attachment.type == 'video' %}
+                                <video controls class="post-video">
+                                    <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-controls">
+                            <button class="prev">❮</button>
+                            <button class="next">❯</button>
+                        </div>
+                    </div>
+                    {% elif attachments|length == 1 %}
+                    {% with attachment=attachments.0 %}
+                    <div class="carousel-item ">
+                        {% if attachment.type == 'photo' %}
+                        <img src="{{ attachment.attachment_url }}/thumb" alt="Image" class="post-img">
+                        {% elif attachment.type == 'video' %}
+                        <video controls class="post-video">
+                            <source src="{{ attachment.attachment_url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        {% endif %}
+                    </div>
+                    {% endwith %}
+                    {% endif %}
+                    {% endwith %}
 
-            <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
-                {% csrf_token %}
-                <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
-                <input type="submit" value="dodaj" class="btn-add-comment">
-            </form>
+                </div>
 
-            {% endif %}
+                <div class="event-character">
+                    <div class="event-character-box">
+                        {{ post.event.when|date:"d.m.Y" }}
+                        {% if post.event.date_end %}
+                        - {{ post.event.date_end|date:"d.m.Y" }}
+                        {% endif %}
+                    </div>
+                    <div class="event-character-box"> {{ post.event.where }}</div>
+                    <div class="event-character-box">{{ post.event.price }} zł</div>
+                    {% if post.event.number_of_people %}
+                    <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-            <div class="comments-section">
-                {% for comment in post.comments.all %}
-                <div class="comment-box">
-                    <a href="/profil/{{comment.user.profile.slug}}">
-                        <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
-                    </a>
-                    <div>
-                        <p class="comment-box-user">
-                            {{ comment.user.first_name }} {{ comment.user.last_name }}
+
+
+            <div class="hashtags">
+                {% with post.hashtags|split:" " as hashtags_list %}
+                {% for tag in hashtags_list %}
+                <div class="tag-box"> {{tag}}</div>
+                {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="actions-counter">
+                <div class="avatars-counter">
+                    {% if is_post_liked_by_user %}
+                    <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
+                        {% else %}
+                        <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
+                            {% endif %}
+                            <p class="like-count">
+                                {{ like_count }}
+                            </p>
+                            <span> <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/> </span>
+                        </button>
+                </div>
+                <button class="comment-counter action-box"  data-post-id="{{ post.id }}">{{ comment_count }} odpowiedzi</button>
+
+                {% if not is_author %}
+                <a  class="action-box btn-share" href="{% url 'share_post' post.id %}">Udostępnij</a>
+                {% endif %}
+            </div>
+
+            <div id="comments-section-wrapper-{{ post.id }}" class="comments-section-wrapper">
+
+                {% if request.user.is_authenticated %}
+
+                <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
+                    {% csrf_token %}
+                    <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
+                    <input type="submit" value="dodaj" class="btn-add-comment">
+                </form>
+
+                {% endif %}
+
+                <div class="comments-section">
+                    {% for comment in post.comments.all %}
+                    <div class="comment-box">
+                        <a href="/profil/{{comment.user.profile.slug}}">
+                            <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                        </a>
+                        <div>
+                            <p class="comment-box-user">
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
+                            </p>
+                            <p class="comment-box-content">{{ comment.content }} </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <p>Brak postów pasujących do frazy "{{ query }}"</p>
+    {% endif %}
+</div>
+
+<div id="users" class="tab-content">
+    <h2>Użytkownicy</h2>
+    {% if profiles %}
+    <div>
+            {% for profile in profiles %}
+            <div class="box user-box">
+                <div class="user-box-top">
+                    <img class="profile-avatar" src="{{user.profile.avatar}}/thumb"
+                         alt="{{profile_wtk.user.first_name}}-avatar"/>
+                    <div class="profile_data">
+                        <p class="profile_name">
+                            {{profile.user.first_name}} {{profile.user.last_name}}
                         </p>
-                        <p class="comment-box-content">{{ comment.content }} </p>
+                        <p class="avatar-number">
+                            <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
+                            99</p>
                     </div>
                 </div>
-                {% endfor %}
+
+                <p class="user-box-description"> {{profile.user.description}} </p>
             </div>
+            {% endfor %}
         </div>
-
-    {% endfor %}
+    {% else %}
+    <p>Brak użytkowników pasujących do frazy "{{ query }}"</p>
+    {% endif %}
 </div>
-</div>
-{% else %}
-<p>Brak postów pasujących do frazy "{{ query }}"</p>
-{% endif %}
 
-<h2>Użytkownicy</h2>
-{% if profiles %}
-<div>
-    {% for profile in profiles %}
-    <div class="box user-box">
-        <div class="user-box-top">
-            <img class="profile-avatar" src="{{user.profile.avatar}}/thumb"
-                 alt="{{profile_wtk.user.first_name}}-avatar"/>
-            <div class="profile_data">
-                <p class="profile_name">
-                    {{profile.user.first_name}} {{profile.user.last_name}}
-                </p>
-                <p class="avatar-number">
-                    <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
-                    99</p>
-            </div>
-        </div>
+<script>
+    function openTab(event, tabId) {
+        var tabContents = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < tabContents.length; i++) {
+            tabContents[i].classList.remove("active");
+        }
 
-        <p class="user-box-description"> {{profile.user.description}} </p>
-    </div>
-    {% endfor %}
-</div>
-{% else %}
-<p>Brak użytkowników pasujących do frazy "{{ query }}"</p>
-{% endif %}
+        // Remove active class from all tabs
+        var tabs = document.getElementsByClassName("tab");
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove("active");
+        }
+
+        document.getElementById(tabId).classList.add("active");
+        event.currentTarget.classList.add("active");
+    }
+</script>
+
 {% endblock %}
