@@ -117,6 +117,7 @@
                             {% if attachments|length > 1 %}
                             <div class="carousel">
                                 <div class="carousel-images">
+
                                     {% for attachment in attachments %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         {% if attachment.type == 'photo' %}
@@ -134,6 +135,7 @@
                                     <button class="prev">❮</button>
                                     <button class="next">❯</button>
                                 </div>
+
                             </div>
                             {% elif attachments|length == 1 %}
                             {% with attachment=attachments.0 %}
@@ -202,6 +204,7 @@
                                     </div>
                                     {% endfor %}
                                 </div>
+
                                 <div class="carousel-controls">
                                     <button class="prev">❮</button>
                                     <button class="next">❯</button>

@@ -27,6 +27,7 @@
     </form>
 </div>
 
+
 <div class="navbar mobile">
     <div class="navbar-content">
         <div class="left-nav">
@@ -35,17 +36,25 @@
                     <img src="{% static 'img/wyprawowo-black.svg' %}" alt="wyprawowo logo"/>
                 </a>
             </div>
-            <button class="search-button mobile">
-                <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon"/>
-            </button>
-            <button class="search-button desktop">
-                <img src="{% static 'img/search-icon.svg' %}" alt="search-icon"/>
-                Szukaj
-            </button>
+            <form method="GET" action="{% url 'search' %}" class="search-form">
+                <input type="text" name="q" placeholder="Szukaj..." required>
+                <button type="submit">
+                    <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon"/>
+                    Szukaj
+                </button>
+            </form>
+{#            <button class="search-button mobile">#}
+{##}
+{#            </button>#}
+{#            <button class="search-button desktop">#}
+{#                <img src="{% static 'img/search-icon.svg' %}" alt="search-icon"/>#}
+{#                Szukaj#}
+{#            </button>#}
         </div>
 
         <div class="right-nav">
             {% if request.user.is_authenticated %}
+
             <div class="notifications-wrapper">
                 <button class="btn-notification">
                     <img src="{% static 'img/notification-icon.svg' %}" alt="notification icon"/>
@@ -54,6 +63,7 @@
                     {% include 'socials/notifications.html' %}
                 </div>
             </div>
+
             {% else %}
             <a class="login_link" href="/login">Zaloguj</a>
             {% endif %}
@@ -75,6 +85,7 @@
                     <a href="/polityka-prywatnosci"> Polityka prywatności </a>
                     <a href="/regulamin"> Regulamin </a>
                     <a href="/logout"> Wyloguj </a>
+
                 </div>
             </div>
             {% endif %}
