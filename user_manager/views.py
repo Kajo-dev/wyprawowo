@@ -440,8 +440,8 @@ def search(request):
             is_shared = False
             posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
 
-    events = posts.filter(post_type='event').select_related('event')
-    texts = posts.filter(post_type='text')
+    events = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'event']
+    texts = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'text']
 
     context = {
         'posts_events': events,

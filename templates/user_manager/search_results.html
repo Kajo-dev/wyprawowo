@@ -6,55 +6,17 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/components/slider.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/style.css'%}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/socials/activity_page.css'%}"/>
-
-<style>
-    .tab-container {
-        display: flex;
-        margin-bottom: 20px;
-        cursor: pointer;
-    }
-
-    .tab {
-        flex: 1;
-        padding: 10px;
-        text-align: center;
-        background-color: #f1f1f1;
-        border: 1px solid #ccc;
-        border-bottom: none;
-        transition: background-color 0.3s;
-    }
-
-    .tab:hover {
-        background-color: #ddd;
-    }
-
-    .tab.active {
-        background-color: #fff;
-        border-bottom: 1px solid #fff;
-    }
-
-    .tab-content {
-        display: none;
-        border: 1px solid #ccc;
-        padding: 20px;
-        background-color: #fff;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-</style>
-
+<link rel="stylesheet" type="text/css" href="{% static 'css/socials/profile_page.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/search_results.css'%}"/>
+<div class="search-results-container">
 <div class="tab-container">
-    <div class="tab active" onclick="openTab(event, 'events')">Event Posts</div>
-    <div class="tab" onclick="openTab(event, 'texts')">Text Posts</div>
-    <div class="tab" onclick="openTab(event, 'users')">Users</div>
+    <div class="tab active" onclick="openTab(event, 'events')">Wydarzenia</div>
+    <div class="tab" onclick="openTab(event, 'texts')">Wpisy</div>
+    <div class="tab" onclick="openTab(event, 'users')">Użytkownicy</div>
 </div>
 
 <div id="events" class="tab-content active">
-    <h2>Event Posts</h2>
     {% if posts_events %}
     <div class="post-list">
         {% for post in posts_events %}
@@ -260,7 +222,6 @@
 </div>
 
 <div id="texts" class="tab-content">
-    <h2>Text Posts</h2>
     {% if posts_texts %}
     <div class="post-list">
         {% for post in posts_texts %}
@@ -273,7 +234,7 @@
                     <p>
                         {{post.user.first_name}} {{post.user.last_name}}
                     </p>
-                    <p class="event-type"> {{ post.event.event_type  }} </p>
+                    <p class="post-date">  {{ post.created_at|date:"d.m.Y"  }} </p>
                 </div>
             </div>
             <div class="post-text">
@@ -328,23 +289,7 @@
                     {% endwith %}
 
                 </div>
-
-                <div class="event-character">
-                    <div class="event-character-box">
-                        {{ post.event.when|date:"d.m.Y" }}
-                        {% if post.event.date_end %}
-                        - {{ post.event.date_end|date:"d.m.Y" }}
-                        {% endif %}
-                    </div>
-                    <div class="event-character-box"> {{ post.event.where }}</div>
-                    <div class="event-character-box">{{ post.event.price }} zł</div>
-                    {% if post.event.number_of_people %}
-                    <div class="event-character-box">Przewidywana liczba osób: {{ post.event.number_of_people }}</div>
-                    {% endif %}
-                </div>
             </div>
-
-
 
             <div class="hashtags">
                 {% with post.hashtags|split:" " as hashtags_list %}
@@ -411,10 +356,10 @@
 </div>
 
 <div id="users" class="tab-content">
-    <h2>Użytkownicy</h2>
     {% if profiles %}
     <div>
             {% for profile in profiles %}
+        <a href="/profil/{{profile.slug}}">
             <div class="box user-box">
                 <div class="user-box-top">
                     <img class="profile-avatar" src="{{user.profile.avatar}}/thumb"
@@ -429,31 +374,73 @@
                     </div>
                 </div>
 
-                <p class="user-box-description"> {{profile.user.description}} </p>
+                <p class="user-box-description"> {{profile.description}} </p>
             </div>
+        </a>
+
             {% endfor %}
         </div>
     {% else %}
     <p>Brak użytkowników pasujących do frazy "{{ query }}"</p>
     {% endif %}
 </div>
+</div>
 
 <script>
-    function openTab(event, tabId) {
-        var tabContents = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < tabContents.length; i++) {
+    const openTab = (event, tabId) => {
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabContents.length; i++) {
             tabContents[i].classList.remove("active");
         }
 
-        // Remove active class from all tabs
-        var tabs = document.getElementsByClassName("tab");
-        for (var i = 0; i < tabs.length; i++) {
+        const tabs = document.getElementsByClassName("tab");
+        for (let i = 0; i < tabs.length; i++) {
             tabs[i].classList.remove("active");
         }
 
         document.getElementById(tabId).classList.add("active");
         event.currentTarget.classList.add("active");
     }
+
+    document.querySelectorAll('.like-post-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const postId = this.getAttribute('data-post-id');
+            const action = this.getAttribute('data-action');
+            fetch(`/post/${postId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                const likeCounter =  this.querySelector('p');
+                if(action==='like'){
+                    this.setAttribute('data-action', 'unlike')
+                    likeCounter.textContent =  Number(likeCounter.textContent) + 1;
+                }else{
+                    this.setAttribute('data-action', 'like')
+                    likeCounter.textContent =  Number(likeCounter.textContent) -1;
+                }
+            })
+        });
+    });
+
+    const toggleContent = (button) => {
+        const postTextDiv = button.parentElement;
+        const shortContent = postTextDiv.querySelector('.short-content');
+        const fullContent = postTextDiv.querySelector('.full-content');
+
+        if (fullContent.style.display === 'none') {
+            fullContent.style.display = 'block';
+            shortContent.style.display = 'none';
+            button.innerText = 'Pokaż mniej';
+        } else {
+            fullContent.style.display = 'none';
+            shortContent.style.display = 'block';
+            button.innerText = 'Pokaż więcej';
+        }
+    }
 </script>
+<script src="{% static 'js/activity_panel.js' %}" type="module"></script>
 
 {% endblock %}

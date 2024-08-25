@@ -1,0 +1,48 @@
+.tab-container {
+    display: flex;
+    margin: 20px 0;
+    cursor: pointer;
+
+}
+
+.tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    background-color: #f1f1f1;
+    border-bottom: none;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+}
+
+.tab:hover {
+    background-color: #ddd;
+}
+
+.tab.active {
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.search-results-container {
+    max-width: 1000px;
+    min-height: 100vh;
+    margin: 0 auto 20px;
+    width: 95%;
+}
+
+#users a {
+    text-decoration: none;
+    color: black;
+}
