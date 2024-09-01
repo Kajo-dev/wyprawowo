@@ -33,6 +33,7 @@ function initializePostTypeDisplay() {
     handlePostTypeChange({target: postTypeSelect});
 }
 
+
 function toggleCommentsSection(event) {
     const postId = event.target.getAttribute("data-post-id");
     const commentsSection = document.getElementById("comments-section-wrapper-" + postId);
@@ -91,10 +92,13 @@ function initializeEventListeners() {
     document.querySelectorAll(".comment-counter").forEach(counter => {
         counter.addEventListener("click", toggleCommentsSection);
     });
+    if (window.location.pathname === '/') {
+        [assetsField, videosField].forEach(el => {
+            el.addEventListener('change', handleFileChange);
+        });
+    }
 
-    [assetsField, videosField].forEach(el => {
-        el.addEventListener('change', handleFileChange);
-    });
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -104,7 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
 });
 
-moreDaysCheckbox.addEventListener('click', () => {
-    moreDaysLabel.classList.toggle('active')
-    moreDaysInput.classList.toggle('active')
-})
+if (window.location.pathname === '/') {
+    moreDaysCheckbox.addEventListener('click', () => {
+        moreDaysLabel.classList.toggle('active')
+        moreDaysInput.classList.toggle('active')
+    })
+}
