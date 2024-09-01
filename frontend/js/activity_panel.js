@@ -33,6 +33,7 @@ function initializePostTypeDisplay() {
     handlePostTypeChange({target: postTypeSelect});
 }
 
+
 function toggleCommentsSection(event) {
     const postId = event.target.getAttribute("data-post-id");
     const commentsSection = document.getElementById("comments-section-wrapper-" + postId);
@@ -96,6 +97,7 @@ function initializeEventListeners() {
             el.addEventListener('change', handleFileChange);
         });
     }
+
 
 }
 
