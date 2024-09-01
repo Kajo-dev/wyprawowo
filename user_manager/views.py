@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment, PostAttachment, EventPostType
-
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import requests
 import json
@@ -302,15 +302,18 @@ def create_post(request):
 
 def create_post_comment(request, post_id):
     if request.method == 'POST':
-        content = request.POST.get('content_comment')
+        content = request.POST.get('content_comment', '').strip()
         post = get_object_or_404(Post, id=post_id)
-
-        Comment.objects.create(
-            user=request.user,
-            content=content,
-            post=post,
-        )
-
+        if not content:
+            messages.error(request, 'Comment content cannot be empty or whitespace only.')
+        elif len(content) > 255:
+            messages.error(request, 'Comment content cannot exceed 255 characters.')
+        elif post:
+            Comment.objects.create(
+                user=request.user,
+                content=content,
+                post=post,
+            )
         return redirect('home')
 
 
