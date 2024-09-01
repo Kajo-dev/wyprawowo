@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from user_manager.models import Profile, UserResponse
-from user_manager.models import Like, PostLike, SharedPost, Question
+from user_manager.models import Like, PostLike, SharedPost, Question, Post
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
 from django.http import JsonResponse
@@ -25,26 +25,26 @@ def worth_to_know(request):
 @login_required
 def profile_view(request, slug_profile):
     user_profile = get_object_or_404(Profile, slug=slug_profile)
-    user_posts = user_profile.user.posts.all()
-    shared_posts = SharedPost.objects.filter(user=user_profile.user)
+    user_posts = list(user_profile.user.posts.all())
+    shared_posts = list(SharedPost.objects.filter(user=user_profile.user))
+
+    combined_posts = user_posts + shared_posts
+    combined_posts.sort(key=lambda x: x.created_at, reverse=True)
 
     is_liked_by_user = Like.objects.filter(user=request.user, profile=user_profile).exists()
 
     posts_with_likes = []
-    for post in user_posts:
+    for item in combined_posts:
+        if isinstance(item, Post):
+            post = item
+            is_shared = False
+        else:
+            post = item.original_post
+            is_shared = True
+
         is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
         like_count = post.likes.count()
         is_author = post.user == request.user
-        is_shared = False
-        posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
-
-    for shared_post in shared_posts:
-        original_post = shared_post.original_post
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=original_post).exists()
-        like_count = original_post.likes.count()
-        is_author = original_post.user == request.user
-        is_shared = True
-        post = original_post
         posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
 
     profile_questions = Question.objects.filter(is_profile=True)
@@ -64,7 +64,6 @@ def profile_view(request, slug_profile):
         'top_profiles': top_profiles,
     }
     return render(request, 'socials/profile_page.html', context)
-
 @login_required
 def get_notifications(request):
     notifications = request.user.notifications.filter(is_read=False)
