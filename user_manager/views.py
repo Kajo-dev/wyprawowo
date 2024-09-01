@@ -427,13 +427,16 @@ def search(request):
     posts_with_likes = []
 
     if query:
-        posts = Post.objects.filter(
-            Q(content__icontains=query) | Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
-        ).annotate(comment_count=Count('comments')).order_by('-created_at')
+        query_words = query.split()
+        post_filters = Q()
+        profile_filters = Q()
 
-        profiles = Profile.objects.filter(
-            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
-        )
+        for word in query_words:
+            post_filters |= Q(content__icontains=word) | Q(user__first_name__icontains=word) | Q(user__last_name__icontains=word)
+            profile_filters |= Q(user__first_name__icontains=word) | Q(user__last_name__icontains=word)
+
+        posts = Post.objects.filter(post_filters).annotate(comment_count=Count('comments')).order_by('-created_at')
+        profiles = Profile.objects.filter(profile_filters)
 
         for post in posts:
             is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
@@ -441,7 +444,7 @@ def search(request):
             comment_count = post.comment_count
             is_author = post.user == request.user
             is_shared = False
-            posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
+            posts_with_likes.append((post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared))
 
     events = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'event']
     texts = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'text']
@@ -452,5 +455,5 @@ def search(request):
         'profiles': profiles,
         'query': query,
     }
-
+    print(context)
     return render(request, 'user_manager/search_results.html', context)
