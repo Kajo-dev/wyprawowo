@@ -297,7 +297,7 @@ def create_post(request):
         followers = Like.objects.filter(profile=request.user.profile)
         for follower in followers:
             create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
-        return redirect(reverse('profile_view', kwargs={'slug_profile': request.user.profile.slug}))
+        return redirect('home')
 
 
 def create_post_comment(request, post_id):
