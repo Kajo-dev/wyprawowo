@@ -83,32 +83,38 @@ def register_page(request):
         email = request.POST['email']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
-
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
         if not email:
-            error_list.append('Adres e-mail jest wymagany ')
+            error_list.append('Adres e-mail jest wymagany.')
         if password1 != password2:
-            error_list.append('Hasła nie są takie same ')
+            error_list.append('Hasła nie są takie same.')
         if len(password1) < 6:
-            error_list.append('Hasło jest zbyt krótkie ')
+            error_list.append('Hasło jest zbyt krótkie.')
+
+        if not error_list:
+            try:
+                if User.objects.filter(email=email).exists():
+                    error_list.append('Adres e-mail jest już zarejestrowany.')
+                else:
+                    newUser = User.objects.create_user(email=email, first_name=first_name, password=password1, last_name=last_name)
+                    newUser.save()
+                    activate_email(request, newUser, email)
+                    data_front = {
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'email': email
+                    }
+                    return render(request, 'user_manager/confirmation_email.html', data_front)
+            except Exception as e:
+                error_list.append('Wystąpił nieznany błąd. Prosimy o kontakt z administratorem.')
+
         data_front = {
             'error_list': error_list
         }
+        return render(request, 'user_manager/register.html', data_front)
 
-        if len(error_list) == 0:
-            newUser = User.objects.create_user(email=email, first_name=first_name, password=password1, last_name=last_name)
-            newUser.save()
-            activate_email(request, newUser, email)
-            data_front = {
-                'first_name': first_name,
-                'last_name': last_name,
-                'email': email
-            }
-            return render(request, 'user_manager/confirmation_email.html', data_front)
-        else:
-            return render(request, 'user_manager/register.html', data_front)
     return render(request, 'user_manager/register.html', {})
 
 def policy_privacy(request):
