@@ -140,43 +140,50 @@ def login_page(request):
     return render(request, 'user_manager/login.html', {})
 
 
+
 @login_required(login_url='login_page')
 def question_view(request, question_id):
     previous_question_id = question_id - 1 if question_id > 1 else 1
     try:
-       question = Question.objects.get(id=question_id)
+        question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
         next_question = Question.objects.filter(id__gt=question_id).order_by('id').first()
-
         if next_question:
-            return redirect('question_page', question_id = next_question.id)
+            return redirect('question_page', question_id=next_question.id)
         else:
             return redirect('update_profile')
 
     answers = Answer.objects.filter(question_id=question.id)
 
-    if request.method=='POST':
+    if request.method == 'POST':
         post_answers = request.POST.getlist('answer')
         user = request.user
-        if not post_answers:
+        if not post_answers and not request.POST.get('text_answer'):
             return render(request, 'user_manager/questions.html', {
-               'question': question,
-               'answers': answers,
-               'previous_question_id': previous_question_id,
-               'error_message': 'Prosze zaznaczyć odpowiedź!'})
+                'question': question,
+                'answers': answers,
+                'previous_question_id': previous_question_id,
+                'error_message': 'Prosze zaznaczyć odpowiedź lub wpisać odpowiedź!'
+            })
 
-        for user_answer_id in post_answers:
-            user_response = UserResponse(user=user, question=question, answer_id=user_answer_id)
+        if question.requires_text_input:
+            text_answer = request.POST.get('text_answer')
+            user_response = UserResponse(user=user, question=question, text_answer=text_answer)
             user_response.save()
+        else:
+            for user_answer_id in post_answers:
+                user_response = UserResponse(user=user, question=question, answer_id=user_answer_id)
+                user_response.save()
 
         next_question_id = question_id + 1
+        return redirect('question_view', question_id=next_question_id)
 
-        return redirect('question_view', question_id = next_question_id)
-
-
-
-    return render(request, 'user_manager/questions.html', {'question': question, 'answers': answers, 'current_number': question_id, 'previous_question_id': previous_question_id})
-
+    return render(request, 'user_manager/questions.html', {
+        'question': question,
+        'answers': answers,
+        'current_number': question_id,
+        'previous_question_id': previous_question_id
+    })
 
 def upload_photo_to_cloudflare(image):
     account_id = settings.ACCOUNT_ID
