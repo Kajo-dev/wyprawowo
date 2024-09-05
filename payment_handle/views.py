@@ -43,6 +43,7 @@ def payment_successful(request):
     session = stripe.checkout.Session.retrieve(checkout_session_id)
     customer = stripe.Customer.retrieve(session.customer)
     user_id = request.user.id
+    request.user.has_payment = True
     user_payment = UserPayment.objects.get(user=user_id)
     user_payment.stripe_checkout_id = checkout_session_id
     user_payment.save()

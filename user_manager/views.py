@@ -215,31 +215,48 @@ def upload_video_to_cloudflare(video):
             return result
     return None
 
-@login_required(login_url=login_page)
+@login_required(login_url='login_page')
 def update_profile(request):
     profile = Profile.objects.get_or_create(user=request.user)[0]
     if request.method == 'POST':
         description = request.POST.get('description')
         avatar = request.FILES.get('avatar')
-        if avatar and description:
+        changes_made = False
+
+        if description:
+            profile.description = description
+            changes_made = True
+
+        if avatar:
             try:
                 avatar_link = upload_photo_to_cloudflare(avatar)
                 if avatar_link:
                     profile.avatar = avatar_link
-                    profile.description = description
-                    profile.save()
-                    return redirect('ini_payment_view')
+                    changes_made = True
             except Exception as e:
-                return render(request, 'user_manager/update_profile.html',{
-                        'profile_avatar': profile.avatar,
-                        'profile_description': profile.description,
-                        'error_message': 'Skontaktuj się z administratorem błąd podczas ładowania avataru'}
-                )
-        else:
-            return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar,
-            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe, oraz Opis!'})
+                return render(request, 'user_manager/update_profile.html', {
+                    'profile_avatar': profile.avatar,
+                    'profile_description': profile.description,
+                    'error_message': 'Skontaktuj się z administratorem błąd podczas ładowania avataru'
+                })
 
-    return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
+        if changes_made:
+            profile.save()
+            if request.user.has_payment:
+                return redirect('profile_view', profile.slug)
+            else:
+                return redirect('ini_payment_view')
+        else:
+            return render(request, 'user_manager/update_profile.html', {
+                'profile_avatar': profile.avatar,
+                'profile_description': profile.description,
+                'error_message': 'Nie wprowadzono żadnych zmian!'
+            })
+
+    return render(request, 'user_manager/update_profile.html', {
+        'profile_avatar': profile.avatar,
+        'profile_description': profile.description
+    })
 
 @login_required(login_url='login_page')
 def logout_page(request):
