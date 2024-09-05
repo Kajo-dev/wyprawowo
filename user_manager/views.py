@@ -83,32 +83,38 @@ def register_page(request):
         email = request.POST['email']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
-
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
         if not email:
-            error_list.append('Adres e-mail jest wymagany ')
+            error_list.append('Adres e-mail jest wymagany.')
         if password1 != password2:
-            error_list.append('Hasła nie są takie same ')
+            error_list.append('Hasła nie są takie same.')
         if len(password1) < 6:
-            error_list.append('Hasło jest zbyt krótkie ')
+            error_list.append('Hasło jest zbyt krótkie.')
+
+        if not error_list:
+            try:
+                if User.objects.filter(email=email).exists():
+                    error_list.append('Adres e-mail jest już zarejestrowany.')
+                else:
+                    newUser = User.objects.create_user(email=email, first_name=first_name, password=password1, last_name=last_name)
+                    newUser.save()
+                    activate_email(request, newUser, email)
+                    data_front = {
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'email': email
+                    }
+                    return render(request, 'user_manager/confirmation_email.html', data_front)
+            except Exception as e:
+                error_list.append('Wystąpił nieznany błąd. Prosimy o kontakt z administratorem.')
+
         data_front = {
             'error_list': error_list
         }
+        return render(request, 'user_manager/register.html', data_front)
 
-        if len(error_list) == 0:
-            newUser = User.objects.create_user(email=email, first_name=first_name, password=password1, last_name=last_name)
-            newUser.save()
-            activate_email(request, newUser, email)
-            data_front = {
-                'first_name': first_name,
-                'last_name': last_name,
-                'email': email
-            }
-            return render(request, 'user_manager/confirmation_email.html', data_front)
-        else:
-            return render(request, 'user_manager/register.html', data_front)
     return render(request, 'user_manager/register.html', {})
 
 def policy_privacy(request):
@@ -140,43 +146,50 @@ def login_page(request):
     return render(request, 'user_manager/login.html', {})
 
 
+
 @login_required(login_url='login_page')
 def question_view(request, question_id):
     previous_question_id = question_id - 1 if question_id > 1 else 1
     try:
-       question = Question.objects.get(id=question_id)
+        question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
         next_question = Question.objects.filter(id__gt=question_id).order_by('id').first()
-
         if next_question:
-            return redirect('question_page', question_id = next_question.id)
+            return redirect('question_page', question_id=next_question.id)
         else:
             return redirect('update_profile')
 
     answers = Answer.objects.filter(question_id=question.id)
 
-    if request.method=='POST':
+    if request.method == 'POST':
         post_answers = request.POST.getlist('answer')
         user = request.user
-        if not post_answers:
+        if not post_answers and not request.POST.get('text_answer'):
             return render(request, 'user_manager/questions.html', {
-               'question': question,
-               'answers': answers,
-               'previous_question_id': previous_question_id,
-               'error_message': 'Prosze zaznaczyć odpowiedź!'})
+                'question': question,
+                'answers': answers,
+                'previous_question_id': previous_question_id,
+                'error_message': 'Prosze zaznaczyć odpowiedź lub wpisać odpowiedź!'
+            })
 
-        for user_answer_id in post_answers:
-            user_response = UserResponse(user=user, question=question, answer_id=user_answer_id)
+        if question.requires_text_input:
+            text_answer = request.POST.get('text_answer')
+            user_response = UserResponse(user=user, question=question, text_answer=text_answer)
             user_response.save()
+        else:
+            for user_answer_id in post_answers:
+                user_response = UserResponse(user=user, question=question, answer_id=user_answer_id)
+                user_response.save()
 
         next_question_id = question_id + 1
+        return redirect('question_view', question_id=next_question_id)
 
-        return redirect('question_view', question_id = next_question_id)
-
-
-
-    return render(request, 'user_manager/questions.html', {'question': question, 'answers': answers, 'current_number': question_id, 'previous_question_id': previous_question_id})
-
+    return render(request, 'user_manager/questions.html', {
+        'question': question,
+        'answers': answers,
+        'current_number': question_id,
+        'previous_question_id': previous_question_id
+    })
 
 def upload_photo_to_cloudflare(image):
     account_id = settings.ACCOUNT_ID
@@ -208,31 +221,48 @@ def upload_video_to_cloudflare(video):
             return result
     return None
 
-@login_required(login_url=login_page)
+@login_required(login_url='login_page')
 def update_profile(request):
     profile = Profile.objects.get_or_create(user=request.user)[0]
     if request.method == 'POST':
         description = request.POST.get('description')
         avatar = request.FILES.get('avatar')
-        if avatar and description:
+        changes_made = False
+
+        if description:
+            profile.description = description
+            changes_made = True
+
+        if avatar:
             try:
                 avatar_link = upload_photo_to_cloudflare(avatar)
                 if avatar_link:
                     profile.avatar = avatar_link
-                    profile.description = description
-                    profile.save()
-                    return redirect('ini_payment_view')
+                    changes_made = True
             except Exception as e:
-                return render(request, 'user_manager/update_profile.html',{
-                        'profile_avatar': profile.avatar,
-                        'profile_description': profile.description,
-                        'error_message': 'Skontaktuj się z administratorem błąd podczas ładowania avataru'}
-                )
-        else:
-            return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar,
-            'profile_description': profile.description, 'error_message':'Wybierz zdjęcie profilowe, oraz Opis!'})
+                return render(request, 'user_manager/update_profile.html', {
+                    'profile_avatar': profile.avatar,
+                    'profile_description': profile.description,
+                    'error_message': 'Skontaktuj się z administratorem błąd podczas ładowania avataru'
+                })
 
-    return render(request, 'user_manager/update_profile.html', {'profile_avatar': profile.avatar, 'profile_description': profile.description})
+        if changes_made:
+            profile.save()
+            if request.user.has_payment:
+                return redirect('profile_view', profile.slug)
+            else:
+                return redirect('ini_payment_view')
+        else:
+            return render(request, 'user_manager/update_profile.html', {
+                'profile_avatar': profile.avatar,
+                'profile_description': profile.description,
+                'error_message': 'Nie wprowadzono żadnych zmian!'
+            })
+
+    return render(request, 'user_manager/update_profile.html', {
+        'profile_avatar': profile.avatar,
+        'profile_description': profile.description
+    })
 
 @login_required(login_url='login_page')
 def logout_page(request):
@@ -317,12 +347,11 @@ def create_post_comment(request, post_id):
         return redirect('home')
 
 
-@login_required
 def home_view(request):
     query_type = request.GET.get('type')
     event_post_types = EventPostType.objects.all()
 
-    if query_type=='event':
+    if query_type == 'event':
         posts = Post.objects.filter(post_type='event').annotate(comment_count=Count('comments')).order_by('-created_at')
     else:
         posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
@@ -331,13 +360,12 @@ def home_view(request):
 
     posts_with_likes = []
     for post in posts:
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists() if request.user.is_authenticated else False
         like_count = post.likes.count()
         comment_count = post.comment_count
-        is_author = post.user == request.user
+        is_author = post.user == request.user if request.user.is_authenticated else False
         is_shared = False
-        posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
-
+        posts_with_likes.append((post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared))
 
     if request.user_agent.is_mobile:
         popular_events = (
@@ -387,7 +415,7 @@ def post_view(request, post_id):
 def like_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     if profile.like(request.user):
-        create_notification(profile.user, f'{request.user.username} liked your profile.')
+        create_notification(profile.user, f'{request.user} liked your profile.')
         return JsonResponse({'status': 'liked'})
     else:
         return JsonResponse({'status': 'already liked'})
@@ -445,7 +473,6 @@ def search(request):
             is_author = post.user == request.user
             is_shared = False
             posts_with_likes.append((post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared))
-
 
     events = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'event']
     texts = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'text']

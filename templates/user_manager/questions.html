@@ -1,13 +1,11 @@
 {% extends "main/base.html" %}
 {% load static %}
-{%block title%}<title>Pytania - Wyprawowo.pl</title>{%endblock title%}
+{% block title %}<title>Pytania - Wyprawowo.pl</title>{% endblock title %}
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/questions.css'%}"/>
-<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/questions.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/user_manager/style.css' %}"/>
 
 <body>
-
-
 <div class="register container">
     <div class="register-left-panel">
         <h2>
@@ -19,58 +17,51 @@
             <br/><br/> Wierzymy, że czas spędzony ze
             społecznością przyniesie Ci niezapomniane chwile.
         </p>
-
     </div>
     <div class="register-right-panel">
-
         <div>
-            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
+            <img src="{% static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
         </div>
-
         <div class="box form-container">
-
-            <p class="question-text"> {{question.text}}</p>
-
+            <p class="question-text">{{ question.text }}</p>
             <form method="POST" action="{% url 'question_view' question.id %}" class="questions-form">
                 {% csrf_token %}
+                {% if question.requires_text_input %}
+                <div class="answer-box">
+                    <label>
+                        <input type="text" name="text_answer" class="text-answer-input" placeholder="Wpisz swoją odpowiedź"/>
+                    </label>
+                </div>
+                {% else %}
                 {% for answer in answers %}
                 <div class="answer-box">
                     <label>
                         {% if question.is_multiple_answer %}
-                        <input class="answer-option-radio" type="checkbox" name="answer"
-                               value="{{ answer.id }}"/>
+                        <input class="answer-option-radio" type="checkbox" name="answer" value="{{ answer.id }}"/>
                         {% else %}
-                        <input class="radio-label answer-option-radio" type="radio" name="answer"
-                               value="{{ answer.id }}"/>
+                        <input class="radio-label answer-option-radio" type="radio" name="answer" value="{{ answer.id }}"/>
                         {% endif %}
                         {{ answer.text }}
                     </label>
                 </div>
                 {% endfor %}
-
+                {% endif %}
                 {% if error_message %}
                 <div class="error-message">
-                    {{error_message}}
+                    {{ error_message }}
                 </div>
-                {%endif %}
-
+                {% endif %}
                 <section class="buttons-wrapper">
-
                     {% if current_number == 1 %}
                     <input type="button" value="Wstecz" class="CTA-button" disabled>
                     {% else %}
                     <a href="{% url 'question_view' previous_question_id %}" class="CTA-button">Wstecz</a>
-                    {%endif%}
-
+                    {% endif %}
                     <input type="submit" value="Dalej" class="CTA-button">
                 </section>
             </form>
-
-
         </div>
     </div>
 </div>
-
-
 </body>
 {% endblock content %}

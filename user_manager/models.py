@@ -103,6 +103,7 @@ class Question(models.Model):
     text = models.CharField(max_length=200)
     is_multiple_answer = models.BooleanField(default=False)
     is_profile = models.BooleanField(default=False)
+    requires_text_input = models.BooleanField(default=False)  # New field
 
     def __str__(self):
         return str(self.text)
@@ -119,7 +120,8 @@ class Answer(models.Model):
 class UserResponse(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.SET_NULL, null=True, blank=True)
+    text_answer = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return str(f'{self.user}: {self.question.text} - {self.answer.text}' )

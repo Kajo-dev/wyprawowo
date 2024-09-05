@@ -23,6 +23,7 @@ def worth_to_know(request):
 
 
 @login_required
+@login_required
 def profile_view(request, slug_profile):
     user_profile = get_object_or_404(Profile, slug=slug_profile)
     user_posts = list(user_profile.user.posts.all())
@@ -50,6 +51,12 @@ def profile_view(request, slug_profile):
     profile_questions = Question.objects.filter(is_profile=True)
     user_responses = UserResponse.objects.filter(user=user_profile.user, question__in=profile_questions)
 
+    # Get current user's responses
+    current_user_responses = UserResponse.objects.filter(user=request.user, question__in=profile_questions)
+
+    # Find common questions answered by both users
+    common_questions = set(user_responses.values_list('question_id', flat=True)) & set(current_user_responses.values_list('question_id', flat=True))
+
     top_profiles = (
         Profile.objects
         .annotate(total_likes=Count('user__posts__likes'))
@@ -61,6 +68,7 @@ def profile_view(request, slug_profile):
         'posts_with_likes': posts_with_likes,
         'is_liked_by_user': is_liked_by_user,
         'user_responses': user_responses,
+        'common_questions': common_questions,
         'top_profiles': top_profiles,
     }
     return render(request, 'socials/profile_page.html', context)
