@@ -451,3 +451,6 @@ def search(request):
     }
 
     return render(request, 'user_manager/search_results.html', context)
+
+def landing_view(request):
+    return render(request, 'main/landing.html')
