@@ -245,8 +245,8 @@
                     <div class="actions-counter">
                         <div class="avatars-counter">
                             {% if is_post_liked_by_user %}
-                            <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
-                                {% else %}
+                                <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="unlike">
+                            {% else %}
                                 <button class="avatars-counter like-post-button" data-post-id="{{ post.id }}" data-action="like">
                                     {% endif %}
                                     <p> {{ like_count }} </p>
@@ -353,6 +353,26 @@
                     likeCounter.textContent =  Number(likeCounter.textContent) -1;
                 }
             })
+        });
+    });
+
+    document.querySelectorAll('.btn-avatar').forEach(button => {
+        button.addEventListener('click', function () {
+            const profileId = this.getAttribute('data-profile-id');
+            const action = this.textContent.trim() === 'Zostaw avatar' ? 'like' : 'unlike';
+            fetch(`/profile/${profileId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data.status === 'liked') {
+                    this.textContent = 'Zabieram avatar';
+                } else if (data.status === 'unliked') {
+                    this.textContent = 'Zostaw avatar';
+                }
+            });
         });
     });
 
