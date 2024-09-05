@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("user_manager", "0036_delete_postattachment"),
+        ("user_manager", "0034_merge_20240729_1127"),
     ]
 
     operations = [

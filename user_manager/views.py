@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from .models import User, Question, Answer, UserResponse, Profile, Like, Post, PostLike, SharedPost, EventPost, Comment, PostAttachment, EventPostType
-
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import requests
 import json
@@ -297,20 +297,23 @@ def create_post(request):
         followers = Like.objects.filter(profile=request.user.profile)
         for follower in followers:
             create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
-        return redirect(reverse('profile_view', kwargs={'slug_profile': request.user.profile.slug}))
+        return redirect('home')
 
 
 def create_post_comment(request, post_id):
     if request.method == 'POST':
-        content = request.POST.get('content_comment')
+        content = request.POST.get('content_comment', '').strip()
         post = get_object_or_404(Post, id=post_id)
-
-        Comment.objects.create(
-            user=request.user,
-            content=content,
-            post=post,
-        )
-
+        if not content:
+            messages.error(request, 'Comment content cannot be empty or whitespace only.')
+        elif len(content) > 255:
+            messages.error(request, 'Comment content cannot exceed 255 characters.')
+        elif post:
+            Comment.objects.create(
+                user=request.user,
+                content=content,
+                post=post,
+            )
         return redirect('home')
 
 
@@ -424,13 +427,16 @@ def search(request):
     posts_with_likes = []
 
     if query:
-        posts = Post.objects.filter(
-            Q(content__icontains=query) | Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
-        ).annotate(comment_count=Count('comments')).order_by('-created_at')
+        query_words = query.split()
+        post_filters = Q()
+        profile_filters = Q()
 
-        profiles = Profile.objects.filter(
-            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
-        )
+        for word in query_words:
+            post_filters |= Q(content__icontains=word) | Q(user__first_name__icontains=word) | Q(user__last_name__icontains=word)
+            profile_filters |= Q(user__first_name__icontains=word) | Q(user__last_name__icontains=word)
+
+        posts = Post.objects.filter(post_filters).annotate(comment_count=Count('comments')).order_by('-created_at')
+        profiles = Profile.objects.filter(profile_filters)
 
         for post in posts:
             is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
@@ -438,7 +444,8 @@ def search(request):
             comment_count = post.comment_count
             is_author = post.user == request.user
             is_shared = False
-            posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
+            posts_with_likes.append((post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared))
+
 
     events = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'event']
     texts = [post_tuple for post_tuple in posts_with_likes if post_tuple[0].post_type == 'text']

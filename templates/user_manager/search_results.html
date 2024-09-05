@@ -19,7 +19,7 @@
 <div id="events" class="tab-content active">
     {% if posts_events %}
     <div class="post-list">
-        {% for post in posts_events %}
+        {% for post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared in posts_events %}
         <div class="post box">
             <div class="post-topbar">
                 <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
@@ -224,7 +224,7 @@
 <div id="texts" class="tab-content">
     {% if posts_texts %}
     <div class="post-list">
-        {% for post in posts_texts %}
+        {% for post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared in posts_texts %}
         <div class="post box">
             <div class="post-topbar">
                 <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
@@ -362,8 +362,8 @@
         <a href="/profil/{{profile.slug}}">
             <div class="box user-box">
                 <div class="user-box-top">
-                    <img class="profile-avatar" src="{{user.profile.avatar}}/thumb"
-                         alt="{{profile_wtk.user.first_name}}-avatar"/>
+                    <img class="profile-avatar" src="{{profile.avatar}}/thumb"
+                         alt="{{profile.user.first_name}}-avatar"/>
                     <div class="profile_data">
                         <p class="profile_name">
                             {{profile.user.first_name}} {{profile.user.last_name}}

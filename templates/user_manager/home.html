@@ -77,15 +77,15 @@
                         <label class="photo-input-label">
                             Dodaj zdjęcie
                             <img src="{% static '/img/photo-icon.svg' %}"/>
-                            <input type="file" name="photos" class="photo_input" accept="image/*" multiple/>
+                            <input type="file" name="photos" class="photo_input" accept="image/*" multiple id="photo-input"/>
                         </label>
 
 
-                         <label class="photo-input-label">
+                        <label class="photo-input-label">
                             Dodaj film
-                             <img src="{% static '/img/video-icon.svg' %}"/>
-                            <input type="file" name="video" class="photo_input video-input" accept="video/*"/>
-                         </label>
+                            <img src="{% static '/img/video-icon.svg' %}"/>
+                            <input type="file" name="video" class="photo_input video-input" accept="video/*" id="video-input"/>
+                        </label>
 
                     </div>
 
@@ -126,10 +126,28 @@
                         <input type="datetime-local" name="when" id="when">
                         <label for="longer_then_one_day">
                             Wydarzenie trwa dłużej niż jeden dzień?
+
                             <input type="checkbox" name="longer_then_one_day" id="longer_then_one_day"/>
                         </label>
                         <label for="date_end" class="end_date_label">Data końcowa:</label>
                         <input type="datetime-local" name="date_end" id="date_end">
+
+                        <script>
+                            const startDateInput = document.getElementById('when');
+                            const endDateInput = document.getElementById('date_end');
+
+                            function validateDates() {
+                                const startDate = new Date(startDateInput.value);
+                                const endDate = new Date(endDateInput.value);
+                                if (endDate < startDate) {
+                                    alert('Data końcowa nie może być wcześniejsza niż data rozpoczęcia.');
+                                    endDateInput.value = '';
+                                }
+                            }
+
+                            startDateInput.addEventListener('change', validateDates);
+                            endDateInput.addEventListener('change', validateDates);
+                        </script>
                         <label for="number_of_people">Liczba osób:</label>
                         <input type="number" name="number_of_people" id="number_of_people">
                         <label for="where">Gdzie:</label>
@@ -463,6 +481,30 @@
             button.innerText = 'Pokaż więcej';
         }
     }
+
+    document.getElementById('photo-input').addEventListener('change', function() {
+        if (this.files.length > 4) {
+            alert('Możesz wybrać maksymalnie 4 zdjęcia.');
+            this.value = '';
+        }
+    });
+
+    document.getElementById('video-input').addEventListener('change', function() {
+        const maxSize = 10 * 1024 * 1024;
+        if (this.files[0].size > maxSize) {
+            alert('Możesz wybrać film o maksymalnym rozmiarze 50MB.');
+            this.value = '';
+        }
+    });
+
+    document.getElementById('when').addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        const now = new Date();
+        if (selectedDate < now) {
+            alert('Nie możesz wybrać daty wstecz.');
+            this.value = '';
+        }
+    });
 </script>
 
 <script src="{% static 'js/activity_panel.js' %}" type="module"></script>
