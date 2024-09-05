@@ -317,12 +317,11 @@ def create_post_comment(request, post_id):
         return redirect('home')
 
 
-@login_required
 def home_view(request):
     query_type = request.GET.get('type')
     event_post_types = EventPostType.objects.all()
 
-    if query_type=='event':
+    if query_type == 'event':
         posts = Post.objects.filter(post_type='event').annotate(comment_count=Count('comments')).order_by('-created_at')
     else:
         posts = Post.objects.all().annotate(comment_count=Count('comments')).order_by('-created_at')
@@ -331,13 +330,12 @@ def home_view(request):
 
     posts_with_likes = []
     for post in posts:
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists() if request.user.is_authenticated else False
         like_count = post.likes.count()
         comment_count = post.comment_count
-        is_author = post.user == request.user
+        is_author = post.user == request.user if request.user.is_authenticated else False
         is_shared = False
-        posts_with_likes.append((post, is_post_liked_by_user, like_count,comment_count, is_author, is_shared))
-
+        posts_with_likes.append((post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared))
 
     if request.user_agent.is_mobile:
         popular_events = (
