@@ -75,42 +75,73 @@
                                 <input type="file" name="video" class="photo_input video-input" accept="video/*" id="video-input"/>
                             </label>
                         </div>
+
                         <div class="assets-block">
                             <div class="images-block"> </div>
                             <div class="videos-block"> </div>
                         </div>
-                        <div id="text-fields">
-                            <label for="hashtags">Hashtagi:</label>
-                            <input type="text" name="hashtags" id="hashtags">
-                        </div>
-                        <div id="event-fields" style="display: none;">
-                            <label for="title">Tytuł:</label>
-                            <input type="text" name="title" id="title">
-                            <label for="event_type">Typ wydarzenia:</label>
-                            <select name="event_type" id="event_type">
-                                {% for event_type in event_types %}
-                                <option value="{{ event_type.text }}">{{ event_type.text }}</option>
-                                {% endfor %}
-                            </select>
-                            <label for="when">Kiedy:</label>
-                            <input type="datetime-local" name="when" id="when" required>
-                            <label for="longer_then_one_day">
-                                Wydarzenie trwa dłużej niż jeden dzień?
-                                <input type="checkbox" name="longer_then_one_day" id="longer_then_one_day"/>
-                            </label>
-                            <label for="date_end" class="end_date_label">Data końcowa:</label>
-                            <input type="datetime-local" name="date_end" id="date_end">
-                            <label for="number_of_people">Liczba osób:</label>
-                            <input type="number" name="number_of_people" id="number_of_people">
-                            <label for="where">Gdzie:</label>
-                            <input type="text" name="where" id="where">
-                            <label for="price">Cena (zł):</label>
-                            <input type="number" step="0.01" name="price" id="price">
-                        </div>
-                        <div class="buttons-container">
-                            <button class="btn-cancel">Zamknij</button>
-                            <input type="submit" value="Dodaj" class="btn-create-post">
-                        </div>
+
+                    <div>
+
+                        <!-- if user choose an image replace image element below by it -->
+{#                        <img src="{% static '/img/test.jpg' %}" class="choose-image" alt="choosed image"/>#}
+                    </div>
+
+{#                    <div class="file_field">#}
+{#                        <label for="file">Dodaj plik:</label>#}
+{#                        <input type="file" name="attachments" class="photo_input" accept="*/*"/>#}
+{#                    </div>#}
+
+                    <div id="text-fields">
+                        <label for="hashtags">Hashtagi:</label>
+                        <input type="text" name="hashtags" id="hashtags">
+                    </div>
+
+                    <div id="event-fields" style="display: none;">
+                        <label for="title">Tytuł:</label>
+                        <input type="text" name="title" id="title">
+                        <label for="event_type">Typ wydarzenia:</label>
+                        <select name="event_type" id="event_type">
+                            {% for event_type in event_types %}
+                            <option value="{{ event_type.text }}">{{ event_type.text }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="when">Kiedy:</label>
+                        <input type="datetime-local" name="when" id="when">
+                        <label for="longer_then_one_day">
+                            Wydarzenie trwa dłużej niż jeden dzień?
+
+                            <input type="checkbox" name="longer_then_one_day" id="longer_then_one_day"/>
+                        </label>
+                        <label for="date_end" class="end_date_label">Data końcowa:</label>
+                        <input type="datetime-local" name="date_end" id="date_end">
+
+                        <script>
+                            const startDateInput = document.getElementById('when');
+                            const endDateInput = document.getElementById('date_end');
+
+                            function validateDates() {
+                                const startDate = new Date(startDateInput.value);
+                                const endDate = new Date(endDateInput.value);
+                                if (endDate < startDate) {
+                                    alert('Data końcowa nie może być wcześniejsza niż data rozpoczęcia.');
+                                    endDateInput.value = '';
+                                }
+                            }
+
+                            startDateInput.addEventListener('change', validateDates);
+                            endDateInput.addEventListener('change', validateDates);
+                        </script>
+                        <label for="number_of_people">Liczba osób:</label>
+                        <input type="number" name="number_of_people" id="number_of_people">
+                        <label for="where">Gdzie:</label>
+                        <input type="text" name="where" id="where">
+                        <label for="price">Cena (zł):</label>
+                        <input type="number" step="0.01" name="price" id="price">
+                    </div>
+                    <div class="buttons-container">
+                        <button  class="btn-cancel">Zamknij</button>
+                        <input type="submit" value="Dodaj" class="btn-create-post">
                     </div>
                 </form>
             </div>

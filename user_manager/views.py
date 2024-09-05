@@ -483,5 +483,8 @@ def search(request):
         'profiles': profiles,
         'query': query,
     }
-    print(context)
+
     return render(request, 'user_manager/search_results.html', context)
+
+def landing_view(request):
+    return render(request, 'main/landing.html')
