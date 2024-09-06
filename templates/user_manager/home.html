@@ -270,63 +270,64 @@
             {% endfor %}
         </div>
     </div>
-    <div class="my-grid-container-right-panel activity-panel">
-        <div class="sticky-container-activity-panel">
-            <div class="new-users red-overlay">
-                <div class="box">
-                    <h3 class="new-users-heading">👋 Nowi użytkownicy</h3>
-                </div>
-                <div class="box">
-                    <div class="new-users-wrapper">
-                        {% for user in new_users %}
-                        <div class="new-users-box">
-                            <div class="new-users-name-box">
-                                <a href="/profil/{{ user.user.profile.slug }}">
-                                    <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
-                                    {{ user.user.first_name }} {{ user.user.last_name }}
-                                </a>
-                            </div>
-                            <div class="new-users-box-date">
-                                Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}
-                            </div>
-                            <div class="new-users-see-more">
-                                <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
+</div>
+<div class="my-grid-container-right-panel activity-panel">
+    <div class="sticky-container-activity-panel">
+        <div class="new-users red-overlay">
+            <div class="box">
+                <h3 class="new-users-heading">👋 Nowi użytkownicy</h3>
             </div>
-            <div class="popular-events red-overlay">
-                <div class="box">
-                    <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
-                </div>
-                <div class="box outbox-events">
-                    <div class="popular-events-wrapper">
-                        {% for event in popular_events %}
-                        <div class="box popular-event-box">
-                            <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
-                                {{ event.title }}
+            <div class="box">
+                <div class="new-users-wrapper">
+                    {% for user in new_users %}
+                    <div class="new-users-box">
+                        <div class="new-users-name-box">
+                            <a href="/profil/{{ user.user.profile.slug }}">
+                                <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                                {{ user.user.first_name }} {{ user.user.last_name }}
                             </a>
-                            <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
-                            <div class="popular-event-box-bottom">
-                                <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
-                                <a class="see-details" href="/post/{{event.post_id}}">
-                                    Otwórz
-                                </a>
-                            </div>
                         </div>
-                        {% endfor %}
+                        <div class="new-users-box-date">
+                            Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}
+                        </div>
+                        <div class="new-users-see-more">
+                            <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
+                        </div>
                     </div>
-                    {% if popular_events %}
-                    <a href="?type=event" class="btn-show-more"> Pokaż wszystkie </a>
-                    {% else %}
-                    <p class="no-events">Brak wydarzeń</p>
-                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
+        <div class="popular-events red-overlay">
+            <div class="box">
+                <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
+            </div>
+            <div class="box outbox-events">
+                <div class="popular-events-wrapper">
+                    {% for event in popular_events %}
+                    <div class="box popular-event-box">
+                        <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
+                            {{ event.title }}
+                        </a>
+                        <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
+                        <div class="popular-event-box-bottom">
+                            <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
+                            <a class="see-details" href="/post/{{event.post_id}}">
+                                Otwórz
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if popular_events %}
+                <a href="?type=event" class="btn-show-more"> Pokaż wszystkie </a>
+                {% else %}
+                <p class="no-events">Brak wydarzeń</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
+</div>
 </div>
 
 <script>
