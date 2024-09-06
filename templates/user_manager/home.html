@@ -57,8 +57,11 @@
                     </a>
                     <div class="user-data">
                         <p>{{post.user.first_name}} {{post.user.last_name}}</p>
-                        <p class="post-date"> {{ post.created_at|date:"d.m.Y" }} </p>
-                        <p class="event-type"> {{ post.event.event_type }} </p>
+                        {% if post.post_type == 'event' and post.event %}
+                        <p class="event-type"> {{ post.event.event_type  }} </p>
+                        {% else %}
+                        <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
+                        {%endif %}
                     </div>
                 </div>
                 <div class="post-text">
@@ -184,7 +187,7 @@
                     </div>
                     <div class="fields-wrapper">
                         <div>
-                            <textarea class="post-content" name="content" id="content" placeholder="Zainspiruj nas"></textarea>
+                            <textarea class="post-content" name="content"  required id="content" placeholder="Zainspiruj nas"></textarea>
                         </div>
                         <div class="assets-btn">
                             <label class="photo-input-label">
@@ -216,21 +219,21 @@
 {#                    </div>#}
 
                     <div id="text-fields">
-                        <label for="hashtags">Hashtagi:</label>
-                        <input type="text" name="hashtags" id="hashtags">
+                        <label for="hashtags">Hashtagi*:</label>
+                        <input class='required-field' required type="text" name="hashtags" id="hashtags">
                     </div>
 
                     <div id="event-fields" style="display: none;">
-                        <label for="title">Tytuł:</label>
-                        <input type="text" name="title" id="title">
-                        <label for="event_type">Typ wydarzenia:</label>
+                        <label for="title">Tytuł*:</label>
+                        <input class='required-field' type="text" name="title" id="title">
+                        <label for="event_type">Typ wydarzenia*:</label>
                         <select name="event_type" id="event_type">
                             {% for event_type in event_types %}
                             <option value="{{ event_type.text }}">{{ event_type.text }}</option>
                             {% endfor %}
                         </select>
-                        <label for="when">Kiedy:</label>
-                        <input type="datetime-local" name="when" id="when">
+                        <label for="when" class='required-field'>Kiedy*:</label>
+                        <input type="datetime-local" class='required-field' name="when" id="when">
                         <label for="longer_then_one_day">
                             Wydarzenie trwa dłużej niż jeden dzień?
 
@@ -255,12 +258,12 @@
                             startDateInput.addEventListener('change', validateDates);
                             endDateInput.addEventListener('change', validateDates);
                         </script>
-                        <label for="number_of_people">Liczba osób:</label>
-                        <input type="number" name="number_of_people" id="number_of_people">
-                        <label for="where">Gdzie:</label>
-                        <input type="text" name="where" id="where">
-                        <label for="price">Cena (zł):</label>
-                        <input type="number" step="0.01" name="price" id="price">
+                        <label for="number_of_people">Liczba osób*:</label>
+                        <input class='required-field' type="number" name="number_of_people" id="number_of_people">
+                        <label class='required-field' for="where">Gdzie*:</label>
+                        <input class='required-field' type="text" name="where" id="where">
+                        <label for="price">Cena (zł)*:</label>
+                        <input type="number" class='required-field' step="0.01" name="price" id="price">
                     </div>
                     <div class="buttons-container">
                         <button  class="btn-cancel">Zamknij</button>
