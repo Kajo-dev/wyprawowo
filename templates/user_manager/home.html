@@ -57,8 +57,11 @@
                     </a>
                     <div class="user-data">
                         <p>{{post.user.first_name}} {{post.user.last_name}}</p>
-                        <p class="post-date"> {{ post.created_at|date:"d.m.Y" }} </p>
-                        <p class="event-type"> {{ post.event.event_type }} </p>
+                        {% if post.post_type == 'event' and post.event %}
+                        <p class="event-type"> {{ post.event.event_type  }} </p>
+                        {% else %}
+                        <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
+                        {%endif %}
                     </div>
                 </div>
                 <div class="post-text">
