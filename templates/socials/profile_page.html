@@ -16,6 +16,8 @@
         <div class="profile-main-view">
             <div class="red-overlay">
                 <div class="profile-box box-no-shadow">
+                    {% if profile.user.is_superuser %}  <span class="admin-box"> Admin </span> {% endif %}
+
                     <div class="profile-main-info">
 
                         <img src="{{profile.avatar}}/thumb" alt="{{profile.slug}} avatar" class="profile_avatar"/>
@@ -37,7 +39,7 @@
                     <div class="profile-bottom-panel">
                         <div class="characteristics-container">
                             {% for response in user_responses|slice:":3" %}
-                            <p class="characteristics-box" title="{{response.question.text}}">
+                            <p class="characteristics-box {% if response.question.id in common_questions %}same-character{% endif %}" title="{{response.question.text}}">
                                 {{ response.answer.text|default:response.text_answer }}
                             </p>
                             {% endfor %}
@@ -51,7 +53,7 @@
                                     <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
                                 </button>
                                 {% for response in user_responses %}
-                                <p class="characteristics-box">
+                                <p class="characteristics-box {% if response.question.id in common_questions %}same-character{% endif %}">
                                     <strong>{{ response.question.text }}</strong>
                                     {{ response.answer.text|default:response.text_answer }}
                                 </p>
@@ -279,9 +281,9 @@
                                     <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
                                 </a>
                                 <div>
-                                    <p class="comment-box-user">
-                                        {{ comment.user.first_name }} {{ comment.user.last_name }}
-                                    </p>
+                                    <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}  
+                                        {% if comment.user.is_superuser %}  <span class="admin-box"> Admin </span> {% endif %}
+                                     </p>
                                     <p class="comment-box-content">{{ comment.content }} </p>
                                 </div>
                             </div>

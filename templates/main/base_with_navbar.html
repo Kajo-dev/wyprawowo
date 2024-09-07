@@ -57,16 +57,12 @@
               />
             </a>
           </div>
-          <button class="search-button mobile">
-            <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon" />
-          </button>
-          <button class="search-button desktop">
-            <img src="{% static 'img/search-icon.svg' %}" alt="search-icon" />
-            Szukaj
-          </button>
         </div>
 
         <div class="right-nav">
+          <button class="search-button">
+            <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon" />
+          </button>
           {% if request.user.is_authenticated %}
 
           <div class="notifications-wrapper">
