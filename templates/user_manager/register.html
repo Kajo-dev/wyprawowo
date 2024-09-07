@@ -1,78 +1,109 @@
-{% extends "main/base.html" %}
-{% load static %}
-
-{%block title%}<title>Rejestracja - Wyprawowo</title>{%endblock title%}
-{% block content %}
-<link rel="stylesheet" type="text/css" href="{%static 'css/user_manager/style.css'%}"/>
+{% extends "main/base.html" %} {% load static %} {%block title%}<title>
+  Rejestracja - Wyprawowo</title
+>{%endblock title%} {% block content %}
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{%static 'css/user_manager/style.css'%}"
+/>
 <body>
-
-<div class="register container">
+  <div class="register container">
     <div class="register-left-panel">
-        <h2>
-            <span> 👋 </span> <br/> Dołącz do wyprawowo.pl!
-        </h2>
-        <span class="line"></span>
-        <p class="register-left-panel-paragraph">
-            Należysz do pasjonatów podróżowania? Chcesz poznawać nowe osoby? Jesteś w dobrym miejscu!
-        </p>
-        <ul>
-            <li>✅ Dziel się doświadczeniami tworząc wpisy</li>
-            <li>✅ Szukaj ciekawych wydarzeń</li>
-            <li>✅ Komentuj</li>
-            <li>✅ Zdobywaj awatary</li>
-        </ul>
+      <h2>
+        <span> 👋 </span> <br />
+        Dołącz do wyprawowo.pl!
+      </h2>
+      <span class="line"></span>
+      <p class="register-left-panel-paragraph">
+        Należysz do pasjonatów podróżowania? Chcesz poznawać nowe osoby? Jesteś
+        w dobrym miejscu!
+      </p>
+      <ul>
+        <li>
+          <img src="{% static 'img/checkbox-icon.svg' %}" /> Dziel się
+          doświadczeniami tworząc wpisy
+        </li>
+        <li>
+          <img src="{% static 'img/checkbox-icon.svg' %}" /> Szukaj ciekawych
+          wydarzeń
+        </li>
+        <li><img src="{% static 'img/checkbox-icon.svg' %}" /> Komentuj</li>
+        <li>
+          <img src="{% static 'img/checkbox-icon.svg' %}" /> Zdobywaj awatary
+        </li>
+      </ul>
     </div>
     <div class="register-right-panel">
+      <div>
+        <img
+          src="{%static 'img/wyprawowo-black.svg' %}"
+          alt="wyprawowo-logo"
+          class="wyprawowo-logo"
+        />
+      </div>
 
-        <div>
-            <img src="{%static 'img/wyprawowo-black.svg' %}" alt="wyprawowo-logo" class="wyprawowo-logo"/>
+      <div class="box form-container">
+        <h2>Utwórz konto</h2>
+
+        <form method="POST" class="register__form">
+          {%csrf_token%}
+          <div class="personal-data">
+            <input
+              type="text"
+              name="first_name"
+              placeholder="Imię"
+              class="name"
+            />
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Nazwisko"
+              class="last_name"
+            />
+          </div>
+          <input type="email" name="email" placeholder="E-mail" class="email" />
+          <input
+            type="password"
+            name="password1"
+            placeholder="Hasło"
+            class="password"
+          />
+          <input
+            type="password"
+            name="password2"
+            placeholder="Powtórz hasło"
+            class="password"
+          />
+
+          <div class="checkbox-wrapper">
+            <label class="checkbox-label">
+              <input type="checkbox" name="policy" />
+              Akceptuję <a href="/regulamin" target="_blank"> regulamin </a> i
+              <a href="/polityka-prywatnosci" target="_blank">
+                politykę prywatności
+              </a>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" name="remember_me" />
+              Zapamiętaj mnie
+            </label>
+          </div>
+
+          <input class="register__form__btn" type="submit" value="Dołącz" />
+        </form>
+
+        <div id="messages">
+          {%for i in error_list%}
+          <label class="error-message">{{i}}</label>
+          {%endfor%}
         </div>
 
-        <div class="box form-container">
-
-            <h2>Utwórz konto</h2>
-
-            <form method="POST" class="register__form">
-                {%csrf_token%}
-                <div class="personal-data">
-                    <input type="text" name="first_name" placeholder="Imię" class="name">
-                    <input type="text" name="last_name" placeholder="Nazwisko" class="last_name">
-                </div>
-                <input type="email" name="email" placeholder="E-mail" class="email">
-                <input type="password" name="password1" placeholder="Hasło" class="password">
-                <input type="password" name="password2" placeholder="Powtórz hasło" class="password">
-
-                <div class="checkbox-wrapper">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="policy"/>
-                        Akceptuję <a href="/regulamin" target="_blank"> regulamin </a> i <a href="/polityka-prywatnosci"
-                                                                                            target="_blank"> politykę
-                        prywatności </a>
-                    </label>
-
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="remember_me"/>
-                        Zapamiętaj mnie
-                    </label>
-                </div>
-
-
-                <input class='register__form__btn' type="submit" value="Dołącz">
-            </form>
-
-            <div id="messages">
-
-                {%for i in error_list%}
-                <label class="error-message">{{i}}</label>
-                {%endfor%}
-
-            </div>
-
-            <p class="having__account">Masz juz konto? <a href="{%url 'login_page'%}">Zaloguj się </a></p>
-
-        </div>
+        <p class="having__account">
+          Masz juz konto? <a href="{%url 'login_page'%}">Zaloguj się </a>
+        </p>
+      </div>
     </div>
-</div>
-
+  </div>
 </body>
 {% endblock content %}
