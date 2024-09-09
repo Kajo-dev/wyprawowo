@@ -9,18 +9,24 @@
   border-radius: 100%;
 }
 
-.admin-box {
+.user-info-box {
   font-size: 12px;
   font-weight: normal;
   background-color: #d9d9d9;
   padding: 2px 5px;
   border-radius: 5px;
+  width: min-content;  
 }
 
-.post.box > .admin-box {
+.user-additional-info{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap:5px;
+  margin-bottom:5px;
+}
+.post.box > .user-info-box {
   margin-bottom: 5px;
-  display: block;
-  width: min-content;
 }
 
 .inspire-us-button {
@@ -587,16 +593,18 @@ button.avatars-counter:hover {
   display: flex;
   padding: 10px 0;
   border-bottom: 1px solid rgba(153, 153, 153, 0.6);
+  gap: 5px;
 }
 
 .comment-box a img {
+  margin-top:5px;
   height: 40px;
   width: 40px;
   border-radius: 100%;
 }
 
 .comment-box-user {
-  margin: 10px 5px 3px;
+  margin: 0px 5px 3px;
   font-weight: 600;
 }
 

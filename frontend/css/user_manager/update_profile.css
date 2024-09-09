@@ -7,6 +7,11 @@
     z-index: -1;
 }
 
+.location-input{
+    font-size: 13px;
+    margin-top:5px;
+}
+
 .update-profile-form {
     display: flex;
     flex-direction: column;

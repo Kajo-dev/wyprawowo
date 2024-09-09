@@ -51,7 +51,7 @@
         <div class="post-list">
             {% for post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared in posts %}
             <div class="post box">
-                {% if post.user.is_superuser %}  <span class="admin-box"> Admin </span> {% endif %}
+                <div class="user-additional-info"> {% if post.user.profile.location %}  <div class="user-info-box"> {{ post.user.profile.location }} </div> {% endif %} {% if post.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
                 <div class="post-topbar">
                     <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
                         <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
@@ -165,8 +165,8 @@
                                 <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
                             </a>
                             <div>
+                                <div class="user-additional-info"> {% if comment.user.profile.location %}  <div class="user-info-box"> {{ comment.user.profile.location }} </div> {% endif %} {% if comment.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
                                 <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}  
-                                    {% if comment.user.is_superuser %}  <span class="admin-box"> Admin </span> {% endif %}
                                  </p>
                                 <p class="comment-box-content">{{ comment.content }}</p>
                             </div>
@@ -293,9 +293,7 @@
                                 {{ user.user.first_name }} {{ user.user.last_name }}
                             </a>
                         </div>
-                        <div class="new-users-box-date">
-                            Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}
-                        </div>
+                        <div class="new-users-box-date"> {{ user.user.profile.location}} </div>
                         <div class="new-users-see-more">
                             <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
                         </div>
