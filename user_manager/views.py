@@ -420,6 +420,7 @@ def post_view(request, post_id):
 def like_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     if profile.like(request.user):
+        print('here')
         create_notification(profile.user, f'{request.user} liked your profile.')
         return JsonResponse({'status': 'liked'})
     else:
