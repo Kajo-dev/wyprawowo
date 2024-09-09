@@ -16,7 +16,7 @@
         <div class="profile-main-view">
             <div class="red-overlay">
                 <div class="profile-box box-no-shadow">
-                    {% if profile.user.is_superuser %}  <span class="admin-box"> Admin </span> {% endif %}
+                    <div class="user-additional-info"> {% if profile.location %}   <div class="user-info-box"> {{profile.location}} </div>  {% if profile.user.is_superuser %}  {% endif %} <div class="user-info-box"> Admin </div> {% endif %} </div>
 
                     <div class="profile-main-info">
 
@@ -281,9 +281,8 @@
                                     <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
                                 </a>
                                 <div>
-                                    <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}  
-                                        {% if comment.user.is_superuser %}  <span class="admin-box"> Admin </span> {% endif %}
-                                     </p>
+                                    <div class="user-additional-info"> {% if comment.user.profile.location %}  <div class="user-info-box"> {{ comment.user.profile.location }} </div> {% endif %} {% if comment.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
+                                    <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}  </p>
                                     <p class="comment-box-content">{{ comment.content }} </p>
                                 </div>
                             </div>
@@ -309,6 +308,7 @@
                     {% for top_profile in top_profiles %}
                     <div class="box user-box">
                         <a href="{{top_profile.slug}}">
+                            <div class="user-additional-info"> {% if top_profile.location %}  <div class="user-info-box"> {{ top_profile.location}} </div> {% endif %} {% if top_profile.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
                             <div class="user-box-top">
                                 <img class="profile-avatar" src="{{top_profile.avatar}}/thumb"
                                      alt="{{top_profile.user.first_name}}-avatar"/>
