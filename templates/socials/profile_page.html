@@ -28,7 +28,7 @@
                             </p>
                             <p class="avatar-number">
                                 <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
-                                {{profile.likes_count}}
+                                <span> {{profile.likes_count}} </span>
                             </p>
                         </div>
                     </div>
@@ -62,16 +62,25 @@
                         </div>
 
                         {% if request.user != profile.user %}
-                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}">
-                                {% if is_liked_by_user %}
+                            {% if is_liked_by_user %}
+                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}" data-action='unlike'>
+                                <span class='action-title'> 
                                     Zabieram avatar
-                                {% else %}
-                                    Zostaw avatar
-                                {% endif %}
+                                </span>
                                 <span class="avatar-wrapper">
                                 <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
                                 </span>
                             </button>
+                            {% else %}
+                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}" data-action='like'>
+                                <span class='action-title'> 
+                                    Zostaw avatar
+                                </span>
+                                <span class="avatar-wrapper">
+                                <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
+                                </span>
+                            </button>
+                            {% endif %}
                         {% endif %}
                     </div>
 
@@ -360,8 +369,10 @@
 
     document.querySelectorAll('.btn-avatar').forEach(button => {
         button.addEventListener('click', function () {
+            const actionNameSpan = document.querySelector('.action-title')
+            const avatarNumberContainer = document.querySelector('.avatar-number span')
             const profileId = this.getAttribute('data-profile-id');
-            const action = this.textContent.trim() === 'Zostaw avatar' ? 'like' : 'unlike';
+            const action = this.getAttribute('data-action');
             fetch(`/profile/${profileId}/${action}/`, {
                 method: 'POST',
                 headers: {
@@ -369,10 +380,14 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => response.json()).then(data => {
-                if (data.status === 'liked') {
-                    this.textContent = 'Zabieram avatar';
-                } else if (data.status === 'unliked') {
-                    this.textContent = 'Zostaw avatar';
+                if (action === 'like') {
+                    actionNameSpan.textContent = 'Zabieram avatar';
+                    this.setAttribute('data-action', 'unlike')
+                    avatarNumberContainer.textContent =  Number(avatarNumberContainer.textContent) +1;
+                } else if (action === 'unlike') {
+                    actionNameSpan.textContent = 'Zostaw avatar';
+                    this.setAttribute('data-action', 'like')
+                    avatarNumberContainer.textContent =  Number(avatarNumberContainer.textContent) -1;
                 }
             });
         });
