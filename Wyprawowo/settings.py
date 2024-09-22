@@ -88,8 +88,12 @@ WSGI_APPLICATION = 'Wyprawowo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('database_name'),
+        'USER': os.getenv('database_user'),
+        'PASSWORD': os.getenv('database_password'),
+        'HOST': os.getenv('database_host'),
+        'PORT': '',
     }
 }
 
