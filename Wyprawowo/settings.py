@@ -32,7 +32,7 @@ SITE_URL = 'http://127.0.0.1:8000/'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["34.118.108.240"]
 
 # Application definition
 
