@@ -1291,15 +1291,15 @@ blockquote {
 }
 
 .hero-section.about-hero {
-  background-image: linear-gradient(360deg, #222, #2220),
-    url("../images/felix-rostig-UmV2wr-Vbq8-unsplash.jpg");
+  /*background-image: linear-gradient(360deg, #222, #2220),*/
+  /*  url("../images/felix-rostig-UmV2wr-Vbq8-unsplash.jpg");*/
   background-position: 0 0, 50% 60%;
   background-size: auto, cover;
 }
 
 .hero-section.contact-hero {
-  background-image: linear-gradient(360deg, #222, #2220),
-    url("../images/adam-solomon-WHUDOzd5IYU-unsplash-1-1.jpg");
+  /*background-image: linear-gradient(360deg, #222, #2220),*/
+  /*  url("../images/adam-solomon-WHUDOzd5IYU-unsplash-1-1.jpg");*/
   background-position: 0 0, 50%;
   background-size: auto, cover;
 }
@@ -1466,8 +1466,8 @@ blockquote {
 }
 
 .safe-section {
-  background-image: linear-gradient(to bottom, #2222222b, var(--black)),
-    url("../images/nathan-dumlao-pLoMDKtl-JY-unsplash.jpg");
+  /*background-image: linear-gradient(to bottom, #2222222b, var(--black)),*/
+  /*  url("../images/nathan-dumlao-pLoMDKtl-JY-unsplash.jpg");*/
   background-position: 0 0, 50%;
   background-size: auto, cover;
   min-height: 550px;
@@ -1731,7 +1731,7 @@ blockquote {
 }
 
 .meet-the-owners-left {
-  background-image: url("../images/sept-commercial-Cqu3DdNwtKQ-unsplash-1-1.jpg");
+  /*background-image: url("../images/sept-commercial-Cqu3DdNwtKQ-unsplash-1-1.jpg");*/
   background-position: 50% 100%;
   background-size: cover;
   border-radius: 5px;
@@ -1797,7 +1797,7 @@ blockquote {
 
 .contact-image-div {
   background-image: linear-gradient(to right, var(--black), #2222222e 76%),
-    url("../images/vinicius-amano-4mK2KVuYrDs-unsplash-1-1.jpg");
+    /*url("../images/vinicius-amano-4mK2KVuYrDs-unsplash-1-1.jpg");*/
   background-position: 0 0, 50%;
   background-repeat: repeat, no-repeat;
   background-size: auto, cover;
@@ -2047,8 +2047,8 @@ blockquote {
 }
 
 .donate-explainer {
-  background-image: linear-gradient(to bottom, #2222228f, var(--black)),
-    url("../images/jed-villejo-bEcC0nyIp2g-unsplash-1-1.jpg");
+  /*background-image: linear-gradient(to bottom, #2222228f, var(--black)),*/
+  /*  url("../images/jed-villejo-bEcC0nyIp2g-unsplash-1-1.jpg");*/
   color: var(--white-smoke);
   background-position: 0 0, 50% 25%;
   background-size: auto, cover;
@@ -2178,8 +2178,8 @@ blockquote {
 }
 
 .utility-page-wrap {
-  background-image: linear-gradient(to bottom, #2222226b, var(--black)),
-    url("../images/nathan-dumlao-pLoMDKtl-JY-unsplash.jpg");
+  /*background-image: linear-gradient(to bottom, #2222226b, var(--black)),*/
+  /*  url("../images/nathan-dumlao-pLoMDKtl-JY-unsplash.jpg");*/
   color: var(--white-smoke);
   background-position: 0 0, 50%;
   background-size: auto, cover;
@@ -2681,7 +2681,7 @@ blockquote {
 }
 
 .pricing-feature {
-  background-image: url("../images/");
+  /*background-image: url("../images/");*/
   background-position: 0 0;
   background-repeat: no-repeat;
   background-size: auto;
@@ -3063,8 +3063,8 @@ blockquote {
   }
 
   .contact-image-div {
-    background-image: linear-gradient(to top, var(--black), #2222222e 76%),
-      url("../images/vinicius-amano-4mK2KVuYrDs-unsplash-1-1.jpg");
+    /*background-image: linear-gradient(to top, var(--black), #2222222e 76%),*/
+    /*  url("../images/vinicius-amano-4mK2KVuYrDs-unsplash-1-1.jpg");*/
     background-position: 0 0, 50% 35%;
     background-repeat: repeat, no-repeat;
     background-size: auto, cover;
