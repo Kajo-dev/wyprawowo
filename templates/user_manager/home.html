@@ -48,84 +48,23 @@
             <button class="inspire-us-button"> Zainspiruj nas</button>
         </div>
         {% endif %}
-        <div class="create-post overlay">
-            <div class="create-post-wrapper box">
-                <form method="post" enctype="multipart/form-data" class="form-create-post" action="{% url 'create_post' %}">
-                    {% csrf_token %}
-                    <div class="post-type-wrapper">
-                        <label class="post-type-label" for="post_type">Typ wpisu:</label>
-                        <select name="post_type" id="post_type">
-                            <option value="text">Tekst</option>
-                            <option value="event">Wydarzenie</option>
-                        </select>
-                    </div>
-                    <div class="fields-wrapper">
-                        <div>
-                            <textarea class="post-content" name="content" id="content" placeholder="Zainspiruj nas"></textarea>
-                        </div>
-                        <div class="assets-btn">
-                            <label class="photo-input-label">
-                                Dodaj zdjęcie
-                                <img src="{% static '/img/photo-icon.svg' %}"/>
-                                <input type="file" name="photos" class="photo_input" accept="image/*" multiple id="photo-input"/>
-                            </label>
-                            <label class="photo-input-label">
-                                Dodaj film
-                                <img src="{% static '/img/video-icon.svg' %}"/>
-                                <input type="file" name="video" class="photo_input video-input" accept="video/*" id="video-input"/>
-                            </label>
-                        </div>
-                        <div class="assets-block">
-                            <div class="images-block"> </div>
-                            <div class="videos-block"> </div>
-                        </div>
-                        <div id="text-fields">
-                            <label for="hashtags">Hashtagi:</label>
-                            <input type="text" name="hashtags" id="hashtags">
-                        </div>
-                        <div id="event-fields" style="display: none;">
-                            <label for="title">Tytuł:</label>
-                            <input type="text" name="title" id="title">
-                            <label for="event_type">Typ wydarzenia:</label>
-                            <select name="event_type" id="event_type">
-                                {% for event_type in event_types %}
-                                <option value="{{ event_type.text }}">{{ event_type.text }}</option>
-                                {% endfor %}
-                            </select>
-                            <label for="when">Kiedy:</label>
-                            <input type="datetime-local" name="when" id="when" required>
-                            <label for="longer_then_one_day">
-                                Wydarzenie trwa dłużej niż jeden dzień?
-                                <input type="checkbox" name="longer_then_one_day" id="longer_then_one_day"/>
-                            </label>
-                            <label for="date_end" class="end_date_label">Data końcowa:</label>
-                            <input type="datetime-local" name="date_end" id="date_end">
-                            <label for="number_of_people">Liczba osób:</label>
-                            <input type="number" name="number_of_people" id="number_of_people">
-                            <label for="where">Gdzie:</label>
-                            <input type="text" name="where" id="where">
-                            <label for="price">Cena (zł):</label>
-                            <input type="number" step="0.01" name="price" id="price">
-                        </div>
-                        <div class="buttons-container">
-                            <button class="btn-cancel">Zamknij</button>
-                            <input type="submit" value="Dodaj" class="btn-create-post">
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
         <div class="post-list">
             {% for post, is_post_liked_by_user, like_count, comment_count, is_author, is_shared in posts %}
             <div class="post box">
+                <div class="user-additional-info"> {% if post.user.profile.location %}  <div class="user-info-box"> {{ post.user.profile.location }} </div> {% endif %} {% if post.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
                 <div class="post-topbar">
                     <a href="/profil/{{post.user.profile.slug}}" class="post-topbar-user-avatar">
                         <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
                     </a>
                     <div class="user-data">
-                        <p>{{post.user.first_name}} {{post.user.last_name}}</p>
-                        <p class="post-date"> {{ post.created_at|date:"d.m.Y" }} </p>
-                        <p class="event-type"> {{ post.event.event_type }} </p>
+                        <p>
+                            {{post.user.first_name}} {{post.user.last_name}}
+                        </p>
+                        {% if post.post_type == 'event' and post.event %}
+                            <p class="event-type"> {{ post.event.event_type  }} </p>
+                        {% else %}
+                            <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
+                        {%endif %}
                     </div>
                 </div>
                 <div class="post-text">
@@ -228,7 +167,9 @@
                                 <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
                             </a>
                             <div>
-                                <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}</p>
+                                <div class="user-additional-info"> {% if comment.user.profile.location %}  <div class="user-info-box"> {{ comment.user.profile.location }} </div> {% endif %} {% if comment.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
+                                <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}
+                                 </p>
                                 <p class="comment-box-content">{{ comment.content }}</p>
                             </div>
                         </div>
@@ -238,64 +179,161 @@
             </div>
             {% endfor %}
         </div>
-    </div>
-    <div class="my-grid-container-right-panel activity-panel">
-        <div class="sticky-container-activity-panel">
-            <div class="new-users red-overlay">
-                <div class="box">
-                    <h3 class="new-users-heading">👋 Nowi użytkownicy</h3>
-                </div>
-                <div class="box">
-                    <div class="new-users-wrapper">
-                        {% for user in new_users %}
-                        <div class="new-users-box">
-                            <div class="new-users-name-box">
-                                <a href="/profil/{{ user.user.profile.slug }}">
-                                    <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
-                                    {{ user.user.first_name }} {{ user.user.last_name }}
-                                </a>
-                            </div>
-                            <div class="new-users-box-date">
-                                Dołączył/a {{ user.user.created_at|date:"d.m.Y" }}
-                            </div>
-                            <div class="new-users-see-more">
-                                <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
-                            </div>
-                        </div>
-                        {% endfor %}
+        <div class="create-post overlay">
+            <div class="create-post-wrapper box">
+                <form method="post" enctype="multipart/form-data" class="form-create-post" action="{% url 'create_post' %}">
+                    {% csrf_token %}
+                    <div class="post-type-wrapper">
+                        <label class="post-type-label" for="post_type">Typ wpisu:</label>
+                        <select name="post_type" id="post_type">
+                            <option value="text">Tekst</option>
+                            <option value="event">Wydarzenie</option>
+                        </select>
                     </div>
-                </div>
-            </div>
-            <div class="popular-events red-overlay">
-                <div class="box">
-                    <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
-                </div>
-                <div class="box outbox-events">
-                    <div class="popular-events-wrapper">
-                        {% for event in popular_events %}
-                        <div class="box popular-event-box">
-                            <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
-                                {{ event.title }}
-                            </a>
-                            <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
-                            <div class="popular-event-box-bottom">
-                                <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
-                                <a class="see-details" href="/post/{{event.post_id}}">
-                                    Otwórz
-                                </a>
-                            </div>
+                    <div class="fields-wrapper">
+                        <div>
+                            <textarea class="post-content" name="content"  required id="content" placeholder="Zainspiruj nas"></textarea>
                         </div>
-                        {% endfor %}
+                        <div class="assets-btn">
+                            <label class="photo-input-label">
+                                Dodaj zdjęcie
+                                <img src="{% static '/img/photo-icon.svg' %}"/>
+                                <input type="file" name="photos" class="photo_input" accept="image/*" multiple id="photo-input"/>
+                            </label>
+                            <label class="photo-input-label">
+                                Dodaj film
+                                <img src="{% static '/img/video-icon.svg' %}"/>
+                                <input type="file" name="video" class="photo_input video-input" accept="video/*" id="video-input"/>
+                            </label>
+                        </div>
+
+                        <div class="assets-block">
+                            <div class="images-block"> </div>
+                            <div class="videos-block"> </div>
+                        </div>
+
+                    <div>
+
+                        <!-- if user choose an image replace image element below by it -->
+{#                        <img src="{% static '/img/test.jpg' %}" class="choose-image" alt="choosed image"/>#}
                     </div>
-                    {% if popular_events %}
-                    <a href="?type=event" class="btn-show-more"> Pokaż wszystkie </a>
-                    {% else %}
-                    <p class="no-events">Brak wydarzeń</p>
-                    {% endif %}
-                </div>
+
+{#                    <div class="file_field">#}
+{#                        <label for="file">Dodaj plik:</label>#}
+{#                        <input type="file" name="attachments" class="photo_input" accept="*/*"/>#}
+{#                    </div>#}
+
+                    <div id="text-fields">
+                        <label for="hashtags">Hashtagi*:</label>
+                        <input class='required-field' required type="text" name="hashtags" id="hashtags">
+                    </div>
+
+                    <div id="event-fields" style="display: none;">
+                        <label for="title">Tytuł*:</label>
+                        <input class='required-field' type="text" name="title" id="title">
+                        <label for="event_type">Typ wydarzenia*:</label>
+                        <select name="event_type" id="event_type">
+                            {% for event_type in event_types %}
+                            <option value="{{ event_type.text }}">{{ event_type.text }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="when" class='required-field'>Kiedy*:</label>
+                        <input type="datetime-local" class='required-field' name="when" id="when">
+                        <label for="longer_then_one_day">
+                            Wydarzenie trwa dłużej niż jeden dzień?
+
+                            <input type="checkbox" name="longer_then_one_day" id="longer_then_one_day"/>
+                        </label>
+                        <label for="date_end" class="end_date_label">Data końcowa:</label>
+                        <input type="datetime-local" name="date_end" id="date_end">
+
+                        <script>
+                            const startDateInput = document.getElementById('when');
+                            const endDateInput = document.getElementById('date_end');
+
+                            function validateDates() {
+                                const startDate = new Date(startDateInput.value);
+                                const endDate = new Date(endDateInput.value);
+                                if (endDate < startDate) {
+                                    alert('Data końcowa nie może być wcześniejsza niż data rozpoczęcia.');
+                                    endDateInput.value = '';
+                                }
+                            }
+
+                            startDateInput.addEventListener('change', validateDates);
+                            endDateInput.addEventListener('change', validateDates);
+                        </script>
+                        <label for="number_of_people">Liczba osób*:</label>
+                        <input class='required-field' type="number" name="number_of_people" id="number_of_people">
+                        <label class='required-field' for="where">Gdzie*:</label>
+                        <input class='required-field' type="text" name="where" id="where">
+                        <label for="price">Cena (zł)*:</label>
+                        <input type="number" class='required-field' step="0.01" name="price" id="price">
+                    </div>
+                    <div class="buttons-container">
+                        <button  class="btn-cancel">Zamknij</button>
+                        <input type="submit" value="Dodaj" class="btn-create-post">
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+<div class="my-grid-container-right-panel activity-panel">
+    <div class="sticky-container-activity-panel">
+        <div class="new-users red-overlay">
+            <div class="box">
+                <h3 class="new-users-heading">Nowi użytkownicy</h3>
+            </div>
+            <div class="box">
+                <div class="new-users-wrapper">
+                    {% for user in new_users %}
+                    <div class="new-users-box">
+                        <div class="new-users-name-box">
+                            <a href="/profil/{{ user.user.profile.slug }}">
+                                <img src="{{user.user.profile.avatar}}/thumb" alt="profile avatar"/>
+                                {{ user.user.first_name }} {{ user.user.last_name }}
+                            </a>
+                        </div>
+                        <div class="new-users-box-date"> {{ user.user.profile.location}} </div>
+                        <div class="new-users-see-more">
+                            <a href="/profil/{{user.user.profile.slug}}">Zobacz profil</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="popular-events red-overlay">
+            <div class="box">
+                <h3 class="popular-events-heading">👑 Najpopularniejsze wydarzenia</h3>
+            </div>
+            <div class="box outbox-events">
+                <div class="popular-events-wrapper">
+                    {% for event in popular_events %}
+                    <div class="box popular-event-box">
+                        <a class="popular-event-box-title" href="{% url 'profile_view' event.post.user.profile.slug %}">
+                            {{ event.title }}
+                        </a>
+                        <p class="popular-event-box-description">{{ event.post.content|truncatechars:100 }}</p>
+                        <div class="popular-event-box-bottom">
+                            <div class="event-character-box">{{ event.when|date:"d.m.Y" }}</div>
+                            <a class="see-details" href="/post/{{event.post_id}}">
+                                Otwórz
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if popular_events %}
+                <a href="?type=event" class="btn-show-more"> Pokaż wszystkie </a>
+                {% else %}
+                <p class="no-events">Brak wydarzeń</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <script>
@@ -365,5 +403,6 @@
 
 <script src="{% static 'js/activity_panel.js' %}" type="module"></script>
 <script src="{% static 'js/slider.js' %}" type="module"></script>
+
 
 {% endblock %}

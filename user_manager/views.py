@@ -227,7 +227,12 @@ def update_profile(request):
     if request.method == 'POST':
         description = request.POST.get('description')
         avatar = request.FILES.get('avatar')
+        location = request.POST.get('location')
         changes_made = False
+
+        if location:
+            profile.location = location
+            changes_made = True
 
         if description:
             profile.description = description
@@ -483,5 +488,8 @@ def search(request):
         'profiles': profiles,
         'query': query,
     }
-    print(context)
     return render(request, 'user_manager/search_results.html', context)
+
+
+def landing_view(request):
+    return render(request, 'main/landing.html')

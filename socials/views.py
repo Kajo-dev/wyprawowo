@@ -72,7 +72,6 @@ def profile_view(request, slug_profile):
         'top_profiles': top_profiles,
     }
     return render(request, 'socials/profile_page.html', context)
-
 @login_required
 def get_notifications(request):
     notifications = request.user.notifications.filter(is_read=False)

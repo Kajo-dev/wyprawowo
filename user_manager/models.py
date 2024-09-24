@@ -62,6 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField(max_length=255, blank=True)
+    location = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(blank=True)
     avatar = models.URLField(blank=False, null=False)
 

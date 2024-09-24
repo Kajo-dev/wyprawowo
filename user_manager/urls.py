@@ -21,4 +21,5 @@ urlpatterns = [
         path('', user_manager_views.home_view, name='home'),
         path('post/<int:post_id>/', user_manager_views.post_view, name='post'),
         path('search/', user_manager_views.search, name='search'),
+        path('landing/', user_manager_views.landing_view, name='landing'),
     ]

@@ -16,6 +16,8 @@
         <div class="profile-main-view">
             <div class="red-overlay">
                 <div class="profile-box box-no-shadow">
+                    <div class="user-additional-info"> {% if profile.location %}   <div class="user-info-box"> {{profile.location}} </div>  {% if profile.user.is_superuser %}  {% endif %} <div class="user-info-box"> Admin </div> {% endif %} </div>
+
                     <div class="profile-main-info">
 
                         <img src="{{profile.avatar}}/thumb" alt="{{profile.slug}} avatar" class="profile_avatar"/>
@@ -26,7 +28,7 @@
                             </p>
                             <p class="avatar-number">
                                 <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
-                                {{profile.likes_count}}
+                                <span> {{profile.likes_count}} </span>
                             </p>
                         </div>
                     </div>
@@ -37,7 +39,7 @@
                     <div class="profile-bottom-panel">
                         <div class="characteristics-container">
                             {% for response in user_responses|slice:":3" %}
-                            <p class="characteristics-box" title="{{response.question.text}}">
+                            <p class="characteristics-box {% if response.question.id in common_questions %}same-character{% endif %}" title="{{response.question.text}}">
                                 {{ response.answer.text|default:response.text_answer }}
                             </p>
                             {% endfor %}
@@ -51,7 +53,7 @@
                                     <img src="{% static 'img/close-icon.svg' %}" alt="close icon"/>
                                 </button>
                                 {% for response in user_responses %}
-                                <p class="characteristics-box">
+                                <p class="characteristics-box {% if response.question.id in common_questions %}same-character{% endif %}">
                                     <strong>{{ response.question.text }}</strong>
                                     {{ response.answer.text|default:response.text_answer }}
                                 </p>
@@ -60,12 +62,20 @@
                         </div>
 
                         {% if request.user != profile.user %}
-                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}">
-                                {% if is_liked_by_user %}
+                            {% if is_liked_by_user %}
+                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}" data-action='unlike'>
+                                <span class='action-title'>
                                     Zabieram avatar
-                                {% else %}
+                                </span>
+                                <span class="avatar-wrapper">
+                                <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
+                                </span>
+                            </button>
+                            {% else %}
+                            <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}" data-action='like'>
+                                <span class='action-title'>
                                     Zostaw avatar
-                                {% endif %}
+                                </span>
                                 <span class="avatar-wrapper">
                                 <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
                                 </span>
@@ -300,13 +310,14 @@
         <div class="red-overlay my-grid-container-right-panel-wrapper">
             <div class="sidebar-content">
                 <div class="sidebar-content-header box">
-                    <p>👋 Ludzie, których warto znać</p>
+                    <p> Ludzie, których warto znać</p>
                 </div>
 
                 <div class="sidebar-content-body box">
                     {% for top_profile in top_profiles %}
                     <div class="box user-box">
                         <a href="{{top_profile.slug}}">
+                            <div class="user-additional-info"> {% if top_profile.location %}  <div class="user-info-box"> {{ top_profile.location}} </div> {% endif %} {% if top_profile.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
                             <div class="user-box-top">
                                 <img class="profile-avatar" src="{{top_profile.avatar}}/thumb"
                                      alt="{{top_profile.user.first_name}}-avatar"/>
@@ -358,8 +369,10 @@
 
     document.querySelectorAll('.btn-avatar').forEach(button => {
         button.addEventListener('click', function () {
+            const actionNameSpan = document.querySelector('.action-title')
+            const avatarNumberContainer = document.querySelector('.avatar-number span')
             const profileId = this.getAttribute('data-profile-id');
-            const action = this.textContent.trim() === 'Zostaw avatar' ? 'like' : 'unlike';
+            const action = this.getAttribute('data-action');
             fetch(`/profile/${profileId}/${action}/`, {
                 method: 'POST',
                 headers: {
@@ -367,10 +380,14 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => response.json()).then(data => {
-                if (data.status === 'liked') {
-                    this.textContent = 'Zabieram avatar';
-                } else if (data.status === 'unliked') {
-                    this.textContent = 'Zostaw avatar';
+                if (action === 'like') {
+                    actionNameSpan.textContent = 'Zabieram avatar';
+                    this.setAttribute('data-action', 'unlike')
+                    avatarNumberContainer.textContent =  Number(avatarNumberContainer.textContent) +1;
+                } else if (action === 'unlike') {
+                    actionNameSpan.textContent = 'Zostaw avatar';
+                    this.setAttribute('data-action', 'like')
+                    avatarNumberContainer.textContent =  Number(avatarNumberContainer.textContent) -1;
                 }
             });
         });
