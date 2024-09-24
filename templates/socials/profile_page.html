@@ -64,7 +64,7 @@
                         {% if request.user != profile.user %}
                             {% if is_liked_by_user %}
                             <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}" data-action='unlike'>
-                                <span class='action-title'> 
+                                <span class='action-title'>
                                     Zabieram avatar
                                 </span>
                                 <span class="avatar-wrapper">
@@ -73,14 +73,13 @@
                             </button>
                             {% else %}
                             <button class="btn-avatar box" id="like-button" data-profile-id="{{ profile.id }}" data-action='like'>
-                                <span class='action-title'> 
+                                <span class='action-title'>
                                     Zostaw avatar
                                 </span>
                                 <span class="avatar-wrapper">
                                 <img src="{% static 'img/wyprawowo-avatar.png' %}" alt="wyprawowo avatar"/>
                                 </span>
                             </button>
-                            {% endif %}
                         {% endif %}
                     </div>
 
@@ -290,8 +289,9 @@
                                     <img src="{{comment.user.profile.avatar}}/thumb" alt="profile avatar"/>
                                 </a>
                                 <div>
-                                    <div class="user-additional-info"> {% if comment.user.profile.location %}  <div class="user-info-box"> {{ comment.user.profile.location }} </div> {% endif %} {% if comment.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
-                                    <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}  </p>
+                                    <p class="comment-box-user">
+                                        {{ comment.user.first_name }} {{ comment.user.last_name }}
+                                    </p>
                                     <p class="comment-box-content">{{ comment.content }} </p>
                                 </div>
                             </div>

@@ -229,7 +229,7 @@ def update_profile(request):
         avatar = request.FILES.get('avatar')
         location = request.POST.get('location')
         changes_made = False
-        
+
         if location:
             profile.location = location
             changes_made = True
@@ -420,7 +420,6 @@ def post_view(request, post_id):
 def like_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     if profile.like(request.user):
-        print('here')
         create_notification(profile.user, f'{request.user} liked your profile.')
         return JsonResponse({'status': 'liked'})
     else:
@@ -489,8 +488,8 @@ def search(request):
         'profiles': profiles,
         'query': query,
     }
-
     return render(request, 'user_manager/search_results.html', context)
+
 
 def landing_view(request):
     return render(request, 'main/landing.html')

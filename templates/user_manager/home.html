@@ -57,11 +57,13 @@
                         <img src="{{post.user.profile.avatar}}/thumb" alt="user avatar"/>
                     </a>
                     <div class="user-data">
-                        <p>{{post.user.first_name}} {{post.user.last_name}}</p>
+                        <p>
+                            {{post.user.first_name}} {{post.user.last_name}}
+                        </p>
                         {% if post.post_type == 'event' and post.event %}
-                        <p class="event-type"> {{ post.event.event_type  }} </p>
+                            <p class="event-type"> {{ post.event.event_type  }} </p>
                         {% else %}
-                        <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
+                            <p class="post-date"> {{ post.created_at|date:"d.m.Y"  }} </p>
                         {%endif %}
                     </div>
                 </div>
@@ -166,7 +168,7 @@
                             </a>
                             <div>
                                 <div class="user-additional-info"> {% if comment.user.profile.location %}  <div class="user-info-box"> {{ comment.user.profile.location }} </div> {% endif %} {% if comment.user.is_superuser %}  <div class="user-info-box"> Admin </div> {% endif %} </div>
-                                <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}  
+                                <p class="comment-box-user">{{ comment.user.first_name }} {{ comment.user.last_name }}
                                  </p>
                                 <p class="comment-box-content">{{ comment.content }}</p>
                             </div>
@@ -281,7 +283,7 @@
     <div class="sticky-container-activity-panel">
         <div class="new-users red-overlay">
             <div class="box">
-                <h3 class="new-users-heading">👋 Nowi użytkownicy</h3>
+                <h3 class="new-users-heading">Nowi użytkownicy</h3>
             </div>
             <div class="box">
                 <div class="new-users-wrapper">
@@ -401,5 +403,6 @@
 
 <script src="{% static 'js/activity_panel.js' %}" type="module"></script>
 <script src="{% static 'js/slider.js' %}" type="module"></script>
+
 
 {% endblock %}

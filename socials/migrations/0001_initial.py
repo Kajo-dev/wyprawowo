@@ -9,8 +9,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-    ]
+        ("user_manager", "0034_merge_20240729_1127"),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),]
+
 
     operations = [
         migrations.CreateModel(
@@ -36,6 +37,6 @@ class Migration(migrations.Migration):
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
-            ],
-        ),
+            ]
+        )
     ]
