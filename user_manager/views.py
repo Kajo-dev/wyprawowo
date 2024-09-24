@@ -227,7 +227,7 @@ def update_profile(request):
     if request.method == 'POST':
         description = request.POST.get('description')
         avatar = request.FILES.get('avatar')
-        location = request.POSTlocation.get('location')
+        location = request.POST.get('location')
         changes_made = False
         
         if location:
