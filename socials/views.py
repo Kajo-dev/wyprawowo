@@ -67,7 +67,7 @@ def profile_view(request, slug_profile):
         .order_by('-total_likes')[:5]
     )
 
-    notifications = request.user.notifications.filter(is_read=False)
+    notifications = request.user.notifications.filter(is_read=False).order_by('created_at')
 
     context = {
         'profile': user_profile,
@@ -82,6 +82,6 @@ def profile_view(request, slug_profile):
 
 @login_required
 def get_notifications(request):
-    notifications = request.user.notifications.filter(is_read=False)
+    notifications = request.user.notifications.filter(is_read=False).order_by('created_at')
     context = {'notifications': notifications}
     return render(request, 'socials/notifications.html', context)
