@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("user_manager", "0043_remove_eventposttype_event_post_eventpost_event_post"),
+        ("user_manager", "0003_alter_profile_location"),
     ]
 
     operations = [
