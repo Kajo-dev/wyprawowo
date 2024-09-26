@@ -439,6 +439,7 @@ def like_post(request, post_id):
     PostLike.objects.get_or_create(user=request.user, post=post)
     return JsonResponse({'status': 'liked'})
 
+
 @login_required
 @require_POST
 def unlike_post(request, post_id):
@@ -446,11 +447,12 @@ def unlike_post(request, post_id):
     PostLike.objects.filter(user=request.user, post=post).delete()
     return JsonResponse({'status': 'unliked'})
 
+
 @login_required
 def share_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     SharedPost.objects.get_or_create(user=request.user, original_post=post)
-    return redirect('profile_view', slug=request.user.profile.slug)
+    return redirect('profile_view', request.user.profile.slug)
 
 
 def search(request):
