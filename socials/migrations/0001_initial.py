@@ -8,6 +8,10 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
     initial = True
 
+    dependencies = [
+        ("user_manager", "0044_remove_eventpost_event_post"),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),]
+
     operations = [
         migrations.CreateModel(
             name="Notification",
