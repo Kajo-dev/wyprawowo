@@ -18,8 +18,12 @@ from django.utils import timezone
 
 
 def worth_to_know(request):
-    worth_to_know_profiles = Profile.objects.all()
-    return render(request, 'socials/worth_to_know.html', {'worth_to_know_profiles':worth_to_know_profiles})
+    top_profiles = (
+        Profile.objects
+        .annotate(total_likes=Count('likes'))
+        .order_by('-total_likes')[:5]
+    )
+    return render(request, 'socials/worth_to_know.html', {'worth_to_know_profiles': top_profiles})
 
 
 @login_required

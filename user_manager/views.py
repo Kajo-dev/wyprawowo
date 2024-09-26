@@ -480,7 +480,7 @@ def search(request):
             profile_filters |= Q(user__first_name__icontains=word) | Q(user__last_name__icontains=word)
 
         posts = Post.objects.filter(post_filters).annotate(comment_count=Count('comments')).order_by('-created_at')
-        profiles = Profile.objects.filter(profile_filters)
+        profiles = Profile.objects.filter(profile_filters).annotate(total_likes=Count('likes'))
 
         for post in posts:
             is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
