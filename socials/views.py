@@ -63,7 +63,7 @@ def profile_view(request, slug_profile):
         .order_by('-total_likes')[:5]
     )
 
-    notifications = get_notifications(request)
+    notifications = request.user.notifications.filter(is_read=False)
 
     context = {
         'profile': user_profile,
