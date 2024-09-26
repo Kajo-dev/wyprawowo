@@ -206,6 +206,12 @@ class SharedPost(models.Model):
     original_post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='shared_posts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     shared_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Check if the object is being created
+            self.created_at = self.original_post.created_at
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.first_name} shared {self.original_post.content[:20]}"
