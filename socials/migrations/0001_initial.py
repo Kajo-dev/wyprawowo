@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("user_manager", "0044_remove_eventpost_event_post"),
+        ("user_manager", "0034_merge_20240729_1127"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),]
 
     operations = [
