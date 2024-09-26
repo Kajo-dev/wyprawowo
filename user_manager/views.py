@@ -348,6 +348,7 @@ def create_post_comment(request, post_id):
         elif len(content) > 255:
             messages.error(request, 'Comment content cannot exceed 255 characters.')
         elif post:
+            create_notification(post.user, f'{request.user} comment your post.')
             Comment.objects.create(
                 user=request.user,
                 content=content,
@@ -445,6 +446,9 @@ def unlike_profile(request, profile_id):
 @require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    if post.like(request.user):
+        create_notification(post.user, f'{request.user} liked your post.')
+        return JsonResponse({'status': 'liked'})
     PostLike.objects.get_or_create(user=request.user, post=post)
     return JsonResponse({'status': 'liked'})
 
