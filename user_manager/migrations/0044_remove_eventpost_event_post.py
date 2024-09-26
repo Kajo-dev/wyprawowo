@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("user_manager", "0034_merge_20240729_1127"),
+        ("user_manager", "0003_alter_profile_location"),
     ]
 
     operations = [
