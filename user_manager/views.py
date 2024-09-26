@@ -20,7 +20,7 @@ from django.utils import timezone
 from socials.utils import create_notification
 from django.urls import reverse
 from django.db.models import Q
-
+from django.contrib.auth.decorators import user_passes_test
 
 from django_user_agents.utils import get_user_agent
 
@@ -76,7 +76,11 @@ def activate_email(request, user, to_email):
         smtp.send_message(msg)
 
 
+def not_logged_in(user):
+    return not user.is_authenticated
 
+
+@user_passes_test(not_logged_in, login_url='home')
 def register_page(request):
     error_list = []
     if request.method == 'POST':
