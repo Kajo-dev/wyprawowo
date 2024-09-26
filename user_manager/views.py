@@ -446,9 +446,7 @@ def unlike_profile(request, profile_id):
 @require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    if post.like(request.user):
-        create_notification(post.user, f'{request.user} liked your post.')
-        return JsonResponse({'status': 'liked'})
+    create_notification(post.user, f'{request.user} liked your post.')
     PostLike.objects.get_or_create(user=request.user, post=post)
     return JsonResponse({'status': 'liked'})
 
