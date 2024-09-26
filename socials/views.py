@@ -59,7 +59,7 @@ def profile_view(request, slug_profile):
 
     top_profiles = (
         Profile.objects
-        .annotate(total_likes=Count('user__posts__likes'))
+        .annotate(total_likes=Count('likes'))
         .order_by('-total_likes')[:5]
     )
 
