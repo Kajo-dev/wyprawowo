@@ -32,7 +32,7 @@ SITE_URL = 'http://34.118.108.240/'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["34.118.108.240"]
+ALLOWED_HOSTS = ["34.118.108.240", "127.0.0.1"]
 
 # Application definition
 
@@ -134,10 +134,10 @@ USE_TZ = True
 STATIC_URL = '/frontend/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'frontend')
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "frontend"),
-]
+#
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "frontend"),
+# ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
