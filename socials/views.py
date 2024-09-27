@@ -18,8 +18,12 @@ from django.utils import timezone
 
 
 def worth_to_know(request):
-    worth_to_know_profiles = Profile.objects.all()
-    return render(request, 'socials/worth_to_know.html', {'worth_to_know_profiles':worth_to_know_profiles})
+    top_profiles = (
+        Profile.objects
+        .annotate(total_likes=Count('likes'))
+        .order_by('-total_likes')[:5]
+    )
+    return render(request, 'socials/worth_to_know.html', {'worth_to_know_profiles': top_profiles})
 
 
 @login_required
@@ -59,9 +63,11 @@ def profile_view(request, slug_profile):
 
     top_profiles = (
         Profile.objects
-        .annotate(total_likes=Count('user__posts__likes'))
+        .annotate(total_likes=Count('likes'))
         .order_by('-total_likes')[:5]
     )
+
+    notifications = request.user.notifications.filter(is_read=False).order_by('created_at')[:10]
 
     context = {
         'profile': user_profile,
@@ -70,10 +76,12 @@ def profile_view(request, slug_profile):
         'user_responses': user_responses,
         'common_questions': common_questions,
         'top_profiles': top_profiles,
+        'notifications': notifications,
     }
     return render(request, 'socials/profile_page.html', context)
+
 @login_required
 def get_notifications(request):
-    notifications = request.user.notifications.filter(is_read=False)
+    notifications = request.user.notifications.filter(is_read=False).order_by('created_at')[:10]
     context = {'notifications': notifications}
     return render(request, 'socials/notifications.html', context)
