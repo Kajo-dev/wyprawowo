@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/components/navbar.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/components/style.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/components/footer.css' %}"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{% static 'img/icon.png' %}"
+    />
+    <script src="{% static 'js/navigation.js' %}" type="module"></script>
+    {% block title %} {% endblock title %}
+  </head>
+  <body>
+    <div class="search-layer">
+      <form method="GET" action="{% url 'search' %}" class="search-form">
+        <input type="text" name="q" placeholder="Wpisz coś..." required />
+        <button type="submit">
+          <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon" />
+          Szukaj
+        </button>
+      </form>
+    </div>
+
+    <div class="navbar mobile">
+      <div class="navbar-content">
+        <div class="left-nav">
+          <div class="logo-wrapper">
+            <a href="/aktualnosci" class="wyprawowo-logo">
+              <img
+                src="{% static 'img/wyprawowo-black.svg' %}"
+                alt="wyprawowo logo"
+              />
+            </a>
+          </div>
+        </div>
+        <div class="right-nav">
+          <button class="search-button">
+            <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon" />
+          </button>
+          {% if request.user.is_authenticated %}
+          <div class="notifications-wrapper">
+            <button
+              class="btn-notification {% if has_unread %}unread {% endif %}"
+            >
+              <img
+                src="{% static 'img/notification-icon.svg' %}"
+                alt="notification icon"
+              />
+            </button>
+            <div class="notifications-container box">
+              {% include 'socials/notifications.html' %}
+            </div>
+          </div>
+
+          {% else %}
+          <a class="login_link" href="/login">Zaloguj</a>
+          {% endif %} {% if request.user_agent.is_mobile %}
+          <a href="/profil/{{request.user.profile.slug}}">
+            <img
+              src="{{request.user.profile.avatar}}/thumb"
+              alt="avatar"
+              class="avatar-profile"
+            />
+          </a>
+          {% else %}
+          <div class="desktop-menu-container">
+            <button class="btn-avatar-option">
+              <img
+                src="{{request.user.profile.avatar}}/thumb"
+                alt="avatar"
+                class="avatar-profile"
+              />
+            </button>
+            <div class="navbar-desktop-menu box">
+              <button class="btn-close">
+                <img src="{% static 'img/close-icon.svg' %}" alt="close icon" />
+              </button>
+              <a href="/profil/{{request.user.profile.slug}}"> Twoje konto </a>
+              <a href="/polityka-prywatnosci"> Polityka prywatności </a>
+              <a href="/regulamin"> Regulamin </a>
+              <a href="/logout"> Wyloguj </a>
+            </div>
+          </div>
+          {% endif %}
+          <button class="btn-menu">
+            <img src="{% static 'img/hamburger-icon.svg' %}" alt="menu icon" />
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="menu">
+      <button class="btn-close">
+        <img src="{% static 'img/close-icon.svg' %}" alt="close icon" />
+      </button>
+      <div class="nav-container">
+        <div class="nav-content">
+          <a href="{% url 'worth_to_know' %}" class="menu-option">
+            Ludzie, których warto znać
+          </a>
+        </div>
+        <div class="bottom-nav">
+          {% if request.user.is_authenticated %}
+          <div class="bottom-nav-top">
+            <img src="{{request.user.profile.avatar}}/thumb" />
+            <a href="{% url 'logout_page' %}" class="btn-logout">Wyloguj</a>
+          </div>
+          {% endif %}
+          <a href="polityka-prywatnosci">Polityka prywatności </a>
+          <a href="regulamin">regulamin</a>
+        </div>
+      </div>
+    </nav>
+    {% block content %} {% endblock content %}
+
+    <footer class="footer">
+      <div class="first-line">
+        <img
+          src="{% static 'img/wyprawowo-avatar.png' %}"
+          alt="avatar-wyprawowo"
+          class="wyprawowo-avatar"
+        />
+        Wyprawowo.pl - <span> Jeszcze nie wiesz, że chcesz </span>
+      </div>
+      <div class="second-line">
+        <div class="footer-nav">
+          <a href="polityka-prywatnosci">Polityka prywatności </a>
+          <a href="regulamin">regulamin</a>
+        </div>
+        <div class="social-media">
+          <div>
+            <a href="https://www.facebook.com/wyprawowopl" target="_blank">
+              <img src="{% static 'img/fb-icon.svg' %}" alt="fb-icon" />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="third-line">
+        © 2024 TRANSPLANET Radomir Ornowski. Wszystkie prawa zastrzeżone
+      </div>
+    </footer>
+    <script src="{% static 'js/navigation.js' %}" type="module"></script>
+  </body>
+</html>
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", () => {
+    const notificationBtn = document.querySelector(".btn-notification");
+
+    notificationBtn.addEventListener("click", async () => {
+      notificationBtn.classList.remove("unread");
+      const csrftoken = getCookie("csrftoken");
+
+      try {
+        const response = await fetch("{% url 'mark_notifications_as_read' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+        });
+      } catch (error) {
+        console.error("Wystąpił błąd:", error);
+      }
+    });
+
+    const getCookie = (name) => {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    };
+  });
+</script>

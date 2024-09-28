@@ -1,0 +1,21 @@
+{% if notifications %} {% for notification in notifications %}
+<div
+  class="notification-box {% if not notification.is_read %}unread {% endif %}"
+>
+  <a href="{{ notification.link }}">
+    <img
+      src="{{ notification.notification_created_by.profile.avatar }}/thumb"
+      alt="profile avatar"
+    />
+    <p>
+      <strong>{{ notification.notification_created_by.first_name }} </strong>
+      <strong> {{ notification.notification_created_by.last_name }} </strong>
+      {{ notification.message}}
+    </p>
+  </a>
+</div>
+{% endfor %} {% else %}
+<div class="notification-box">
+  <p>Brak Powiadomień</p>
+</div>
+{% endif %}
