@@ -244,6 +244,8 @@
 
 .notifications-container.active {
   display: flex;
+  max-height: 500px;
+  overflow: scroll;
 }
 
 .notification-box i {

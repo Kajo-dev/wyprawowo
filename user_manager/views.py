@@ -18,6 +18,7 @@ from django.views.decorators.http import require_POST
 from django.db.models import Sum, Count
 from django.utils import timezone
 from socials.utils import create_notification
+from socials.models import Notification
 from django.urls import reverse
 from django.db.models import Q
 from django.contrib.auth.decorators import user_passes_test
@@ -336,7 +337,7 @@ def create_post(request):
             )
         followers = Like.objects.filter(profile=request.user.profile)
         for follower in followers:
-            create_notification(follower.user, f'{request.user.first_name} {request.user.last_name} added a new post.')
+            create_notification(follower.user, f'dodał/a nowy wpis.', notification_created_by=request.user)
         return redirect('home')
 
 
@@ -349,7 +350,7 @@ def create_post_comment(request, post_id):
         elif len(content) > 255:
             messages.error(request, 'Comment content cannot exceed 255 characters.')
         elif post:
-            create_notification(post.user, f'{request.user} comment your post.')
+            create_notification(post.user, f'skomentował/a twój wpis.', notification_created_by=request.user)
             Comment.objects.create(
                 user=request.user,
                 content=content,
@@ -391,12 +392,20 @@ def home_view(request):
         )
 
 
+    notifications = []
+    has_unread = False
+
+    if request.user.is_authenticated:
+        notifications = request.user.notifications.order_by('created_at')[:10]
+        has_unread = request.user.notifications.filter(is_read=False).exists()
+        
     context = {
         'posts': posts_with_likes,
         'new_users': new_users,
         'popular_events': popular_events,
         'event_types': event_post_types,
-        'notifications': request.user.notifications.filter(is_read=False).order_by('created_at')[:10] if request.user else [],
+        'notifications': notifications,
+        'has_unread': has_unread
     }
     return render(request, 'user_manager/home.html', context)
 
@@ -418,7 +427,7 @@ def post_view(request, post_id):
 
     context = {
         'posts': posts_with_likes,
-        'notifications': request.user.notifications.filter(is_read=False).order_by('created_at')[:10] if request.user else [],
+        'notifications': request.user.notifications.order_by('created_at')[:10] if request.user else [],
     }
 
 
@@ -429,7 +438,7 @@ def post_view(request, post_id):
 def like_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     if profile.like(request.user):
-        create_notification(profile.user, f'{request.user} liked your profile.')
+        create_notification(profile.user, f'zostawił/a awatar na Twoim profilu.', notification_created_by=request.user)
         return JsonResponse({'status': 'liked'})
     else:
         return JsonResponse({'status': 'already liked'})
@@ -445,7 +454,7 @@ def unlike_profile(request, profile_id):
 @require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    create_notification(post.user, f'{request.user} liked your post.')
+    create_notification(post.user, f'zostawił/a awatar pod Twoim wpisem.', notification_created_by=request.user)
     PostLike.objects.get_or_create(user=request.user, post=post)
     return JsonResponse({'status': 'liked'})
 
@@ -499,7 +508,7 @@ def search(request):
         'posts_texts': texts,
         'profiles': profiles,
         'query': query,
-        'notifications': request.user.notifications.filter(is_read=False).order_by('created_at')[
+        'notifications': request.user.notifications.order_by('created_at')[
                          :10] if request.user else [],
     }
     return render(request, 'user_manager/search_results.html', context)
@@ -507,3 +516,10 @@ def search(request):
 
 def landing_view(request):
     return render(request, 'main/landing.html')
+
+
+def mark_notifications_as_read_view(request):
+    if request.user.is_authenticated:
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=403)

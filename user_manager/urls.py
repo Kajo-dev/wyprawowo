@@ -22,4 +22,5 @@ urlpatterns = [
         path('post/<int:post_id>/', user_manager_views.post_view, name='post'),
         path('search/', user_manager_views.search, name='search'),
         path('', user_manager_views.landing_view, name='landing'),
+        path('mark-all-read/', user_manager_views.mark_notifications_as_read_view, name='mark_notifications_as_read'),
     ]

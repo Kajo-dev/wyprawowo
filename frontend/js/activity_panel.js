@@ -87,7 +87,7 @@ function handleFileChange(event) {
 }
 
 function initializeEventListeners() {
-  if (window.location.pathname === "/aktualnosci") {
+  if (window.location.pathname === "/aktualnosci/") {
     document
       .querySelector('select[name="post_type"]')
       .addEventListener("change", handlePostTypeChange);
@@ -108,7 +108,7 @@ function initializeEventListeners() {
   document.querySelectorAll(".comment-counter").forEach((counter) => {
     counter.addEventListener("click", toggleCommentsSection);
   });
-  if (window.location.pathname === "/aktualnosci") {
+  if (window.location.pathname === "/aktualnosci/") {
     [assetsField, videosField].forEach((el) => {
       el.addEventListener("change", handleFileChange);
     });
@@ -141,13 +141,13 @@ const handleRequiredFields = (postType) => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (window.location.pathname === "/aktualnosci") {
+  if (window.location.pathname === "/aktualnosci/") {
     initializePostTypeDisplay();
   }
   initializeEventListeners();
 });
 
-if (window.location.pathname === "/aktualnosci") {
+if (window.location.pathname === "/aktualnosci/") {
   moreDaysCheckbox.addEventListener("click", () => {
     moreDaysLabel.classList.toggle("active");
     moreDaysInput.classList.toggle("active");

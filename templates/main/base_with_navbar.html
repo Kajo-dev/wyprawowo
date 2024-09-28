@@ -58,15 +58,15 @@
             </a>
           </div>
         </div>
-
         <div class="right-nav">
           <button class="search-button">
             <img src="{% static 'img/search-icon-w.svg' %}" alt="search-icon" />
           </button>
           {% if request.user.is_authenticated %}
-
           <div class="notifications-wrapper">
-            <button class="btn-notification">
+            <button
+              class="btn-notification {% if has_unread %}unread {% endif %}"
+            >
               <img
                 src="{% static 'img/notification-icon.svg' %}"
                 alt="notification icon"
@@ -166,3 +166,41 @@
     <script src="{% static 'js/navigation.js' %}" type="module"></script>
   </body>
 </html>
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", () => {
+    const notificationBtn = document.querySelector(".btn-notification");
+
+    notificationBtn.addEventListener("click", async () => {
+      notificationBtn.classList.remove("unread");
+      const csrftoken = getCookie("csrftoken");
+
+      try {
+        const response = await fetch("{% url 'mark_notifications_as_read' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+        });
+      } catch (error) {
+        console.error("Wystąpił błąd:", error);
+      }
+    });
+
+    const getCookie = (name) => {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    };
+  });
+</script>
