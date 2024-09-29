@@ -26,8 +26,6 @@ def worth_to_know(request):
     return render(request, 'socials/worth_to_know.html', {'worth_to_know_profiles': top_profiles})
 
 
-@login_required
-@login_required
 def profile_view(request, slug_profile):
     user_profile = get_object_or_404(Profile, slug=slug_profile)
     user_posts = list(user_profile.user.posts.all())
@@ -35,8 +33,10 @@ def profile_view(request, slug_profile):
 
     combined_posts = user_posts + shared_posts
     combined_posts.sort(key=lambda x: x.created_at, reverse=True)
+    is_liked_by_user = False
 
-    is_liked_by_user = Like.objects.filter(user=request.user, profile=user_profile).exists()
+    if request.user.is_authenticated:
+        is_liked_by_user = Like.objects.filter(user=request.user, profile=user_profile).exists()
 
     posts_with_likes = []
     for item in combined_posts:
@@ -47,7 +47,11 @@ def profile_view(request, slug_profile):
             post = item.original_post
             is_shared = True
 
-        is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        if request.user.is_authenticated:
+            is_post_liked_by_user = PostLike.objects.filter(user=request.user, post=post).exists()
+        else:
+            is_post_liked_by_user = False
+        
         like_count = post.likes.count()
         is_author = post.user == request.user
         posts_with_likes.append((post, is_post_liked_by_user, like_count, is_author, is_shared))
@@ -56,10 +60,10 @@ def profile_view(request, slug_profile):
     user_responses = UserResponse.objects.filter(user=user_profile.user, question__in=profile_questions)
 
     # Get current user's responses
-    current_user_responses = UserResponse.objects.filter(user=request.user, question__in=profile_questions)
+    current_user_responses = UserResponse.objects.filter(user=request.user, question__in=profile_questions) if request.user.is_authenticated else []
 
     # Find common questions answered by both users
-    common_questions = set(user_responses.values_list('question_id', flat=True)) & set(current_user_responses.values_list('question_id', flat=True))
+    common_questions = set(user_responses.values_list('question_id', flat=True)) & set(current_user_responses.values_list('question_id', flat=True)) if request.user.is_authenticated else []
 
     top_profiles = (
         Profile.objects
@@ -75,7 +79,7 @@ def profile_view(request, slug_profile):
         'user_responses': user_responses,
         'common_questions': common_questions,
         'top_profiles': top_profiles,
-        'notifications': request.user.notifications.filter(is_read=False).order_by('-created_at')[:10] if request.user else [],
+        'notifications': request.user.notifications.filter(is_read=False).order_by('-created_at')[:10] if request.user.is_authenticated else [],
     }
     return render(request, 'socials/profile_page.html', context)
 
