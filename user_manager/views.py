@@ -396,7 +396,7 @@ def home_view(request):
     has_unread = False
 
     if request.user.is_authenticated:
-        notifications = request.user.notifications.order_by('created_at')[:10]
+        notifications = request.user.notifications.order_by('-created_at')[:10]
         has_unread = request.user.notifications.filter(is_read=False).exists()
         
     context = {
@@ -427,7 +427,7 @@ def post_view(request, post_id):
 
     context = {
         'posts': posts_with_likes,
-        'notifications': request.user.notifications.order_by('created_at')[:10] if request.user else [],
+        'notifications': request.user.notifications.order_by('-created_at')[:10] if request.user else [],
     }
 
 
