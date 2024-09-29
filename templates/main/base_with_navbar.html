@@ -89,6 +89,7 @@
           </a>
           {% else %}
           <div class="desktop-menu-container">
+            {% if request.user.is_authenticated %}
             <button class="btn-avatar-option">
               <img
                 src="{{request.user.profile.avatar}}/thumb"
@@ -96,6 +97,7 @@
                 class="avatar-profile"
               />
             </button>
+            {% endif %}
             <div class="navbar-desktop-menu box">
               <button class="btn-close">
                 <img src="{% static 'img/close-icon.svg' %}" alt="close icon" />
