@@ -193,7 +193,7 @@
                 <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
                     {% csrf_token %}
                     <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
-                    <input type="submit" value="dodaj" class="btn-add-comment">
+                    <input type="submit" value="dodaj" class="btn-add-comment creation-btn">
                 </form>
 
                 {% endif %}
@@ -327,7 +327,7 @@
                 <form method="post" action="{% url 'create_post_comment' post_id=post.id %}" class="comment-form">
                     {% csrf_token %}
                     <textarea type="text" name="content_comment" class="comment-textarea" placeholder="Skomentuj" id="content_comment"></textarea>
-                    <input type="submit" value="dodaj" class="btn-add-comment">
+                    <input type="submit" value="dodaj" class="btn-add-comment creation-btn">
                 </form>
 
                 {% endif %}

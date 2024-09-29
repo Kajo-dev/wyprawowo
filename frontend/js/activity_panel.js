@@ -11,6 +11,7 @@ const moreDaysLabel = document.querySelector(".end_date_label");
 const moreDaysInput = document.querySelector("#date_end");
 const eventFields = document.querySelectorAll("#event-fields .required-field");
 const textFields = document.querySelectorAll("#text-fields .required-field");
+const creationButtons = document.querySelectorAll('.creation-btn')
 
 function toggleModal(open) {
   if (open) {
@@ -19,6 +20,18 @@ function toggleModal(open) {
     createButtonModal.classList.remove("open");
   }
 }
+
+
+creationButtons.forEach(el=>{
+  el.addEventListener('click', (e) => {
+    setTimeout(()=>{
+      el.setAttribute('disabled', true)
+    },0)
+    setTimeout(()=>{
+      el.removeAttribute('disabled')
+    },3000)
+  })
+})
 
 function toggleElementDisplay(element, displayStyle) {
   element.style.display = displayStyle;
